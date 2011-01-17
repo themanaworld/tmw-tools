@@ -16,6 +16,7 @@ spritesDir = "graphics/sprites/"
 errors = 0
 warnings = 0
 errDict = set()
+safeDye = False
 
 def printErr(err):
 	errDict.add(err)
@@ -180,7 +181,7 @@ def testDyeInternal(id, col, text, iserr):
 def testDyeColors(id, color, text, iserr):
 	if len(color) < 4:
 		showMsg(id, "dye to small size: " + text, iserr)
-		return
+		return -1
 	colors = dyesplit1.split(color)
 	for col in colors:
 		if len(col) < 4:
@@ -188,6 +189,23 @@ def testDyeColors(id, color, text, iserr):
 			continue
 		if testDyeInternal(id, col, text, iserr) == False:
 			continue
+	return len(colors)
+
+def testDyeMark(file, color, text, iserr):
+	if len(color) < 1:
+		showMsgSprite(file, "dye mark size to small:" + text, iserr)
+		return -1
+	colors = dyesplit1.split(color)
+	for c in colors:
+		if len(c) != 1:
+			showMsgSprite(file, "dye mark incorrect size: " + text, iserr)
+			continue
+		
+		if c != "R" and c != "G" and c != "B" and c != "Y" and c != "M" \
+			and c != "C" and c != "W":
+			showMsgSprite(file, "dye make incorrect: " + text, iserr)
+ 			continue
+	return len(colors)
 
 
 def testSprites(id, node, iserr):
@@ -257,16 +275,19 @@ def testSprite(id, file, iserr):
 	color = tmp[1]
 	file2 = tmp[0]
 	if color != "":
-		testDyeColors(id, color, file, iserr)
+		dnum = testDyeColors(id, color, file, iserr)
+	else:
+		dnum = 0
 
 	fullPath = os.path.abspath(parentDir + "/" + spritesDir + file2)
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showFileMsgById(id, spritesDir, file2, iserr)
 	else:
-		testSpriteFile(id, fullPath, file, spritesDir + file2, iserr)
+		testSpriteFile(id, fullPath, file, spritesDir + file2, dnum, iserr)
 
-def testSpriteFile(id, fullPath, file, fileLoc, iserr):
-	#todo check src dye
+def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
+	global safeDye
+	
 	try:
 		dom = minidom.parse(fullPath)
 	except:
@@ -302,6 +323,18 @@ def testSpriteFile(id, fullPath, file, fileLoc, iserr):
 	except:
 		showMsgSprite(fileLoc, "no height attribute", iserr)
 	
+	if imagecolor != "":
+		num = testDyeMark(fileLoc, imagecolor, image0, iserr)
+		if safeDye == False and dnum != num:
+			if dnum > num:
+				e = iserr
+			else:
+				e = False
+			showMsgSprite(fileLoc, "dye colors size not same in sprite (" + str(num) \
+			+ ") and in caller (" + str(dnum) + ", id=" + str(id) + ")", e)
+	elif safeDye == True and dnum > 0:
+			showMsgSprite(fileLoc, "dye set in sprite but not in caller (id=" + str(id) + ")", False)
+
 
 	fullPath = os.path.abspath(parentDir + "/" + image)
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
@@ -341,7 +374,7 @@ def testImageFile(file, fullPath, sz, iserr):
 
 
 def testItems(fileName, imgDir):
-	global warnings, errors
+	global warnings, errors, safeDye
 	print "Checking items.xml"
 	dom = minidom.parse(parentDir + fileName)
 	idset = set()
@@ -379,7 +412,9 @@ def testItems(fileName, imgDir):
 				print "error: hairsprite override player sprites"
 				errors = errors + 1
 
+			safeDye = True
 			testSprites(id, node, True)
+			safeDye = False
 
 		elif type == "racesprite":
 			if idI >= 0:
