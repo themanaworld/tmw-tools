@@ -455,6 +455,26 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		if "right" not in aniset:
 			showMsgSprite(file, "no right direction in animation: " + name, iserr)
 
+	if name == "dead" and len(animations) > 0:
+		lastani = animations[len(animations) - 1]
+		lastNode = None
+		nc = 0
+		for node in lastani.childNodes:
+			if node.nodeName == "frame":
+				lastNode = node
+				nc = nc + 1
+			if node.nodeName == "sequence":
+				lastNode = node
+				nc = nc + 2
+		if nc > 1:
+			try:
+				delay = int(lastNode.attributes["delay"].value)
+			except:
+				delay = 0
+			if delay > 0 and delay < 5000:
+				showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, iserr)
+
+
 
 
 def testImageFile(file, fullPath, sz, iserr):
@@ -563,7 +583,7 @@ def testItems(fileName, imgDir):
 
 showHeader()
 print "Checking xml file syntax"
-enumDirs("../../clientdata")
+enumDirs(parentDir)
 loadPaths()
 testItems("/items.xml", iconsDir)
 showFooter()
