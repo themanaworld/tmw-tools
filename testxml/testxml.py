@@ -7,7 +7,7 @@ import xml
 from xml.dom import minidom
 from PIL import Image
 
-filt = re.compile(".+[.]xml", re.IGNORECASE)
+filt = re.compile(".+[.](xml|tmx)", re.IGNORECASE)
 dyesplit1 = re.compile(";")
 dyesplit2 = re.compile(",")
 parentDir = "../../clientdata"
@@ -113,6 +113,7 @@ def enumDirs(parentDir):
 				errors = errors + 1
 
 def loadPaths():
+	global warnings
 	try:
 		dom = minidom.parse(parentDir + "/paths.xml")
 		for node in dom.getElementsByTagName("option"):
@@ -341,14 +342,118 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
 		showMsgSprite(fileLoc, "image file not exist: " + image, iserr)
 		return
 	sizes = testImageFile(image, fullPath, 0, iserr)
-	s = int(sizes[0] / int(width)) * int(width)
-	if sizes[0] != s:
+	s1 = int(sizes[0] / int(width)) * int(width)
+	if sizes[0] != s1:
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
-		" (need " + str(s) + ") is not multiply to frame size " + width + ", image:" + image, False)
-	s = int(sizes[1] / int(height)) * int(height)
-	if sizes[1] != s:
+		" (need " + str(s1) + ") is not multiply to frame size " + width + ", image:" + image, False)
+	s2 = int(sizes[1] / int(height)) * int(height)
+	if sizes[1] != s2:
 		showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
-		" (need " + str(s) + ") is not multiply to frame size " + height + ", image:" + image, False)
+		" (need " + str(s2) + ") is not multiply to frame size " + height + ", image:" + image, False)
+
+	num = (s1 / int(width)) * (s2 / int(height))
+	if num < 1:
+		showMsgSprite(fileLoc, "image have zero frames: " + iamge, iserr)
+
+	try:
+		includes = dom.getElementsByTagName("include")
+	except:
+		includes = None
+
+	#todo need parse included files
+
+	try:
+		actions = dom.getElementsByTagName("action")
+	except:
+		actions = None
+
+	if (actions == None or len(actions) == 0) and (includes == None or len(includes) == 0):
+		showMsgSprite(fileLoc, "no actions in sprite file", iserr)
+	else:
+		actset = set()
+		for action in actions:
+			try:
+				name = action.attributes["name"].value
+			except:
+				showMsgSprite("no action name", iserr)
+				continue
+
+			testSpriteAction(fileLoc, name, action, num, iserr)
+
+			if name in actset:
+				showMsgSprite(fileLoc, "duplicate action: " + name, iserr)
+				continue
+			actset.add(name)
+
+
+
+def testSpriteAction(file, name, action, numframes, iserr):
+	try:
+		animations = action.getElementsByTagName("animation")
+	except:
+		animations = None
+	
+	if animations == None or len(animations) == 0:
+		showMsgSprite(file, "no animation tags in action: " + name, False)
+
+	aniset = set()
+	for animation in animations:
+		try:
+			direction = animation.attributes["direction"].value
+		except:
+			direction = "default"
+
+		if direction is aniset:
+			showMsgSprite(file, "duplicate direction in action: " + name, iserr)
+			continue
+		aniset.add(direction)
+		try:
+			frames = animation.getElementsByTagName("frame")
+			for frame in frames:
+				try:
+					idx = int(frame.attributes["index"].value)
+					if idx >= numframes or idx < 0:
+						showMsgSprite(file, "incorrect frame index " + str(idx) + \
+						"in action: " + name, iserr)
+
+				except:
+					showMsgSprite(file, "no frame index in action: " + name, iserr)
+
+			cnt = len(frames)
+		except:
+			cnt = 0
+
+		try:
+			sequences = animation.getElementsByTagName("sequence")
+			cnt = cnt + len(sequences)
+
+			for sequence in sequences:
+				try:
+					i1 = int(sequence.attributes["start"].value)
+					i2 = int(sequence.attributes["end"].value)
+					if i1 >= numframes or i1 < 0:
+						showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
+						"in action: " + name, iserr)
+					if i2 >= numframes or i2 < 0:
+						showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
+						"in action: " + name, iserr)
+				except:
+					showMsgSprite(file, "no sequence start or end index in action: " + name, iserr)
+		except:
+			None
+
+		if cnt == 0:
+			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
+
+	if "default" not in aniset:
+		if "down" not in aniset:
+			showMsgSprite(file, "no down direction in animation: " + name, iserr)
+		if "up" not in aniset:
+			showMsgSprite(file, "no up direction in animation: " + name, iserr)
+		if "left" not in aniset:
+			showMsgSprite(file, "no left direction in animation: " + name, iserr)
+		if "right" not in aniset:
+			showMsgSprite(file, "no right direction in animation: " + name, iserr)
 
 
 
