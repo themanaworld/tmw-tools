@@ -646,6 +646,6 @@ showHeader()
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
-#testItems("/items.xml", iconsDir)
+testItems("/items.xml", iconsDir)
 testMonsters("/monsters.xml")
 showFooter()
