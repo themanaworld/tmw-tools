@@ -468,11 +468,16 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				nc = nc + 2
 		if nc > 1:
 			try:
-				delay = int(lastNode.attributes["delay"].value)
+				cont = int(lastNode.attributes["continue"].value)
 			except:
-				delay = 0
-			if delay > 0 and delay < 5000:
-				showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, iserr)
+				cont  = 0;
+			if cont == 0:
+				try:
+					delay = int(lastNode.attributes["delay"].value)
+				except:
+					delay = 0
+				if delay > 0 and delay < 5000:
+					showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, False)
 
 
 
