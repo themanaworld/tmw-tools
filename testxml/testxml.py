@@ -381,6 +381,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
 		showMsgSprite(fileLoc, "no actions in sprite file", iserr)
 	else:
 		actset = set()
+		frameSet = set()
 		for action in actions:
 			try:
 				name = action.attributes["name"].value
@@ -388,16 +389,27 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
 				showMsgSprite("no action name", iserr)
 				continue
 
-			testSpriteAction(fileLoc, name, action, num, iserr)
+			frameSet = frameSet | testSpriteAction(fileLoc, name, action, num, iserr)
 
 			if name in actset:
 				showMsgSprite(fileLoc, "duplicate action: " + name, iserr)
 				continue
 			actset.add(name)
 
+		if len(frameSet) > 0:
+			errIds = ""
+			i = 0
+			while i < max(frameSet):
+				if i not in frameSet:
+					errIds = errIds + str(i) + ","
+				i = i + 1
+			if len(errIds) > 0:
+				showMsgSprite(fileLoc, "unused frames: " + errIds[0:len(errIds)-1], False)
 
 
 def testSpriteAction(file, name, action, numframes, iserr):
+	framesid = set()
+	
 	try:
 		animations = action.getElementsByTagName("animation")
 	except:
@@ -425,6 +437,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					if idx >= numframes or idx < 0:
 						showMsgSprite(file, "incorrect frame index " + str(idx) + \
 						" in action: " + name, iserr)
+					else:
+						framesid.add(idx)
 
 				except:
 					showMsgSprite(file, "no frame index in action: " + name, iserr)
@@ -447,6 +461,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					if i2 >= numframes or i2 < 0:
 						showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
 						" in action: " + name, iserr)
+					for i in range(i1,i2 + 1):
+						framesid.add(i)
 				except:
 					showMsgSprite(file, "no sequence start or end index in action: " + name, iserr)
 		except:
@@ -489,7 +505,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				if delay > 0 and delay < 5000:
 					showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, False)
 
-
+	return framesid
 
 
 def testImageFile(file, fullPath, sz, iserr):
