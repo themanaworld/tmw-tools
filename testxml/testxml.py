@@ -655,8 +655,30 @@ def testMonsters(fileName):
 			errors = errors + 1
 			name = ""
 
+		testTargetCursor(id, node, fileName)
 		testSprites(id, node, False, True)
 		testSounds(id, node, "monster")
+		testParticles(id, node, "particlefx")
+
+
+def testTargetCursor(id, node, file):
+	try:
+		targetCursor = node.attributes["targetCursor"].value
+		if targetCursor != "small" and targetCursor != "medium" and targetCursor != "large":
+			showMsgFile(id, "unknown target cursor " + targetCursor)
+	except:
+		None
+
+def testParticles(id, node, nodeName):
+	particles = node.getElementsByTagName(nodeName)
+	for particle in particles:
+		try:
+			particlefx = particle.childNodes[0].data
+		except:
+			showMsgFile(id, "particle tag have incorrect data", True)
+
+		testParticle(particlefx)
+
 
 
 def testSounds(id, node, type):
@@ -675,6 +697,7 @@ def testSounds(id, node, type):
 		elif type == "item":
 			if event != "hit" and event != "strike":
 				print "error: incorrect sound event name " + event + " in id=" + id
+				errors = errors + 1
 
 		testSound(sound.childNodes[0].data)
 
