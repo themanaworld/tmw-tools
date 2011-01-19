@@ -4,6 +4,7 @@
 import os
 import re
 import xml
+import ogg.vorbis
 from xml.dom import minidom
 from PIL import Image
 
@@ -13,6 +14,7 @@ dyesplit2 = re.compile(",")
 parentDir = "../../clientdata"
 iconsDir = "graphics/items/"
 spritesDir = "graphics/sprites/"
+sfxDir = "sfx/"
 errors = 0
 warnings = 0
 errDict = set()
@@ -121,6 +123,8 @@ def loadPaths():
 				iconsDir = node.attributes["value"].value
 			elif node.attributes["name"].value == "sprites":
 				spritesDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "sfx":
+				sfxDir = node.attributes["value"].value
 	except:
 		print "warn: paths.xml not found"
 		warnings = warnings + 1
@@ -502,6 +506,17 @@ def testImageFile(file, fullPath, sz, iserr):
 	
 	return sizes	
 
+def testSound(file):
+	fullPath = parentDir + "/" + sfxDir + file
+	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
+		showMsgFile(file, "sound file not found", True)
+	
+	try:
+		snd = ogg.vorbis.VorbisFile(fullPath)
+	except ogg.vorbis.VorbisError as e:
+		showMsgFile(file, "sound file incorrect error: " + str(e), True)
+
+
 
 def testItems(fileName, imgDir):
 	global warnings, errors, safeDye
@@ -586,9 +601,51 @@ def testItems(fileName, imgDir):
 			print "warn: unknown type '" + type + "' for id=" + id
 			warnings = warnings + 1
 
+def testMonsters(fileName):
+	global warnings, errors
+	print "monsters.xml"
+	dom = minidom.parse(parentDir + fileName)
+	idset = set()
+	for node in dom.getElementsByTagName("monster"):
+		try:
+			id = node.attributes["id"].value
+		except:
+			print "error: no id for monster"
+			errors = errors + 1
+			continue
+
+		if id in idset:
+			print "duplicate id=" + id
+		else:
+			idset.add(id)
+
+		try:
+			name = node.attributes["name"].value
+		except:
+			print "error: no name for id=" + id
+			errors = errors + 1
+			name = ""
+
+		testSprites(id, node, True)
+		for sound in node.getElementsByTagName("sound"):
+			try:
+				event = sound.attributes["event"].value
+			except:
+				print "error: no sound event name in id=" + id
+				errors = errors + 1
+
+			if event != "hit" and event != "miss" and event != "hurt" and event != "die":
+				print "error: incorrect sound event name " + event + " in id=" + id
+				errors = errors + 1
+
+			testSound(sound.childNodes[0].data)
+
+
+
 showHeader()
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
-testItems("/items.xml", iconsDir)
+#testItems("/items.xml", iconsDir)
+testMonsters("/monsters.xml")
 showFooter()
