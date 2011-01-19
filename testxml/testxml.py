@@ -424,7 +424,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					idx = int(frame.attributes["index"].value)
 					if idx >= numframes or idx < 0:
 						showMsgSprite(file, "incorrect frame index " + str(idx) + \
-						"in action: " + name, iserr)
+						" in action: " + name, iserr)
 
 				except:
 					showMsgSprite(file, "no frame index in action: " + name, iserr)
@@ -443,10 +443,10 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					i2 = int(sequence.attributes["end"].value)
 					if i1 >= numframes or i1 < 0:
 						showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
-						"in action: " + name, iserr)
+						" in action: " + name, iserr)
 					if i2 >= numframes or i2 < 0:
 						showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
-						"in action: " + name, iserr)
+						" in action: " + name, iserr)
 				except:
 					showMsgSprite(file, "no sequence start or end index in action: " + name, iserr)
 		except:
@@ -701,6 +701,29 @@ def testSounds(id, node, type):
 
 		testSound(sound.childNodes[0].data)
 
+def testNpcs(file):
+	global warnings, errors
+	print "Checking npcs.xml"
+	dom = minidom.parse(parentDir + file)
+	idset = set()
+	for node in dom.getElementsByTagName("npc"):
+		try:
+			id = node.attributes["id"].value
+		except:
+			print "error: no id for npc"
+			errors = errors + 1
+			continue
+		
+		if id in idset:
+			print "error: duplicate npc id=" + id
+		else:
+			idset.add(id)
+
+		testSprites(id, node, False, True)
+
+
+
+
 
 def haveXml(dir):
 	if not os.path.isdir(dir) or not os.path.exists(dir):
@@ -732,4 +755,5 @@ enumDirs(parentDir)
 loadPaths()
 testItems("/items.xml", iconsDir)
 testMonsters("/monsters.xml")
+testNpcs("/npcs.xml")
 showFooter()
