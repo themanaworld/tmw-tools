@@ -641,8 +641,31 @@ def testMonsters(fileName):
 			testSound(sound.childNodes[0].data)
 
 
+def haveXml(dir):
+	if not os.path.isdir(dir) or not os.path.exists(dir):
+		return False
+	for file in os.listdir(dir):
+		if filt.search(file):
+			return True
+	return False
+		
+
+def detectClientData(dirs):
+	global parentDir
+
+	for dir in dirs:
+		if haveXml(dir):
+			print "Detected client data directory in: " + dir
+			parentDir = dir
+			return True
+	
+	print "Cant detect client data directory"
+	exit(1)
+
 
 showHeader()
+print "Detecting clientdata dir"
+detectClientData([".", "..", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
