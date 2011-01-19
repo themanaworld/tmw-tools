@@ -213,7 +213,7 @@ def testDyeMark(file, color, text, iserr):
 	return len(colors)
 
 
-def testSprites(id, node, iserr):
+def testSprites(id, node, checkGender, iserr):
 	try:
 		tmp = node.getElementsByTagName("nosprite")
 		if tmp is not None and len(tmp) > 1:
@@ -233,17 +233,18 @@ def testSprites(id, node, iserr):
 		if len(sprites) == 0:
 			if nosprite == False:
 				showMsg(id, "no sprite tags found", iserr)
-		elif len(sprites) > 3:
+		elif len(sprites) > 3 and checkGender:
 			showMsg(id, "incorrect number of sprite tags", iserr)
 		elif len(sprites) == 1:
 			file = sprites[0].childNodes[0].data
-			try:
-				gender = sprites[0].attributes["gender"].value
-			except:
-				gender = ""
+			if checkGender:
+				try:
+					gender = sprites[0].attributes["gender"].value
+				except:
+					gender = ""
 
-			if gender != "" and gender != "unisex":
-				showMsg(id, "gender tag in alone sprite", iserr)
+				if gender != "" and gender != "unisex":
+					showMsg(id, "gender tag in alone sprite", iserr)
 
 			testSprite(id, file, iserr)
 		else:
@@ -251,28 +252,30 @@ def testSprites(id, node, iserr):
 			female = False
 			for sprite in sprites:
 				file = sprite.childNodes[0].data
-				try:
-					gender = sprite.attributes["gender"].value
-				except:
-					gender = ""
-				if gender == "male":
-					if male == True:
-						showMsg(id, "double male sprite tag", iserr)
-					male = True
-				elif gender == "female":
-					if female == True:
-						showMsg(id, "double female sprite tag", iserr)
-					female = True
-				elif gender == "unisex":
-					if female == True or male == True:
-						showMsg(id, "gender sprite tag with unisex tag", False)
-					male = True
-					female = True
+				if checkGender:
+					try:
+						gender = sprite.attributes["gender"].value
+					except:
+						gender = ""
+					if gender == "male":
+						if male == True:
+							showMsg(id, "double male sprite tag", iserr)
+						male = True
+					elif gender == "female":
+						if female == True:
+							showMsg(id, "double female sprite tag", iserr)
+						female = True
+					elif gender == "unisex":
+						if female == True or male == True:
+							showMsg(id, "gender sprite tag with unisex tag", False)
+						male = True
+						female = True
 				testSprite(id, file, iserr)
-			if male == False:
-				showMsg(id, "no male sprite tag", iserr)
-			if female == False:
-				showMsg(id, "no female sprite tag", iserr)
+			if checkGender:
+				if male == False:
+					showMsg(id, "no male sprite tag", iserr)
+				if female == False:
+					showMsg(id, "no female sprite tag", iserr)
 
 
 def testSprite(id, file, iserr):
@@ -303,7 +306,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
 
 	root = dom.childNodes[0];
 	imagesets = dom.getElementsByTagName("imageset")
-	if imagesets is None or len(imagesets) != 1:
+	if imagesets is None or len(imagesets) < 1:
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
 	imageset = imagesets[0]
 	
@@ -510,7 +513,7 @@ def testSound(file):
 	fullPath = parentDir + "/" + sfxDir + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showMsgFile(file, "sound file not found", True)
-	
+		return
 	try:
 		snd = ogg.vorbis.VorbisFile(fullPath)
 	except ogg.vorbis.VorbisError as e:
@@ -558,7 +561,7 @@ def testItems(fileName, imgDir):
 				errors = errors + 1
 
 			safeDye = True
-			testSprites(id, node, True)
+			testSprites(id, node, True, True)
 			safeDye = False
 
 		elif type == "racesprite":
@@ -594,7 +597,7 @@ def testItems(fileName, imgDir):
 			and type != "equip-2hand" and type != "equip-ammo" \
 			and type != "equip-charm" and type != "equip-neck":
 				err = type != "equip-shield"
-				testSprites(id, node, err)
+				testSprites(id, node, True, err)
 		elif type == "other":
 			None
 		elif type != "":
@@ -603,7 +606,7 @@ def testItems(fileName, imgDir):
 
 def testMonsters(fileName):
 	global warnings, errors
-	print "monsters.xml"
+	print "Checking monsters.xml"
 	dom = minidom.parse(parentDir + fileName)
 	idset = set()
 	for node in dom.getElementsByTagName("monster"):
@@ -626,7 +629,7 @@ def testMonsters(fileName):
 			errors = errors + 1
 			name = ""
 
-		testSprites(id, node, True)
+		testSprites(id, node, False, True)
 		for sound in node.getElementsByTagName("sound"):
 			try:
 				event = sound.attributes["event"].value
