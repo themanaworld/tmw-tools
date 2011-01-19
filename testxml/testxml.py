@@ -14,6 +14,7 @@ dyesplit2 = re.compile(",")
 parentDir = "../../clientdata"
 iconsDir = "graphics/items/"
 spritesDir = "graphics/sprites/"
+particlesDir = "graphics/particles/"
 sfxDir = "sfx/"
 errors = 0
 warnings = 0
@@ -125,6 +126,8 @@ def loadPaths():
 				spritesDir = node.attributes["value"].value
 			elif node.attributes["name"].value == "sfx":
 				sfxDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "particles":
+				particlesDir = node.attributes["value"].value
 	except:
 		print "warn: paths.xml not found"
 		warnings = warnings + 1
@@ -519,6 +522,11 @@ def testSound(file):
 	except ogg.vorbis.VorbisError as e:
 		showMsgFile(file, "sound file incorrect error: " + str(e), True)
 
+def testParticle(file):
+	fullPath = parentDir + "/" + file
+	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
+		showMsgFile(file, "particle file not found", True)
+	#todo add parsing and checking particle xml file
 
 
 def testItems(fileName, imgDir):
@@ -552,6 +560,17 @@ def testItems(fileName, imgDir):
 			image0 = ""
 			imagecolor = ""
 
+		try:
+			description = node.attributes["description"].value
+		except:
+			description = ""
+
+		try:
+			missile = node.attributes["missile-particle"].value
+		except:
+			missile = ""
+
+
 		if type == "hairsprite":
 			if idI >= 0:
 				print "error: hairsprite with id=" + id
@@ -584,6 +603,13 @@ def testItems(fileName, imgDir):
 			elif len(imagecolor) > 0:
 				testDye(id, imagecolor, "image=" + image0, True)
 
+			if description == "":
+				print "warn: missing description attribute on id=" + id
+				warnings = warnings + 1
+			if missile != "":
+				testParticle(missile)
+
+			testSounds(id, node, "item")
 
 			fullPath = os.path.abspath(parentDir + "/" + imgDir + image)
 			if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
@@ -630,18 +656,27 @@ def testMonsters(fileName):
 			name = ""
 
 		testSprites(id, node, False, True)
-		for sound in node.getElementsByTagName("sound"):
-			try:
-				event = sound.attributes["event"].value
-			except:
-				print "error: no sound event name in id=" + id
-				errors = errors + 1
+		testSounds(id, node, "monster")
 
+
+def testSounds(id, node, type):
+	global errors
+	for sound in node.getElementsByTagName("sound"):
+		try:
+			event = sound.attributes["event"].value
+		except:
+			print "error: no sound event name in id=" + id
+			errors = errors + 1
+
+		if type == "monster":
 			if event != "hit" and event != "miss" and event != "hurt" and event != "die":
 				print "error: incorrect sound event name " + event + " in id=" + id
 				errors = errors + 1
+		elif type == "item":
+			if event != "hit" and event != "strike":
+				print "error: incorrect sound event name " + event + " in id=" + id
 
-			testSound(sound.childNodes[0].data)
+		testSound(sound.childNodes[0].data)
 
 
 def haveXml(dir):
