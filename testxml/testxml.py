@@ -249,7 +249,12 @@ def testSprites(id, node, checkGender, iserr):
 				if gender != "" and gender != "unisex":
 					showMsg(id, "gender tag in alone sprite", iserr)
 
-			testSprite(id, file, iserr)
+			try:
+				variant = int(sprites[0].attributes["variant"].value)
+			except:
+				variant = 0
+
+			testSprite(id, file, variant, iserr)
 		else:
 			male = False
 			female = False
@@ -273,7 +278,11 @@ def testSprites(id, node, checkGender, iserr):
 							showMsg(id, "gender sprite tag with unisex tag", False)
 						male = True
 						female = True
-				testSprite(id, file, iserr)
+				try:
+					variant = int(sprite.attributes["variant"].value)
+				except:
+					variant = 0
+				testSprite(id, file, variant, iserr)
 			if checkGender:
 				if male == False:
 					showMsg(id, "no male sprite tag", iserr)
@@ -281,7 +290,7 @@ def testSprites(id, node, checkGender, iserr):
 					showMsg(id, "no female sprite tag", iserr)
 
 
-def testSprite(id, file, iserr):
+def testSprite(id, file, variant, iserr):
 	tmp = splitImage(file)
 	color = tmp[1]
 	file2 = tmp[0]
@@ -294,9 +303,9 @@ def testSprite(id, file, iserr):
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showFileMsgById(id, spritesDir, file2, iserr)
 	else:
-		testSpriteFile(id, fullPath, file, spritesDir + file2, dnum, iserr)
+		testSpriteFile(id, fullPath, file, spritesDir + file2, dnum, variant, iserr)
 
-def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
+def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	global safeDye
 	
 	try:
@@ -362,6 +371,9 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, iserr):
 		" (need " + str(s2) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
 	num = (s1 / int(width)) * (s2 / int(height))
+	if variant >= num:
+		showMsgSprite(fileLoc, "to big variant number " + str(variant) \
+		+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
 	if num < 1:
 		showMsgSprite(fileLoc, "image have zero frames: " + iamge, iserr)
 
@@ -626,6 +638,13 @@ def testItems(fileName, imgDir):
 				testParticle(missile)
 
 			testSounds(id, node, "item")
+
+			try:
+				floor = node.getElementsByTagName("floor")[0]
+			except:
+				floor = None
+			if floor != None:
+				testSprites(id, floor, False, err)
 
 			fullPath = os.path.abspath(parentDir + "/" + imgDir + image)
 			if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
