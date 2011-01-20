@@ -441,44 +441,84 @@ def testSpriteAction(file, name, action, numframes, iserr):
 			showMsgSprite(file, "duplicate direction in action: " + name, iserr)
 			continue
 		aniset.add(direction)
-		try:
-			frames = animation.getElementsByTagName("frame")
-			for frame in frames:
+
+		lastIndex1 = -1
+		lastIndex2 = -1
+		lastOffsetX = 0
+		lastOffsetY = 0
+		cnt = 0
+
+		for node2 in animation.childNodes:
+			if node2.nodeName == "frame" or node2.nodeName == "sequence":
+				try:
+					offsetX = int(node2.attributes["offsetX"].value)
+				except:
+					offsetX = 0
+				try:
+					offsetY = int(node2.attributes["offsetY"].value)
+				except:
+					offsetY = 0
+
+			if node2.nodeName == "frame":
+				frame = node2	
 				try:
 					idx = int(frame.attributes["index"].value)
-					if idx >= numframes or idx < 0:
-						showMsgSprite(file, "incorrect frame index " + str(idx) + \
-						" in action: " + name, iserr)
-					else:
-						framesid.add(idx)
-
 				except:
 					showMsgSprite(file, "no frame index in action: " + name, iserr)
+					
+				if idx >= numframes or idx < 0:
+					showMsgSprite(file, "incorrect frame index " + str(idx) + \
+							" aciton: " + name + ", direction: "\
+							+ direction, iserr)
+				else:
+					framesid.add(idx)
+				if lastIndex1 == idx and lastIndex2 == -1 and offsetX == lastOffsetX \
+				and offsetY == lastOffsetY:
+					showMsgSprite(file, "duplicate frame animation for frame index=" \
+							+ str(idx) + " action: " + name + \
+							", direction: " + direction, False)
+				else:
+					lastIndex1 = idx
+					lastIndex2 = -1
+					lastOffsetX = offsetX
+					lastOffsetY = offsetY
 
-			cnt = len(frames)
-		except:
-			cnt = 0
-
-		try:
-			sequences = animation.getElementsByTagName("sequence")
-			cnt = cnt + len(sequences)
-
-			for sequence in sequences:
+				framesid.add(idx)
+				cnt = cnt + 1
+			elif node2.nodeName == "sequence":
+				sequence = node2
 				try:
 					i1 = int(sequence.attributes["start"].value)
 					i2 = int(sequence.attributes["end"].value)
-					if i1 >= numframes or i1 < 0:
-						showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
-						" in action: " + name, iserr)
-					if i2 >= numframes or i2 < 0:
-						showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
-						" in action: " + name, iserr)
-					for i in range(i1,i2 + 1):
-						framesid.add(i)
 				except:
-					showMsgSprite(file, "no sequence start or end index in action: " + name, iserr)
-		except:
-			None
+					showMsgSprite(file, "no sequence start or end index action: " + \
+							name + ", direction: " + direction, iserr)
+					
+				if i1 >= numframes or i1 < 0:
+					showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
+							" action: " + name + ", direction: " + direction, iserr)
+				if i2 >= numframes or i2 < 0:
+					showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
+							" action: " + name + ", direction: " + direction, iserr)
+				if i1 == i2:
+					showMsgSprite(file, "start and end sequence index is same. " \
+							+ "May be better use frame? action: " + \
+							name + ", direction: " + direction, False)
+
+				if lastIndex1 == i1 and lastIndex2 == i2 and offsetX == lastOffsetX \
+				and offsetY == lastOffsetY:
+					showMsgSprite(file, "duplicate sequence animation for start=" \
+							+ str(i1) + ", end=" + str(i2) + " action: " + \
+							name + ", direction: " + direction, False)
+				else:
+					lastIndex1 = i1
+					lastIndex2 = i2
+					lastOffsetX = offsetX
+					lastOffsetY = offsetY
+				
+				cnt = cnt + 1
+				for i in range(i1,i2 + 1):
+					framesid.add(i)
 
 		if cnt == 0:
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
