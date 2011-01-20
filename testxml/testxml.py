@@ -74,7 +74,7 @@ def showMsgFile(file, text, iserr):
 		err = "warn: file=" + file + " " + text
 		if err not in errDict:
 			printErr(err)
-			warnings = warnigs + 1
+			warnings = warnings + 1
 	
 
 def showFileMsgById(id, rootDir, fileDir, iserr):
@@ -537,7 +537,12 @@ def testImageFile(file, fullPath, sz, iserr):
 			showMsgFile(file, "image size incorrect (" + str(sizes[0]) \
 			+ "x" + str(sizes[1]) + ") should be (" + str(sz) + "x" \
 			+ str(sz) + ")", iserr)
-	
+		elif sizes[0] < sz or sizes[1] < sz:
+			showMsgFile(file, "possible image size incorrect (" + str(sizes[0]) \
+			+ "x" + str(sizes[1]) + ") should be (" + str(sz) + "x" \
+			+ str(sz) + ")", False)
+
+
 	return sizes	
 
 def testSound(file):
