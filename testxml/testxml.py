@@ -37,8 +37,10 @@ def showError(id, text):
 def showWarning(id, text):
 	print "warn: id=" + id + " " + text
 
-def showMsg(id, text, iserr):
+def showMsg(id, text, src, iserr):
 	global errors, warnings
+	if text != "":
+		text = text + ", " + src
 	if iserr == True:
 		if text not in errDict:
 			showError(id, text)
@@ -145,57 +147,57 @@ def splitImage(image):
 		imagecolor = ""
 	return [image, imagecolor]
 
-def testDye(id, color, text, iserr):
+def testDye(id, color, text, src, iserr):
 	if len(color) < 4:
-		showMsg(id, "dye to small size: " + text, iserr)
+		showMsg(id, "dye to small size: " + text, src, iserr)
 		return
 	colors = dyesplit1.split(color)
 	for col in colors:
 		if len(col) < 4:
-			showMsg(id, "dye to small size: " + text, iserr)
+			showMsg(id, "dye to small size: " + text, src, iserr)
 			continue
 
 		c = col[0];
 		if col[1] != ":":
-			showMsg(id, "incorrect dye string: " + text, iserr)
+			showMsg(id, "incorrect dye string: " + text, src, iserr)
 			continue
 
 		if c != "R" and c != "G" and c != "B" and c != "Y" and c != "M" \
 			and c != "C" and c != "W":
-				showMsg(id, "incorrect dye color: " + c + " in " + text, iserr)
+				showMsg(id, "incorrect dye color: " + c + " in " + text, src, iserr)
 				continue
-		if testDyeInternal(id, col[2:], text, iserr) == False:
+		if testDyeInternal(id, col[2:], text, src, iserr) == False:
 			continue
 
 
-def testDyeInternal(id, col, text, iserr):
+def testDyeInternal(id, col, text, src, iserr):
 	if col[0] != "#":
-		showMsg(id, "incorrect dye colors: " + text, iserr)
+		showMsg(id, "incorrect dye colors: " + text, src, iserr)
 		return False
 
 	paletes = dyesplit2.split(col[1:])
 	for palete in paletes:
 		if len(palete) != 6:
-			showMsg(id, "incorrect dye palete: " + text, iserr)
+			showMsg(id, "incorrect dye palete: " + text, src, iserr)
 			return False
 		
 		for char in palete.lower():
 			if (char < '0' or char > '9') and (char < 'a' or char > 'f'):
-				showMsg(id, "incorrect dye palete: " + text, iserr)
+				showMsg(id, "incorrect dye palete: " + text, src, iserr)
 				return False
 	return True
 
 
-def testDyeColors(id, color, text, iserr):
+def testDyeColors(id, color, text, src, iserr):
 	if len(color) < 4:
-		showMsg(id, "dye to small size: " + text, iserr)
+		showMsg(id, "dye to small size: " + text, src, iserr)
 		return -1
 	colors = dyesplit1.split(color)
 	for col in colors:
 		if len(col) < 4:
-			showMsg(id, "dye to small size: " + text, iserr)
+			showMsg(id, "dye to small size: " + text, src, iserr)
 			continue
-		if testDyeInternal(id, col, text, iserr) == False:
+		if testDyeInternal(id, col, text, src, iserr) == False:
 			continue
 	return len(colors)
 
@@ -220,7 +222,7 @@ def testSprites(id, node, checkGender, iserr):
 	try:
 		tmp = node.getElementsByTagName("nosprite")
 		if tmp is not None and len(tmp) > 1:
-			showMsg(id, "more than one nosprite tag found", iserr)
+			showMsg(id, "more than one nosprite tag found", "", iserr)
 		nosprite = True
 	except:
 		nosprite = False
@@ -230,14 +232,14 @@ def testSprites(id, node, checkGender, iserr):
 	except:
 		sprites = None
 		if nosprite == False:
-			showMsg(id, "no sprite tag found", iserr)
+			showMsg(id, "no sprite tag found", "", iserr)
 
 	if sprites is not None:
 		if len(sprites) == 0:
 			if nosprite == False:
-				showMsg(id, "no sprite tags found", iserr)
+				showMsg(id, "no sprite tags found", "", iserr)
 		elif len(sprites) > 3 and checkGender:
-			showMsg(id, "incorrect number of sprite tags", iserr)
+			showMsg(id, "incorrect number of sprite tags", "", iserr)
 		elif len(sprites) == 1:
 			file = sprites[0].childNodes[0].data
 			if checkGender:
@@ -247,7 +249,7 @@ def testSprites(id, node, checkGender, iserr):
 					gender = ""
 
 				if gender != "" and gender != "unisex":
-					showMsg(id, "gender tag in alone sprite", iserr)
+					showMsg(id, "gender tag in alone sprite", "", iserr)
 
 			try:
 				variant = int(sprites[0].attributes["variant"].value)
@@ -267,15 +269,15 @@ def testSprites(id, node, checkGender, iserr):
 						gender = ""
 					if gender == "male":
 						if male == True:
-							showMsg(id, "double male sprite tag", iserr)
+							showMsg(id, "double male sprite tag", "", iserr)
 						male = True
 					elif gender == "female":
 						if female == True:
-							showMsg(id, "double female sprite tag", iserr)
+							showMsg(id, "double female sprite tag", "", iserr)
 						female = True
 					elif gender == "unisex":
 						if female == True or male == True:
-							showMsg(id, "gender sprite tag with unisex tag", False)
+							showMsg(id, "gender sprite tag with unisex tag", "", False)
 						male = True
 						female = True
 				try:
@@ -285,9 +287,9 @@ def testSprites(id, node, checkGender, iserr):
 				testSprite(id, file, variant, iserr)
 			if checkGender:
 				if male == False:
-					showMsg(id, "no male sprite tag", iserr)
+					showMsg(id, "no male sprite tag", "",iserr)
 				if female == False:
-					showMsg(id, "no female sprite tag", iserr)
+					showMsg(id, "no female sprite tag", "", iserr)
 
 
 def testSprite(id, file, variant, iserr):
@@ -295,7 +297,7 @@ def testSprite(id, file, variant, iserr):
 	color = tmp[1]
 	file2 = tmp[0]
 	if color != "":
-		dnum = testDyeColors(id, color, file, iserr)
+		dnum = testDyeColors(id, color, file, "", iserr)
 	else:
 		dnum = 0
 
@@ -595,11 +597,46 @@ def testSound(file):
 	except ogg.vorbis.VorbisError as e:
 		showMsgFile(file, "sound file incorrect error: " + str(e), True)
 
-def testParticle(file):
+
+def testParticle(id, file, src):
 	fullPath = parentDir + "/" + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showMsgFile(file, "particle file not found", True)
-	#todo add parsing and checking particle xml file
+	dom = minidom.parse(fullPath)
+
+	nodes = dom.getElementsByTagName("particle")
+	if len(nodes) < 1:
+		showMsgFile(file, "missing particle tags", False)
+	else:
+		for node in nodes:
+			testEmitters(id, file, node, file)
+
+
+def testEmitters(id, file, parentNode, src):
+	for node in parentNode.getElementsByTagName("property"):
+		try:
+			name = node.attributes["name"].value
+		except:
+			showMsgFile(file, "missing attribute name in emitter" \
+					" in particle file", True)
+			continue
+		try:
+			value = node.attributes["value"].value
+		except:
+			value = None
+
+		if name == "image":
+			if value == None:
+				showMsgFile(file, "missing attribute value in emitter" \
+						" image attribute", True)
+			img = splitImage(value)
+			image = img[0]
+			imagecolor = img[1]
+			testDye(id, imagecolor, "image=" + image, src, True)
+			testImageFile(image, parentDir + "/" + image, 0, True)
+	for node in parentNode.getElementsByTagName("emitter"):
+		testEmitters(id, file, node, src)
+
 
 
 def testItems(fileName, imgDir):
@@ -674,13 +711,13 @@ def testItems(fileName, imgDir):
 				errors = errors + 1
 				continue
 			elif len(imagecolor) > 0:
-				testDye(id, imagecolor, "image=" + image0, True)
+				testDye(id, imagecolor, "image=" + image0, "items.xml", True)
 
 			if description == "":
 				print "warn: missing description attribute on id=" + id
 				warnings = warnings + 1
 			if missile != "":
-				testParticle(missile)
+				testParticle(id, missile, "items.xml")
 
 			testSounds(id, node, "item")
 
@@ -738,7 +775,7 @@ def testMonsters(fileName):
 		testTargetCursor(id, node, fileName)
 		testSprites(id, node, False, True)
 		testSounds(id, node, "monster")
-		testParticles(id, node, "particlefx")
+		testParticles(id, node, "particlefx", fileName)
 
 
 def testTargetCursor(id, node, file):
@@ -749,7 +786,7 @@ def testTargetCursor(id, node, file):
 	except:
 		None
 
-def testParticles(id, node, nodeName):
+def testParticles(id, node, nodeName, src):
 	particles = node.getElementsByTagName(nodeName)
 	for particle in particles:
 		try:
@@ -757,7 +794,7 @@ def testParticles(id, node, nodeName):
 		except:
 			showMsgFile(id, "particle tag have incorrect data", True)
 
-		testParticle(particlefx)
+		testParticle(id, particlefx, src)
 
 
 
@@ -800,7 +837,7 @@ def testNpcs(file):
 			idset.add(id)
 
 		testSprites(id, node, False, True)
-
+		testParticles(id, node, "particlefx", file)
 
 
 
