@@ -671,6 +671,17 @@ def testItems(fileName, imgDir):
 			imagecolor = ""
 
 		try:
+			floor = node.attributes["floor"].value
+			floor0 = floor
+			flr = splitImage(floor)
+			floor = flr[0]
+			floorcolor = flr[1]
+		except:
+			floor = None
+			floor0 = None
+			floorcolor = None
+
+		try:
 			description = node.attributes["description"].value
 		except:
 			description = ""
@@ -713,6 +724,9 @@ def testItems(fileName, imgDir):
 			elif len(imagecolor) > 0:
 				testDye(id, imagecolor, "image=" + image0, "items.xml", True)
 
+			if floorcolor != None and len(floorcolor) > 0:
+				testDye(id, floorcolor, "floor=" + floor0, "items.xml", True)
+
 			if description == "":
 				print "warn: missing description attribute on id=" + id
 				warnings = warnings + 1
@@ -722,11 +736,15 @@ def testItems(fileName, imgDir):
 			testSounds(id, node, "item")
 
 			try:
-				floor = node.getElementsByTagName("floor")[0]
+				floorSprite = node.getElementsByTagName("floor")[0]
 			except:
-				floor = None
-			if floor != None:
-				testSprites(id, floor, False, err)
+				floorSprite = None
+			if floorSprite != None:
+				if floor != None:
+					print "error: found attribute floor and tag floor. " + \
+							"Should be only one tag or attribute. id=" + id
+					errors = errors + 1
+				testSprites(id, floorSprite, False, err)
 
 			fullPath = os.path.abspath(parentDir + "/" + imgDir + image)
 			if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
@@ -734,6 +752,15 @@ def testItems(fileName, imgDir):
 				errors = errors + 1
 			else:
 				testImageFile(imgDir + image, fullPath, 32, True)
+
+			if floor != None:
+				fullPath = os.path.abspath(parentDir + "/" + imgDir + floor)
+				if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
+					showFileErrorById (id, imgDir, floor)
+					error = errors + 1
+				else:
+					testImageFile(imgDir + floor, fullPath, 0, True)
+
 
 			if type != "usable" and type != "unusable" and type != "generic" \
 			and type != "equip-necklace" and type != "equip-1hand" \
