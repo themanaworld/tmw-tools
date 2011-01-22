@@ -94,7 +94,8 @@ def printSeparator():
 	print "--------------------------------------------------------------------------------"
 
 def showHeader():
-	print "Evol client data validator. (http://www.gitorious.org/evol/evol-tools/blobs/master/testxml/testxml.py)"
+	print "Evol client data validator."
+	print "http://www.gitorious.org/evol/evol-tools/blobs/master/testxml/testxml.py"
 	printSeparator()
 
 def showFooter():
