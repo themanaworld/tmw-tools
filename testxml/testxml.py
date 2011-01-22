@@ -927,10 +927,18 @@ def testMap(file, path):
 					+ name + ": " + file, True)
 			if source != None:
 				imagePath = os.path.abspath(parentDir + "/" + mapsDir + source)
+
+				img = splitImage(imagePath)
+				imagePath = img[0]
+				imagecolor = img[1]
+
 				if not os.path.isfile(imagePath) or os.path.exists(imagePath) == False:
-					showMsgFile(file, "image file not exist: " + image + ", " + source + ", " + \
+					showMsgFile(file, "image file not exist: " + mapsDir + source + ", " + \
 							name, True)
 					continue
+
+				if imagecolor != "":
+					testDye("", imagecolor, source, file, True)
 
 				sz = testImageFile(file, imagePath, 0, True)
 				width = sz[0]
@@ -983,7 +991,7 @@ def testMap(file, path):
 					str(mapWidth) + ": " + name, True)
 		if mapHeight < height:
 			showMsgFile(file, "layer height " + str(height) + " more then map height " + \
-					str(mapHeight) + ": " + name, False)
+					str(mapHeight) + ": " + name, True)
 
 
 
