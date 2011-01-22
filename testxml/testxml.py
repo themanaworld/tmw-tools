@@ -9,6 +9,7 @@ from xml.dom import minidom
 from PIL import Image
 
 filt = re.compile(".+[.](xml|tmx)", re.IGNORECASE)
+filtmaps = re.compile(".+[.]tmx", re.IGNORECASE)
 dyesplit1 = re.compile(";")
 dyesplit2 = re.compile(",")
 parentDir = "../../clientdata"
@@ -16,6 +17,7 @@ iconsDir = "graphics/items/"
 spritesDir = "graphics/sprites/"
 particlesDir = "graphics/particles/"
 sfxDir = "sfx/"
+mapsDir = "maps/"
 errors = 0
 warnings = 0
 errDict = set()
@@ -130,6 +132,8 @@ def loadPaths():
 				sfxDir = node.attributes["value"].value
 			elif node.attributes["name"].value == "particles":
 				particlesDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "maps":
+				mapsDir = node.attributes["value"].value
 	except:
 		print "warn: paths.xml not found"
 		warnings = warnings + 1
@@ -866,7 +870,136 @@ def testNpcs(file):
 		testSprites(id, node, False, True)
 		testParticles(id, node, "particlefx", file)
 
+def readAttrI(node, attr, dv, msg, iserr):
+	return int(readAttr(node, attr, dv, msg, iserr))
 
+def readAttr(node, attr, dv, msg, iserr):
+	global warnings, errors
+	try:
+		return node.attributes[attr].value
+	except:
+		print msg
+		if iserr:
+			errors = errors + 1
+		else:
+			warnings = warnings + 1
+		return dv
+
+
+def testMap(file, path):
+	global warnings, errors
+	fullPath = parentDir + "/" + path
+	dom = minidom.parse(fullPath)
+	root = dom.documentElement
+	mapWidth = readAttrI(root, "width", 0, "error: missing map width: " + file, True)
+	mapHeight = readAttrI(root, "height", 0, "error: missing map height: " + file, True)
+	mapTileWidth = readAttrI(root, "tilewidth", 0, "error: missing tile width: " + file, True)
+	mapTileHeight = readAttrI(root, "tileheight", 0, "error: missing tile height: " + file, True)
+	if mapWidth == 0 or mapHeight == 0 or mapTileWidth == 0 or mapTileHeight == 0:
+		return
+
+	for tileset in dom.getElementsByTagName("tileset"):
+		name = readAttr(tileset, "name", "", "warning: missing tile name: " + file, False)
+		tileWidth = readAttrI(tileset, "tilewidth", mapTileWidth, \
+				"error: missing tile width in tileset: " + name + ", " + file, True)
+		tileHeight = readAttrI(tileset, "tileheight", mapTileHeight, \
+				"error: missing tile height in tileset: " + name + ", " + file, True)
+
+		if tileWidth == 0 or tileHeight == 0:
+			continue
+
+#		if tileWidth != 32:
+#			showMsgFile(file, "tile width " + str(tileWidth) + " != 32: " + name, False)
+#		if tileHeight != 32:
+#			showMsgFile(file, "tile height " + str(tileHeight) + " != 32: " + name, False)
+
+		images = tileset.getElementsByTagName("image")
+		if images == None or len(images) == 0:
+			showMsgFile(file, "missing image tags in tile " + name, True)
+			continue
+		elif len(images) > 1:
+			showMsgFile(file, "to many image tags in tile " + name, True)
+			continue
+		else:
+			image = images[0]
+			source = readAttr(image, "source", None, "error: missing source in image tag in tile " \
+					+ name + ": " + file, True)
+			if source != None:
+				imagePath = os.path.abspath(parentDir + "/" + mapsDir + source)
+				if not os.path.isfile(imagePath) or os.path.exists(imagePath) == False:
+					showMsgFile(file, "image file not exist: " + image + ", " + source + ", " + \
+							name, True)
+					continue
+
+				sz = testImageFile(file, imagePath, 0, True)
+				width = sz[0]
+				height = sz[1]
+
+				if width == 0 or height == 0:
+					continue
+				
+				if width < tileWidth:
+					showMsgFile(file, "tile width more than image width in tile: " + \
+							name, True)
+					continue
+				if height < tileHeight:
+					showMsgFile(file, "tile height more than image height in tile: " + \
+							name, True)
+					continue
+
+				s1 = int(width / int(tileWidth)) * int(tileWidth)
+
+				if width != s1:
+					showMsgFile(file, "image width " + str(width) + \
+							" (need " + str(s1) + ") is not multiply to tile size " + \
+							str(tileWidth) + ". " + source + ", " + name, False)
+
+				s2 = int(height / int(tileHeight)) * int(tileHeight)
+
+				if height != s2:
+					showMsgFile(file, "image width " + str(height) + \
+							" (need " + str(s2) + ") is not multiply to tile size " + \
+							str(tileHeight) + ". " + source + ", " + name, False)
+					
+
+	layers = dom.getElementsByTagName("layer")
+	if layers == None or len(layers) == 0:
+		showMsgFile(file, "map dont have layers", True)
+		return
+	for layer in layers:
+		name = readAttr(layer, "name", None, "layer dont have name", True)
+		if name == None:
+			continue
+		width = readAttrI(layer, "width", 0, "error: missing layer width: " + name + \
+				", " + file, True)
+		height = readAttrI(layer, "height", 0, "error: missing layer height: " + name + \
+				", " + file, True)
+		if width == 0 or height == 0:
+			continue
+
+		if mapWidth < width:
+			showMsgFile(file, "layer width " + str(width) + " more than map width " + \
+					str(mapWidth) + ": " + name, True)
+		if mapHeight < height:
+			showMsgFile(file, "layer height " + str(height) + " more then map height " + \
+					str(mapHeight) + ": " + name, False)
+
+
+
+
+
+def testMaps(dir):
+	global warnings, errors
+	fullPath = parentDir + "/" + dir
+	print "Checking maps"
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		print "error: maps dir not found: " + dir
+		errors = errors + 1
+		return
+
+	for file in os.listdir(fullPath):
+		if filtmaps.search(file):
+			testMap(mapsDir + file, dir + file)
 
 
 def haveXml(dir):
@@ -900,4 +1033,5 @@ loadPaths()
 testItems("/items.xml", iconsDir)
 testMonsters("/monsters.xml")
 testNpcs("/npcs.xml")
+testMaps(mapsDir)
 showFooter()
