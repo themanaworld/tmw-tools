@@ -1,12 +1,14 @@
 #! /usr/bin/env python2.6
 # -*- coding: utf8 -*-
 
+import base64
 import os
 import re
 import xml
 import ogg.vorbis
 from xml.dom import minidom
 from PIL import Image
+import zlib
 
 filt = re.compile(".+[.](xml|tmx)", re.IGNORECASE)
 filtmaps = re.compile(".+[.]tmx", re.IGNORECASE)
@@ -975,10 +977,31 @@ def testMap(file, path):
 	if layers == None or len(layers) == 0:
 		showMsgFile(file, "map dont have layers", True)
 		return
+
+	fringe = None
+	collision = None
+	lowLayers = []
+	overLayers = []
+	beforeFringe = True
+
 	for layer in layers:
 		name = readAttr(layer, "name", None, "layer dont have name", True)
 		if name == None:
 			continue
+		if name.lower() == "fringe":
+			if fringe is not None:
+				showMsgFile(file, "duplicate Fringe layer", True)
+			fringe = layer
+			beforeFringe = False
+		elif name.lower() == "collision":
+			if collision is not None:
+				showMsgFile(file, "duplicate Collision layer", True)
+			collision = layer
+		elif beforeFringe == True:
+			lowLayers.append(layer)
+		else:
+			overLayers.append(layer)
+			
 		width = readAttrI(layer, "width", 0, "error: missing layer width: " + name + \
 				", " + file, True)
 		height = readAttrI(layer, "height", 0, "error: missing layer height: " + name + \
@@ -993,8 +1016,41 @@ def testMap(file, path):
 			showMsgFile(file, "layer height " + str(height) + " more then map height " + \
 					str(mapHeight) + ": " + name, True)
 
+		testLayer(file, layer, name, width, height)
+
+	if fringe == None:
+		showMsgFile(file, "missing fringe layer", True)
+	if collision == None:
+		showMsgFile(file, "missing collision layer", True)
+	if len(lowLayers) < 1:
+		showMsgFile(file, "missing low layers", False)
+	if len(overLayers) < 1:
+		showMsgFile(file, "missing over layers", False)
 
 
+def testLayer(file, node, name, width, height):
+	datas = node.getElementsByTagName("data")
+	if datas == None or len(datas) == 0:
+		showMsgFile(file, "missing data tag in layer: " + name, True)
+		return
+	for data in datas:
+		try:
+			encoding = data.attributes["encoding"].value
+		except:
+			encoding = ""
+		try:
+			compression = data.attributes["compression"].value
+		except:
+			compression = ""
+		if encoding == "base64":
+			if compression != "gzip":
+				showMsgFile(file, "invalid compression " + compression + \
+						" in layer: " + name, True)
+				continue
+			#todo here need oncompress and check layer
+			#str = data.childNodes[0].data.strip()
+			#str = str.decode('base64')
+			#zlib.decompress(str)
 
 
 def testMaps(dir):
@@ -1039,8 +1095,8 @@ detectClientData([".", "..", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
-testItems("/items.xml", iconsDir)
-testMonsters("/monsters.xml")
-testNpcs("/npcs.xml")
+#testItems("/items.xml", iconsDir)
+#testMonsters("/monsters.xml")
+#testNpcs("/npcs.xml")
 testMaps(mapsDir)
 showFooter()
