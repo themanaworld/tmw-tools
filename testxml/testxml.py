@@ -1,7 +1,9 @@
 #! /usr/bin/env python2.6
 # -*- coding: utf8 -*-
 
+import array
 import base64
+import gzip
 import os
 import re
 import xml
@@ -24,6 +26,12 @@ errors = 0
 warnings = 0
 errDict = set()
 safeDye = False
+
+class Tileset:
+	None
+
+class Layer:
+	None
 
 def printErr(err):
 	errDict.add(err)
@@ -609,6 +617,7 @@ def testParticle(id, file, src):
 	fullPath = parentDir + "/" + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showMsgFile(file, "particle file not found", True)
+		return
 	dom = minidom.parse(fullPath)
 
 	nodes = dom.getElementsByTagName("particle")
@@ -901,15 +910,33 @@ def testMap(file, path):
 	if mapWidth == 0 or mapHeight == 0 or mapTileWidth == 0 or mapTileHeight == 0:
 		return
 
+	tilesMap = dict()
+
 	for tileset in dom.getElementsByTagName("tileset"):
 		name = readAttr(tileset, "name", "", "warning: missing tile name: " + file, False)
 		tileWidth = readAttrI(tileset, "tilewidth", mapTileWidth, \
 				"error: missing tile width in tileset: " + name + ", " + file, True)
 		tileHeight = readAttrI(tileset, "tileheight", mapTileHeight, \
 				"error: missing tile height in tileset: " + name + ", " + file, True)
+		try:
+			firstGid = int(tileset.attributes["firstgid"].value)
+		except:
+			firstGid = 0
+
+		if firstGid in tilesMap:
+			showMsgFile(file, "tile with firstgid " + str(firstGid) + \
+					" already exist: " + name + ", " + file, True)
+			continue
 
 		if tileWidth == 0 or tileHeight == 0:
 			continue
+
+		tile = Tileset()
+		tile.name = name
+		tile.width = tileWidth
+		tile.height = tileHeight
+		tile.firstGid = firstGid
+		tile.lastGid = 0
 
 #		if tileWidth != 32:
 #			showMsgFile(file, "tile width " + str(tileWidth) + " != 32: " + name, False)
@@ -933,6 +960,9 @@ def testMap(file, path):
 				img = splitImage(imagePath)
 				imagePath = img[0]
 				imagecolor = img[1]
+
+				tile.image = imagePath
+				tile.color = imagecolor
 
 				if not os.path.isfile(imagePath) or os.path.exists(imagePath) == False:
 					showMsgFile(file, "image file not exist: " + mapsDir + source + ", " + \
@@ -967,10 +997,13 @@ def testMap(file, path):
 
 				s2 = int(height / int(tileHeight)) * int(tileHeight)
 
+				tile.lastGid = tile.firstGid + (s1 * s2)
 				if height != s2:
 					showMsgFile(file, "image width " + str(height) + \
 							" (need " + str(s2) + ") is not multiply to tile size " + \
 							str(tileHeight) + ". " + source + ", " + name, False)
+
+		tilesMap[tile.firstGid] = tile
 					
 
 	layers = dom.getElementsByTagName("layer")
@@ -980,27 +1013,29 @@ def testMap(file, path):
 
 	fringe = None
 	collision = None
-	lowLayers = []
-	overLayers = []
+	lowLayers = set() 
+	overLayers = set()
 	beforeFringe = True
 
 	for layer in layers:
 		name = readAttr(layer, "name", None, "layer dont have name", True)
 		if name == None:
 			continue
+		obj = Layer()
+		obj.name = name
 		if name.lower() == "fringe":
 			if fringe is not None:
 				showMsgFile(file, "duplicate Fringe layer", True)
-			fringe = layer
+			fringe = obj
 			beforeFringe = False
 		elif name.lower() == "collision":
 			if collision is not None:
 				showMsgFile(file, "duplicate Collision layer", True)
-			collision = layer
+			collision = obj
 		elif beforeFringe == True:
-			lowLayers.append(layer)
+			lowLayers.add(obj)
 		else:
-			overLayers.append(layer)
+			overLayers.add(obj)
 			
 		width = readAttrI(layer, "width", 0, "error: missing layer width: " + name + \
 				", " + file, True)
@@ -1009,6 +1044,9 @@ def testMap(file, path):
 		if width == 0 or height == 0:
 			continue
 
+		obj.width = width
+		obj.height = height
+
 		if mapWidth < width:
 			showMsgFile(file, "layer width " + str(width) + " more than map width " + \
 					str(mapWidth) + ": " + name, True)
@@ -1016,7 +1054,7 @@ def testMap(file, path):
 			showMsgFile(file, "layer height " + str(height) + " more then map height " + \
 					str(mapHeight) + ": " + name, True)
 
-		testLayer(file, layer, name, width, height)
+		obj = testLayer(file, layer, name, width, height, obj, tilesMap)
 
 	if fringe == None:
 		showMsgFile(file, "missing fringe layer", True)
@@ -1027,12 +1065,43 @@ def testMap(file, path):
 	if len(overLayers) < 1:
 		showMsgFile(file, "missing over layers", False)
 
+	if fringe != None:
+		lowLayers.add(fringe)
+	warn1 = None
 
-def testLayer(file, node, name, width, height):
+	if len(overLayers) > 0:
+		warn1 = testLayerGroups(file, lowLayers, False)
+		lowLayers = lowLayers | overLayers
+		err1 = testLayerGroups(file, lowLayers, False)
+	else:
+		err1 = testLayerGroups(file, lowLayers, False)
+
+	if warn1 != None and err1 != None:
+		warn1 = warn1 - err1
+	if warn1 != None and len(warn1) > 0:
+		showLayerErrors(file, warn1, "empty tile in lower layers", False)
+	if err1 != None and len(err1) > 0:
+		showLayerErrors(file, err1, "empty tile in all layers", True)
+
+
+def showLayerErrors(file, points, msg, iserr):
+	txt = ""
+	for point in points:
+		txt = txt + " " + str(point) + ","
+	showMsgFile(file, msg + txt[0:len(txt)-1], iserr)
+
+	
+
+def getLDV(arr, index):
+    return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
+		    | (arr[index + 3] << 24)
+
+def testLayer(file, node, name, width, height, layer, tiles):
 	datas = node.getElementsByTagName("data")
 	if datas == None or len(datas) == 0:
 		showMsgFile(file, "missing data tag in layer: " + name, True)
 		return
+	layer.arr = None
 	for data in datas:
 		try:
 			encoding = data.attributes["encoding"].value
@@ -1047,10 +1116,53 @@ def testLayer(file, node, name, width, height):
 				showMsgFile(file, "invalid compression " + compression + \
 						" in layer: " + name, True)
 				continue
-			#todo here need oncompress and check layer
-			#str = data.childNodes[0].data.strip()
-			#str = str.decode('base64')
-			#zlib.decompress(str)
+			binData = data.childNodes[0].data.strip()
+			binData = binData.decode('base64')
+			dc = zlib.decompressobj(16 + zlib.MAX_WBITS)
+			layerData = dc.decompress(binData)
+			arr = array.array("B")
+			arr.fromstring(layerData)
+			layer.arr = arr
+
+			# here may be i should check is tiles correct or not, but i will trust to tiled
+	return layer
+
+
+def testLayerGroups(file, layers, iserr):
+	width = 0
+	height = 0
+	errset = set()
+	for layer in layers:
+		if layer.width > width:
+			width = layer.width
+		if layer.height > height:
+			height = layer.height
+
+	for x in range(0, width):
+		for y in range(0, height):
+			good = False
+			for layer in layers:
+				if layer.arr != None and x < layer.width \
+						and y < layer.height:
+					arr = layer.arr
+					ptr = ((y * layer.width) + x) * 4
+					if arr[ptr] != 0 or arr[ptr + 1] != 0 or \
+							arr[ptr + 2] != 0 or arr[ptr + 3] != 0:
+								good = True
+								break
+			if good == False:
+				errset.add((x,y))
+#				showMsgFile(file, "empty tile in lower layers (" \
+#						+ str(x) + "," + str(y) + ")", False)
+
+
+					
+#					for f in range(0, len(arr), 4):
+#						flg = getLDV(arr, f)
+#						y = int(f / 4 / layer.width)
+#						x = int(f / 4) - (y * layer.width)
+#						print "addr: " + str(f) + ", flg=" + str(flg) + ", x=" + str(x) + ", y=" + str(y)
+	return errset
 
 
 def testMaps(dir):
@@ -1095,8 +1207,8 @@ detectClientData([".", "..", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
-testItems("/items.xml", iconsDir)
-testMonsters("/monsters.xml")
-testNpcs("/npcs.xml")
+#testItems("/items.xml", iconsDir)
+#testMonsters("/monsters.xml")
+#testNpcs("/npcs.xml")
 testMaps(mapsDir)
 showFooter()
