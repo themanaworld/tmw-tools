@@ -910,6 +910,11 @@ def testMap(file, path):
 	if mapWidth == 0 or mapHeight == 0 or mapTileWidth == 0 or mapTileHeight == 0:
 		return
 
+	if mapWidth < 16:
+		showMsgFile(file, "map width to small", False)
+	if mapHeight < 16:
+		showMsgFile(file, "map height to small", False)
+
 	tilesMap = dict()
 
 	for tileset in dom.getElementsByTagName("tileset"):
@@ -1207,8 +1212,8 @@ detectClientData([".", "..", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
-#testItems("/items.xml", iconsDir)
-#testMonsters("/monsters.xml")
-#testNpcs("/npcs.xml")
+testItems("/items.xml", iconsDir)
+testMonsters("/monsters.xml")
+testNpcs("/npcs.xml")
 testMaps(mapsDir)
 showFooter()
