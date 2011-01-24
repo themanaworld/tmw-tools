@@ -6,6 +6,7 @@ import base64
 import gzip
 import os
 import re
+import datetime
 import xml
 import ogg.vorbis
 from xml.dom import minidom
@@ -105,6 +106,7 @@ def printSeparator():
 
 def showHeader():
 	print "Evol client data validator."
+	print "Run at: " + datetime.datetime.now().isoformat()
 	print "http://www.gitorious.org/evol/evol-tools/blobs/master/testxml/testxml.py"
 	printSeparator()
 
