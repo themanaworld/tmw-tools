@@ -1093,8 +1093,13 @@ def testMap(file, path):
 
 def showLayerErrors(file, points, msg, iserr):
 	txt = ""
+	cnt = 0
 	for point in points:
 		txt = txt + " " + str(point) + ","
+		cnt = cnt + 1 
+		if cnt > 100:
+			txt = txt + " ... "
+			break
 	showMsgFile(file, msg + txt[0:len(txt)-1], iserr)
 
 	
