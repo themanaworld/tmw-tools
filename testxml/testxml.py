@@ -1181,12 +1181,19 @@ def testLayer(file, node, name, width, height, layer, tiles):
 			compression = ""
 		if encoding == "base64":
 			if compression != "gzip":
-				showMsgFile(file, "invalid compression " + compression + \
-						" in layer: " + name, True)
-				continue
+				if compression != "zlib":
+					showMsgFile(file, "invalid compression " + compression + \
+							" in layer: " + name, True)
+					continue
+				else:
+					showMsgFile(file, "not supported compression by old clients " \
+							+ compression + " in layer: " + name, False)
 			binData = data.childNodes[0].data.strip()
 			binData = binData.decode('base64')
-			dc = zlib.decompressobj(16 + zlib.MAX_WBITS)
+			if compression == "gzip":
+				dc = zlib.decompressobj(16 + zlib.MAX_WBITS)
+			else:
+				dc = zlib.decompressobj()
 			layerData = dc.decompress(binData)
 			arr = array.array("B")
 			arr.fromstring(layerData)
