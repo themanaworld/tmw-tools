@@ -1125,6 +1125,9 @@ def testCollisionLayer(file, layer):
 	if y2 < 0:
 		y2 = 0
 
+	if arr is None:
+		return tileset
+
 	for x in range(0, layer.width):
 		if haveTiles == True:
 			break
@@ -1158,7 +1161,7 @@ def showLayerErrors(file, points, msg, iserr):
 	
 
 def getLDV(arr, index):
-    return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
+	return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
 		    | (arr[index + 3] << 24)
 
 def testLayer(file, node, name, width, height, layer, tiles):
