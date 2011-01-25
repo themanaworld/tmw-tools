@@ -27,6 +27,7 @@ errors = 0
 warnings = 0
 errDict = set()
 safeDye = False
+borderSize = 20
 
 class Tileset:
 	None
@@ -912,10 +913,10 @@ def testMap(file, path):
 	if mapWidth == 0 or mapHeight == 0 or mapTileWidth == 0 or mapTileHeight == 0:
 		return
 
-	if mapWidth < 16:
-		showMsgFile(file, "map width to small", False)
-	if mapHeight < 16:
-		showMsgFile(file, "map height to small", False)
+	if mapWidth < borderSize * 2 + 1:
+		showMsgFile(file, "map width to small: " + str(mapWidth), False)
+	if mapHeight < borderSize * 2 + 1:
+		showMsgFile(file, "map height to small: " + str(mapHeight), False)
 
 	tilesMap = dict()
 
@@ -1067,6 +1068,11 @@ def testMap(file, path):
 		showMsgFile(file, "missing fringe layer", True)
 	if collision == None:
 		showMsgFile(file, "missing collision layer", True)
+	else:
+		ids =testCollisionLayer(file, collision)
+		if ids != None and len(ids) > 0:
+			showLayerErrors(file, ids, "empty tiles in collision border", False)
+
 	if len(lowLayers) < 1:
 		showMsgFile(file, "missing low layers", False)
 	if len(overLayers) < 1:
@@ -1089,6 +1095,38 @@ def testMap(file, path):
 		showLayerErrors(file, warn1, "empty tile in lower layers", False)
 	if err1 != None and len(err1) > 0:
 		showLayerErrors(file, err1, "empty tile in all layers", True)
+
+
+def testCollisionLayer(file, layer):
+	haveTiles = False
+	tileset = set()
+	arr = layer.arr
+	x1 = borderSize 
+	y1 = borderSize
+	x2 = layer.width - 20
+	y2 = layer.width - 20
+	if x2 < 0:
+		x2 = 0
+	if y2 < 0:
+		y2 = 0
+
+	for x in range(0, layer.width):
+		if haveTiles == True:
+			break
+		for y in range(0, layer.height):
+			idx = ((y * layer.width) + x) * 4
+			val = getLDV(arr, idx)
+			if val != 0:
+				haveTiles = True
+			if val == 0 and (x < x1 or x > x2 or y < y1 or y > y2):
+				tileset.add((x, y))
+
+	
+	if haveTiles == False:
+		showMsgFile(file, "empty collision layer", False)
+
+	return tileset
+
 
 
 def showLayerErrors(file, points, msg, iserr):
