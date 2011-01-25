@@ -336,6 +336,16 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	if len(dom.childNodes) < 1:
 		return
 
+	try:
+		variants = dom.attributes["variants"].value
+	except:
+		variants = 0
+
+	try:
+		variant_offset = dom.attributes["variant_offset"].value
+	except:
+		variant_offset = 0
+		
 	root = dom.childNodes[0];
 	imagesets = dom.getElementsByTagName("imageset")
 	if imagesets is None or len(imagesets) < 1:
@@ -391,6 +401,11 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		" (need " + str(s2) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
 	num = (s1 / int(width)) * (s2 / int(height))
+	if variants == 0 and variant > 0:
+		showMsgSprite(fileLoc, "missing variants attribute in sprite", iserr)
+	if variants > 0 and variant >= variants:
+		showMsgSprite(fileLoc, "variant number more then in variants attribute", iserr)
+
 	if variant >= num:
 		showMsgSprite(fileLoc, "to big variant number " + str(variant) \
 		+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
