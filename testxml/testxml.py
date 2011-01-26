@@ -1125,7 +1125,7 @@ def testCollisionLayer(file, layer):
 	if y2 < 0:
 		y2 = 0
 
-	if arr is None:
+	if arr is None :
 		return tileset
 
 	for x in range(0, layer.width):
@@ -1142,6 +1142,7 @@ def testCollisionLayer(file, layer):
 	
 	if haveTiles == False:
 		showMsgFile(file, "empty collision layer", False)
+		return set()
 
 	return tileset
 
