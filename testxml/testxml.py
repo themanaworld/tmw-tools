@@ -1020,7 +1020,7 @@ def testMap(file, path):
 
 				s2 = int(height / int(tileHeight)) * int(tileHeight)
 
-				tile.lastGid = tile.firstGid + (s1 * s2)
+				tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight)))
 				if height != s2:
 					showMsgFile(file, "image width " + str(height) + \
 							" (need " + str(s2) + ") is not multiply to tile size " + \
@@ -1084,9 +1084,11 @@ def testMap(file, path):
 	if collision == None:
 		showMsgFile(file, "missing collision layer", True)
 	else:
-		ids =testCollisionLayer(file, collision)
-		if ids != None and len(ids) > 0:
-			showLayerErrors(file, ids, "empty tiles in collision border", False)
+		ids = testCollisionLayer(file, collision, tilesMap)
+		if ids[0] != None and len(ids[0]) > 0:
+			showLayerErrors(file, ids(0), "empty tiles in collision border", False)
+		if ids[1] != None and len(ids[1]) > 0:
+			showLayerErrors(file, ids[1], "incorrect tileset index in collision layer", False)
 
 	if len(lowLayers) < 1:
 		showMsgFile(file, "missing low layers", False)
@@ -1112,9 +1114,10 @@ def testMap(file, path):
 		showLayerErrors(file, err1, "empty tile in all layers", True)
 
 
-def testCollisionLayer(file, layer):
+def testCollisionLayer(file, layer, tiles):
 	haveTiles = False
 	tileset = set()
+	badtiles = set()
 	arr = layer.arr
 	x1 = borderSize 
 	y1 = borderSize
@@ -1126,7 +1129,7 @@ def testCollisionLayer(file, layer):
 		y2 = 0
 
 	if arr is None :
-		return tileset
+		return (set(), set())
 
 	for x in range(0, layer.width):
 		if haveTiles == True:
@@ -1136,16 +1139,31 @@ def testCollisionLayer(file, layer):
 			val = getLDV(arr, idx)
 			if val != 0:
 				haveTiles = True
+				tile = findTileByGid(tiles, val)
+				if tile is not None:
+					idx = val -  tile.firstGid
+					if idx > 1:
+						badtiles.add(((x, y), idx))
 			if val == 0 and (x < x1 or x > x2 or y < y1 or y > y2):
 				tileset.add((x, y))
 
 	
 	if haveTiles == False:
 		showMsgFile(file, "empty collision layer", False)
-		return set()
+		return (set(), set())
 
-	return tileset
+	return (tileset, badtiles)
 
+
+
+def findTileByGid(tiles, gid):
+	for firstGid in tiles:
+		if firstGid <= gid:
+			tile = tiles[firstGid]
+			if tile.lastGid >= gid:
+				return tile
+			
+	return None
 
 
 def showLayerErrors(file, points, msg, iserr):
