@@ -29,6 +29,12 @@ errDict = set()
 safeDye = False
 borderSize = 20
 
+testBadCollisions = False
+# number of tiles difference. after this amount tiles can be counted as incorrect
+tileNumDiff = 3
+# max number of incorrect tiles. If more then tile not counted as error
+maxNumErrTiles = 5
+
 class Tileset:
 	None
 
@@ -957,7 +963,9 @@ def testMap(file, path):
 		tile = Tileset()
 		tile.name = name
 		tile.width = tileWidth
+		tile.tileWidth = tileWidth
 		tile.height = tileHeight
+		tile.tileHeight = tileHeight
 		tile.firstGid = firstGid
 		tile.lastGid = 0
 
@@ -1020,7 +1028,7 @@ def testMap(file, path):
 
 				s2 = int(height / int(tileHeight)) * int(tileHeight)
 
-				tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight)))
+				tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight))) - 1
 				if height != s2:
 					showMsgFile(file, "image width " + str(height) + \
 							" (need " + str(s2) + ") is not multiply to tile size " + \
@@ -1036,8 +1044,8 @@ def testMap(file, path):
 
 	fringe = None
 	collision = None
-	lowLayers = set() 
-	overLayers = set()
+	lowLayers = [] 
+	overLayers = []
 	beforeFringe = True
 
 	for layer in layers:
@@ -1056,9 +1064,9 @@ def testMap(file, path):
 				showMsgFile(file, "duplicate Collision layer", True)
 			collision = obj
 		elif beforeFringe == True:
-			lowLayers.add(obj)
+			lowLayers.append(obj)
 		else:
-			overLayers.add(obj)
+			overLayers.append(obj)
 			
 		width = readAttrI(layer, "width", 0, "error: missing layer width: " + name + \
 				", " + file, True)
@@ -1096,15 +1104,19 @@ def testMap(file, path):
 		showMsgFile(file, "missing over layers", False)
 
 	if fringe != None:
-		lowLayers.add(fringe)
+		lowLayers.append(fringe)
 	warn1 = None
 
 	if len(overLayers) > 0:
-		warn1 = testLayerGroups(file, lowLayers, False)
-		lowLayers = lowLayers | overLayers
-		err1 = testLayerGroups(file, lowLayers, False)
+		testData = dict() 
+		warn1 = testLayerGroups(file, lowLayers, collision, None, tilesMap, False)
+		lowLayers.extend(overLayers)
+		err1 = testLayerGroups(file, lowLayers, collision, testData, tilesMap, False)
+		reportAboutTiles(file, testData)
 	else:
-		err1 = testLayerGroups(file, lowLayers, False)
+		testData = dict()
+		err1 = testLayerGroups(file, lowLayers, collision, testData, tilesMap, False)
+		reportAboutTiles(file, testData)
 
 	if warn1 != None and err1 != None:
 		warn1 = warn1 - err1
@@ -1112,6 +1124,55 @@ def testMap(file, path):
 		showLayerErrors(file, warn1, "empty tile in lower layers", False)
 	if err1 != None and len(err1) > 0:
 		showLayerErrors(file, err1, "empty tile in all layers", True)
+
+
+def reportAboutTiles(file, data):
+	if testBadCollisions == False:
+		return
+	for k in data:
+		d = data[k]
+		if d[0] != 0 and d[2] != 0:
+			#print file + ": " + str(k) + ": " + str(d)
+			testCollisionPoints(file, k, d, 1, 3, \
+				"possible tiles should be without collision: ", \
+				"because no collision: ", False)
+			testCollisionPoints(file, k, d, 3, 1, \
+				"possible tiles should be with collision: ", \
+				"because collision: ", False)
+
+
+def testCollisionPoints(file, tileId, data, idx1, idx2, msg1, msg2, iserr):
+	#print "test: " + str(idx1) + ", " + str(idx2)
+	cnt1 = 0
+	cnt2 = 0
+	for point in data[idx1]:
+		if point[2] > 0:
+			cnt1 = cnt1 + 1
+	for point in data[idx2]:
+		if point[2] > 0:
+			cnt2 = cnt2 + 1
+
+	ln1 = len(data[idx1])
+	ln2 = len(data[idx2])
+	#print "cnt1=" + str(cnt1) + ", cnt2=" + str(cnt2) + ", ln1=" + str(ln1) + ", ln2=" + str(ln2)
+	if ln1 > 0 and ln2 > 0 and cnt2 > 0 and cnt2 < cnt1 - tileNumDiff and cnt2 < maxNumErrTiles:
+		text = msg1
+		c = 0
+		for point in data[idx2]:
+			if point[2] > 0:
+				if c > 100:
+					break
+				text = text + "(" + str(point[0]) + ", " + str(point[1]) + "), "
+				c = c + 1
+		text = text[:len(text)-2] + " " +  msg2
+		c = 0
+		for point in data[idx1]:
+			if c > 100:
+				break
+			text = text + "(" + str(point[0]) + ", " + str(point[1]) + "), "
+			c = c + 1
+		showMsgFile(file, text[:len(text)-2], iserr)
+	
 
 
 def testCollisionLayer(file, layer, tiles):
@@ -1155,7 +1216,6 @@ def testCollisionLayer(file, layer, tiles):
 	return (tileset, badtiles)
 
 
-
 def findTileByGid(tiles, gid):
 	for firstGid in tiles:
 		if firstGid <= gid:
@@ -1177,11 +1237,35 @@ def showLayerErrors(file, points, msg, iserr):
 			break
 	showMsgFile(file, msg + txt[0:len(txt)-1], iserr)
 
-	
 
 def getLDV(arr, index):
 	return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
 		    | (arr[index + 3] << 24)
+
+
+def getLDV2(arr, x, y, width, height, tilesMap):
+	ptr = ((y * width) + x) * 4
+	res = getLDV(arr, ptr)
+	yend = height - 1
+	if yend - y > 5:
+		yend = y + 5
+	for y2 in range(height - 1, y, -1):
+		x0 = x - 3
+		if x0 < 0:
+			x0 = 0
+		for x2 in range(x0, x + 1):
+			ptr = ((y2 * width) + x2) * 4
+			val = getLDV(arr, ptr)
+			tile = findTileByGid(tilesMap, val)
+			if tile is not None:
+				if (tile.tileHeight > 32 or y2 == y) and (tile.tileWidth > 32 or x2 == x):
+					hg = tile.tileHeight / 32
+					wg = tile.tileWidth / 32
+					if (y2 - y < hg or y2 == y) and (x2 - x < wg or x2 == x):
+						res = val
+
+	return res
+
 
 def testLayer(file, node, name, width, height, layer, tiles):
 	datas = node.getElementsByTagName("data")
@@ -1222,7 +1306,7 @@ def testLayer(file, node, name, width, height, layer, tiles):
 	return layer
 
 
-def testLayerGroups(file, layers, iserr):
+def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
 	width = 0
 	height = 0
 	errset = set()
@@ -1235,28 +1319,71 @@ def testLayerGroups(file, layers, iserr):
 	for x in range(0, width):
 		for y in range(0, height):
 			good = False
+			lastTileId = 0
 			for layer in layers:
 				if layer.arr != None and x < layer.width \
 						and y < layer.height:
 					arr = layer.arr
 					ptr = ((y * layer.width) + x) * 4
-					if arr[ptr] != 0 or arr[ptr + 1] != 0 or \
-							arr[ptr + 2] != 0 or arr[ptr + 3] != 0:
-								good = True
-								break
+					if testBadCollisions == True:
+						val = getLDV2(arr, x, y, layer.width, layer.height, tilesMap)
+					else:
+						val = 0
+					val1 = getLDV(arr, ptr)
+					if val1 != 0:
+						good = True
+						if val == val1 and testBadCollisions == True: 
+							lastTileId = val
 			if good == False:
 				errset.add((x,y))
-#				showMsgFile(file, "empty tile in lower layers (" \
-#						+ str(x) + "," + str(y) + ")", False)
-
+			elif testBadCollisions == True and collision != None and tileInfo != None:
+				if lastTileId not in tileInfo:
+					tileInfo[lastTileId] = [0, set(), 0, set()]
+				ti = tileInfo[lastTileId]
+				flg = getLDV(collision.arr, ((y * collision.width) + x) * 4)
+				cnt = countCollisionsNear(collision, x, y)
+				k = 0
+				if flg > 0:
+					if cnt[1] < cnt[0] and cnt[0] - cnt[1] > 5:
+						k = 1
+					ti[2] = ti[2] + 1
+					ti[3].add((x, y, k))
+				else:
+					if cnt[0] > cnt[1] and cnt[0] - cnt[1] > 5:
+						k = 1
+					ti[0] = ti[0] + 1
+					ti[1].add((x, y, k))
 
 					
-#					for f in range(0, len(arr), 4):
-#						flg = getLDV(arr, f)
-#						y = int(f / 4 / layer.width)
-#						x = int(f / 4) - (y * layer.width)
-#						print "addr: " + str(f) + ", flg=" + str(flg) + ", x=" + str(x) + ", y=" + str(y)
 	return errset
+
+def countCollisionsNear(layer, x, y):
+	arr = layer.arr
+	x1 = x - 1
+	y1 = y - 1
+	x2 = x + 1
+	y2 = y + 1
+	col = 0
+	nor = 0
+
+	if x1 < 0:
+		x1 = 0
+	if x2 >= layer.width:
+		x2 = layer.width - 1
+	if y1 < 0:
+		y1 = 0
+	if y2 >= layer.height:
+		y2 = layer.height - 1
+
+	for f in range(x1, x2 + 1):
+		for d in range(y1, y2 + 1):
+			if f != x or d != y:
+				val = getLDV(arr, ((d * layer.width) + f) * 4)
+				if val == 0:
+					nor = nor + 1
+				else:
+					col = col + 1
+	return (nor, col)
 
 
 def testMaps(dir):
