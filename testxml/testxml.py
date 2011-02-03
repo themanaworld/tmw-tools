@@ -1,5 +1,7 @@
 #! /usr/bin/env python2.6
 # -*- coding: utf8 -*-
+#
+# Copyright (C) 2010-2011  Evol Online
 
 import array
 import base64
