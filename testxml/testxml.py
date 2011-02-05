@@ -17,6 +17,9 @@ import zlib
 
 filt = re.compile(".+[.](xml|tmx)", re.IGNORECASE)
 filtmaps = re.compile(".+[.]tmx", re.IGNORECASE)
+filtimages = re.compile(".+[.]png", re.IGNORECASE)
+filtxmls = re.compile(".+[.]xml", re.IGNORECASE)
+filtogg = re.compile(".+[.]ogg", re.IGNORECASE)
 dyesplit1 = re.compile(";")
 dyesplit2 = re.compile(",")
 parentDir = "../../clientdata"
@@ -24,7 +27,15 @@ iconsDir = "graphics/items/"
 spritesDir = "graphics/sprites/"
 particlesDir = "graphics/particles/"
 sfxDir = "sfx/"
+musicDir = "music/"
 mapsDir = "maps/"
+attackSfxFile = "fist-swish.ogg"
+spriteErrorFile = "error.xml"
+levelUpEffectFile = "levelup.particle.xml"
+portalEffectFile = "warparea.particle.xml"
+minimapsDir = "graphics/minimaps/"
+wallpapersDir = "graphics/images/"
+wallpaperFile = "login_wallpaper.png"
 errors = 0
 warnings = 0
 errDict = set()
@@ -156,6 +167,22 @@ def loadPaths():
 				particlesDir = node.attributes["value"].value
 			elif node.attributes["name"].value == "maps":
 				mapsDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "attackSfxFile":
+				attackSfxFile = node.attributes["value"].value
+			elif node.attributes["name"].value == "spriteErrorFile":
+				spriteErrorFile = node.attributes["value"].value
+			elif node.attributes["name"].value == "levelUpEffectFile":
+				levelUpEffectFile = node.attributes["value"].value
+			elif node.attributes["name"].value == "portalEffectFile":
+				portalEffectFile = node.attributes["value"].value
+			elif node.attributes["name"].value == "minimaps":
+				minimapsDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "wallpapers":
+				wallpapersDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "wallpaperFile":
+				wallpaperFile = node.attributes["value"].value
+			elif node.attributes["name"].value == "music":
+				musicDir = node.attributes["value"].value
 	except:
 		print "warn: paths.xml not found"
 		warnings = warnings + 1
@@ -358,6 +385,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	imagesets = dom.getElementsByTagName("imageset")
 	if imagesets is None or len(imagesets) < 1:
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
+		return
 	imageset = imagesets[0]
 	
 	try:
@@ -418,7 +446,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		showMsgSprite(fileLoc, "to big variant number " + str(variant) \
 		+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
 	if num < 1:
-		showMsgSprite(fileLoc, "image have zero frames: " + iamge, iserr)
+		showMsgSprite(fileLoc, "image have zero frames: " + image, iserr)
 
 	try:
 		includes = dom.getElementsByTagName("include")
@@ -674,7 +702,8 @@ def testEmitters(id, file, parentNode, src):
 			img = splitImage(value)
 			image = img[0]
 			imagecolor = img[1]
-			testDye(id, imagecolor, "image=" + image, src, True)
+			if imagecolor != None and len(imagecolor) > 0:
+				testDye(id, imagecolor, "image=" + image, src, True)
 			testImageFile(image, parentDir + "/" + image, 0, True)
 	for node in parentNode.getElementsByTagName("emitter"):
 		testEmitters(id, file, node, src)
@@ -1401,6 +1430,112 @@ def testMaps(dir):
 		if filtmaps.search(file):
 			testMap(mapsDir + file, dir + file)
 
+def testDefaultFiles():
+	print "Checking defult files"
+	testSound(attackSfxFile)
+	testSprite("0", spriteErrorFile, 0, True)
+	testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
+	testParticle("0", particlesDir + portalEffectFile, "portalEffectFile")
+	fullName = parentDir + "/" + wallpapersDir + wallpaperFile
+	if not os.path.isdir(fullName) and os.path.exists(fullName):
+		testImageFile(wallpapersDir + wallpaperFile, fullName, 0, False)
+
+
+def testMinimapsDir():
+	global errors, warnings
+
+	print "Checking minimaps"
+	fullPath = parentDir + "/" + minimapsDir
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		print "warn: minimaps dir not exist"
+		warnings = warnings + 1
+		return
+	for file in os.listdir(fullPath):
+		if filtimages.search(file):
+			fullName = parentDir + "/" + minimapsDir + file
+			testImageFile(minimapsDir + file, fullName, 0, True)
+
+
+def testImagesDir(imagesDir, sz):
+	global errors, warnings
+
+	fullPath = parentDir + "/" + imagesDir
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		return
+	for file in os.listdir(fullPath):
+		file2 = fullPath + "/" + file
+		if file[0] == ".":
+			continue
+		if not os.path.isfile(file2):
+			testImagesDir(imagesDir + file + "/", sz)
+		if filtimages.search(file):
+			fullName = parentDir + "/" + imagesDir + file
+			testImageFile(imagesDir + file, fullName, sz, True)
+
+
+def testSpritesDir(dir):
+	global errors, warnings, safeDye
+
+	fullPath = parentDir + "/" + spritesDir + dir
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		return
+	
+	for file in os.listdir(fullPath):
+		file2 = fullPath + "/" + file
+		if file[0] == ".":
+			continue
+		if not os.path.isfile(file2):
+			testSpritesDir(dir + file + "/")
+		if filtimages.search(file):
+			fullName = parentDir + "/" + spritesDir + dir + file
+			testImageFile(spritesDir + dir, fullName, 0, True)
+		elif filtxmls.search(file):
+			fullName = dir + file
+			safeDye = True
+			testSprite("0", dir + file, 0, True)
+			safeDye = False
+
+
+
+def testParticlesDir(dir):
+	global errors, warnings, safeDye
+
+	fullPath = parentDir + "/" + dir
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		return
+	for file in os.listdir(fullPath):
+		file2 = fullPath + "/" + file
+		if file[0] == ".":
+			continue
+		if not os.path.isfile(file2):
+			testParticlesDir(dir + file + "/")
+		if filtimages.search(file):
+			fullName = parentDir + "/" + dir + file
+			testImageFile(dir + file, fullName, 0, True)
+		elif filtxmls.search(file):
+			fullName = dir + file
+			safeDye = True
+			testParticle("0", dir + file, "")
+			safeDye = False
+
+def testSoundsDir(dir, sfxDir):
+	global errors, warnings
+
+	fullPath = parentDir + "/" + sfxDir + dir
+	if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
+		print "warn: directory " + sfxDir + " not exist"
+		warnings = warnings + 1
+		return
+	for file in os.listdir(fullPath):
+		file2 = fullPath + "/" + file
+		if file[0] == ".":
+			continue
+		if not os.path.isfile(file2):
+			testSoundsDir(dir + file + "/", sfxDir)
+		elif filtogg.search(file):
+			fullName = dir + file
+			testSound(dir + file)
+
 
 def haveXml(dir):
 	if not os.path.isdir(dir) or not os.path.exists(dir):
@@ -1430,8 +1565,22 @@ detectClientData([".", "..", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
+testDefaultFiles()
 testItems("/items.xml", iconsDir)
 testMonsters("/monsters.xml")
 testNpcs("/npcs.xml")
 testMaps(mapsDir)
+testMinimapsDir()
+print "Checking images dir"
+testImagesDir(wallpapersDir, 0)
+print "Checking icons dir"
+testImagesDir(iconsDir, 32)
+print "Checking sprites dir"
+testSpritesDir("")
+print "Checking particles dir"
+testParticlesDir(particlesDir)
+print "Checking sfx dir"
+testSoundsDir("", sfxDir)
+print "Checking music dir"
+testSoundsDir("", musicDir)
 showFooter()
