@@ -426,7 +426,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showMsgSprite(fileLoc, "image file not exist: " + image, iserr)
 		return
-	sizes = testImageFile(image, fullPath, 0, iserr)
+	sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
 	s1 = int(sizes[0] / int(width)) * int(width)
 	if sizes[0] != s1:
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
@@ -442,7 +442,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	if variants > 0 and variant >= variants:
 		showMsgSprite(fileLoc, "variant number more then in variants attribute", iserr)
 
-	if variant >= num:
+	if variant > 0 and variant >= num:
 		showMsgSprite(fileLoc, "to big variant number " + str(variant) \
 		+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
 	if num < 1:
@@ -631,16 +631,16 @@ def testSpriteAction(file, name, action, numframes, iserr):
 	return framesid
 
 
-def testImageFile(file, fullPath, sz, iserr):
+def testImageFile(file, fullPath, sz, src, iserr):
 	try:
 		img = Image.open(fullPath, "r")
 		img.load()
 	except:
-		showMsgFile(file, "incorrect image format", iserr)
+		showMsgFile(file, "incorrect image format" + src, iserr)
 		return
 
 	if img.format != "PNG":
-		showMsgFile(file, "image format is not png", False)
+		showMsgFile(file, "image format is not png" + src, False)
 
 	sizes = img.size
 	if sz != 0:
@@ -704,7 +704,11 @@ def testEmitters(id, file, parentNode, src):
 			imagecolor = img[1]
 			if imagecolor != None and len(imagecolor) > 0:
 				testDye(id, imagecolor, "image=" + image, src, True)
-			testImageFile(image, parentDir + "/" + image, 0, True)
+			fullName = parentDir + "/" + image
+			if not os.path.isfile(fullName) or os.path.exists(fullName) == False:
+				showMsgFile(file, "image file not exist: " + image, True)
+			else:
+				testImageFile(image, fullName, 0, " " + file,True)
 	for node in parentNode.getElementsByTagName("emitter"):
 		testEmitters(id, file, node, src)
 
@@ -822,7 +826,7 @@ def testItems(fileName, imgDir):
 				showFileErrorById (id, imgDir, image)
 				errors = errors + 1
 			else:
-				testImageFile(imgDir + image, fullPath, 32, True)
+				testImageFile(imgDir + image, fullPath, 32, "", True)
 
 			if floor != None:
 				fullPath = os.path.abspath(parentDir + "/" + imgDir + floor)
@@ -830,7 +834,7 @@ def testItems(fileName, imgDir):
 					showFileErrorById (id, imgDir, floor)
 					error = errors + 1
 				else:
-					testImageFile(imgDir + floor, fullPath, 0, True)
+					testImageFile(imgDir + floor, fullPath, 0, "", True)
 
 
 			if type != "usable" and type != "unusable" and type != "generic" \
@@ -1034,7 +1038,7 @@ def testMap(file, path):
 				if imagecolor != "":
 					testDye("", imagecolor, source, file, True)
 
-				sz = testImageFile(file, imagePath, 0, True)
+				sz = testImageFile(file, imagePath, 0, "", True)
 				width = sz[0]
 				height = sz[1]
 
@@ -1125,7 +1129,7 @@ def testMap(file, path):
 	else:
 		ids = testCollisionLayer(file, collision, tilesMap)
 		if ids[0] != None and len(ids[0]) > 0:
-			showLayerErrors(file, ids(0), "empty tiles in collision border", False)
+			showLayerErrors(file, ids[0], "empty tiles in collision border", False)
 		if ids[1] != None and len(ids[1]) > 0:
 			showLayerErrors(file, ids[1], "incorrect tileset index in collision layer", False)
 
@@ -1438,7 +1442,7 @@ def testDefaultFiles():
 	testParticle("0", particlesDir + portalEffectFile, "portalEffectFile")
 	fullName = parentDir + "/" + wallpapersDir + wallpaperFile
 	if not os.path.isdir(fullName) and os.path.exists(fullName):
-		testImageFile(wallpapersDir + wallpaperFile, fullName, 0, False)
+		testImageFile(wallpapersDir + wallpaperFile, fullName, 0, "", False)
 
 
 def testMinimapsDir():
@@ -1453,7 +1457,7 @@ def testMinimapsDir():
 	for file in os.listdir(fullPath):
 		if filtimages.search(file):
 			fullName = parentDir + "/" + minimapsDir + file
-			testImageFile(minimapsDir + file, fullName, 0, True)
+			testImageFile(minimapsDir + file, fullName, 0, "", True)
 
 
 def testImagesDir(imagesDir, sz):
@@ -1470,7 +1474,7 @@ def testImagesDir(imagesDir, sz):
 			testImagesDir(imagesDir + file + "/", sz)
 		if filtimages.search(file):
 			fullName = parentDir + "/" + imagesDir + file
-			testImageFile(imagesDir + file, fullName, sz, True)
+			testImageFile(imagesDir + file, fullName, sz, "", True)
 
 
 def testSpritesDir(dir):
@@ -1488,7 +1492,7 @@ def testSpritesDir(dir):
 			testSpritesDir(dir + file + "/")
 		if filtimages.search(file):
 			fullName = parentDir + "/" + spritesDir + dir + file
-			testImageFile(spritesDir + dir, fullName, 0, True)
+			testImageFile(spritesDir + dir, fullName, 0, "", True)
 		elif filtxmls.search(file):
 			fullName = dir + file
 			safeDye = True
@@ -1511,7 +1515,7 @@ def testParticlesDir(dir):
 			testParticlesDir(dir + file + "/")
 		if filtimages.search(file):
 			fullName = parentDir + "/" + dir + file
-			testImageFile(dir + file, fullName, 0, True)
+			testImageFile(dir + file, fullName, 0, "", True)
 		elif filtxmls.search(file):
 			fullName = dir + file
 			safeDye = True
