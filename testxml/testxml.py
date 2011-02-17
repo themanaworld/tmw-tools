@@ -719,8 +719,21 @@ def testItems(fileName, imgDir):
 	print "Checking items.xml"
 	dom = minidom.parse(parentDir + fileName)
 	idset = set()
+	oldId = None
 	for node in dom.getElementsByTagName("item"):
-		id = node.attributes["id"].value
+		if node.parentNode != dom.documentElement:
+			continue
+
+		try:
+			id = node.attributes["id"].value
+		except:
+			if oldId is None:
+				print "error: item without id"
+			else:
+				print "error: item without id. Last id was: " + oldId
+			errors = errors + 1
+			continue
+		oldId = id
 		if id in idset:
 			print "error: duplicated id=" + id
 			errors = errors + 1
