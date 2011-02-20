@@ -578,7 +578,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 							name + ", direction: " + direction, False)
 
 				if lastIndex1 == i1 and lastIndex2 == i2 and offsetX == lastOffsetX \
-				and offsetY == lastOffsetY:
+				and offsetY == lastOffsetY and i1 == i2 and lastIndex1 == lastIndex2:
 					showMsgSprite(file, "duplicate sequence animation for start=" \
 							+ str(i1) + ", end=" + str(i2) + " action: " + \
 							name + ", direction: " + direction, False)
