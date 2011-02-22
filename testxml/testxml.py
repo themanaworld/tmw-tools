@@ -373,12 +373,12 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		return
 
 	try:
-		variants = dom.attributes["variants"].value
+		variants = dom.documentElement.attributes["variants"].value
 	except:
 		variants = 0
 
 	try:
-		variant_offset = dom.attributes["variant_offset"].value
+		variant_offset = dom.documentElement.attributes["variant_offset"].value
 	except:
 		variant_offset = 0
 		
