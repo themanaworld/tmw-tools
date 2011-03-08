@@ -272,7 +272,7 @@ def testDyeMark(file, color, text, iserr):
 	return len(colors)
 
 
-def testSprites(id, node, checkGender, iserr):
+def testSprites(id, node, checkGender, isNormalDye, iserr):
 	try:
 		tmp = node.getElementsByTagName("nosprite")
 		if tmp is not None and len(tmp) > 1:
@@ -310,7 +310,7 @@ def testSprites(id, node, checkGender, iserr):
 			except:
 				variant = 0
 
-			testSprite(id, file, variant, iserr)
+			testSprite(id, file, variant, isNormalDye, iserr)
 		else:
 			male = False
 			female = False
@@ -338,7 +338,7 @@ def testSprites(id, node, checkGender, iserr):
 					variant = int(sprite.attributes["variant"].value)
 				except:
 					variant = 0
-				testSprite(id, file, variant, iserr)
+				testSprite(id, file, variant, isNormalDye, iserr)
 			if checkGender:
 				if male == False:
 					showMsg(id, "no male sprite tag", "",iserr)
@@ -346,7 +346,8 @@ def testSprites(id, node, checkGender, iserr):
 					showMsg(id, "no female sprite tag", "", iserr)
 
 
-def testSprite(id, file, variant, iserr):
+def testSprite(id, file, variant, isNormalDye, iserr):
+	global safeDye
 	tmp = splitImage(file)
 	color = tmp[1]
 	file2 = tmp[0]
@@ -359,7 +360,14 @@ def testSprite(id, file, variant, iserr):
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showFileMsgById(id, spritesDir, file2, iserr)
 	else:
+		if not isNormalDye and color is not None and len(color) > 0:
+			showMsg(id, "sprite tag have dye string but it should not, because used colors dye", color, iserr)
+
+		oldSafe = safeDye
+		safeDye = True
 		testSpriteFile(id, fullPath, file, spritesDir + file2, dnum, variant, iserr)
+		safeDye = oldSafe
+
 
 def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	global safeDye
@@ -742,6 +750,13 @@ def testItems(fileName, imgDir):
 			idset.add(id)
 			
 		idI = int(id)
+
+		try:
+			colors = node.attributes["colors"].value
+		except:
+			colors = None
+
+
 		try:
 			type = node.attributes["type"].value
 		except:
@@ -790,7 +805,7 @@ def testItems(fileName, imgDir):
 				errors = errors + 1
 
 			safeDye = True
-			testSprites(id, node, True, True)
+			testSprites(id, node, True, True, True)
 			safeDye = False
 
 		elif type == "racesprite":
@@ -811,10 +826,16 @@ def testItems(fileName, imgDir):
 				errors = errors + 1
 				continue
 			elif len(imagecolor) > 0:
-				testDye(id, imagecolor, "image=" + image0, "items.xml", True)
+				if colors is None:
+					testDye(id, imagecolor, "image=" + image0, "items.xml", True)
+				else:
+					testDyeMark(id, imagecolor, "image=" + image0, True)
 
 			if floorcolor != None and len(floorcolor) > 0:
-				testDye(id, floorcolor, "floor=" + floor0, "items.xml", True)
+				if colors is None:
+					testDye(id, floorcolor, "floor=" + floor0, "items.xml", True)
+				else:
+					testByeMark(id, imagecolor, "floor=" + floor0, True);
 
 			if description == "":
 				print "warn: missing description attribute on id=" + id
@@ -833,7 +854,7 @@ def testItems(fileName, imgDir):
 					print "error: found attribute floor and tag floor. " + \
 							"Should be only one tag or attribute. id=" + id
 					errors = errors + 1
-				testSprites(id, floorSprite, False, err)
+				testSprites(id, floorSprite, False, colors is None, err)
 
 			fullPath = os.path.abspath(parentDir + "/" + imgDir + image)
 			if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
@@ -856,7 +877,7 @@ def testItems(fileName, imgDir):
 			and type != "equip-2hand" and type != "equip-ammo" \
 			and type != "equip-charm" and type != "equip-neck":
 				err = type != "equip-shield"
-				testSprites(id, node, True, err)
+				testSprites(id, node, True, colors is None, err)
 		elif type == "other":
 			None
 		elif type != "":
@@ -889,7 +910,7 @@ def testMonsters(fileName):
 			name = ""
 
 		testTargetCursor(id, node, fileName)
-		testSprites(id, node, False, True)
+		testSprites(id, node, False, True, True)
 		testSounds(id, node, "monster")
 		testParticles(id, node, "particlefx", fileName)
 
@@ -952,7 +973,7 @@ def testNpcs(file):
 		else:
 			idset.add(id)
 
-		testSprites(id, node, False, True)
+		testSprites(id, node, False, True, True)
 		testParticles(id, node, "particlefx", file)
 
 def readAttrI(node, attr, dv, msg, iserr):
@@ -1451,7 +1472,7 @@ def testMaps(dir):
 def testDefaultFiles():
 	print "Checking defult files"
 	testSound(attackSfxFile)
-	testSprite("0", spriteErrorFile, 0, True)
+	testSprite("0", spriteErrorFile, 0, True, True)
 	testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
 	testParticle("0", particlesDir + portalEffectFile, "portalEffectFile")
 	fullName = parentDir + "/" + wallpapersDir + wallpaperFile
@@ -1510,7 +1531,7 @@ def testSpritesDir(dir):
 		elif filtxmls.search(file):
 			fullName = dir + file
 			safeDye = True
-			testSprite("0", dir + file, 0, True)
+			testSprite("0", dir + file, 0, True, True)
 			safeDye = False
 
 
