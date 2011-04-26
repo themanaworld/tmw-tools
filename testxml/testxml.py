@@ -665,9 +665,10 @@ def testImageFile(file, fullPath, sz, src, iserr):
 
 	return sizes	
 
-def testSound(file):
+def testSound(file, sfxDir):
 	fullPath = parentDir + "/" + sfxDir + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
+		print "errin:" + fullPath
 		showMsgFile(file, "sound file not found", True)
 		return
 	try:
@@ -953,7 +954,7 @@ def testSounds(id, node, type):
 				print "error: incorrect sound event name " + event + " in id=" + id
 				errors = errors + 1
 
-		testSound(sound.childNodes[0].data)
+		testSound(sound.childNodes[0].data, sfxDir)
 
 def testNpcs(file):
 	global warnings, errors
@@ -1471,7 +1472,7 @@ def testMaps(dir):
 
 def testDefaultFiles():
 	print "Checking defult files"
-	testSound(attackSfxFile)
+	testSound(attackSfxFile, sfxDir)
 	testSprite("0", spriteErrorFile, 0, True, True)
 	testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
 	testParticle("0", particlesDir + portalEffectFile, "portalEffectFile")
@@ -1573,7 +1574,7 @@ def testSoundsDir(dir, sfxDir):
 			testSoundsDir(dir + file + "/", sfxDir)
 		elif filtogg.search(file):
 			fullName = dir + file
-			testSound(dir + file)
+			testSound(dir + file, sfxDir)
 
 
 def haveXml(dir):
