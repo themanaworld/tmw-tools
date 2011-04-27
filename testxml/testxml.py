@@ -528,6 +528,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		lastOffsetX = 0
 		lastOffsetY = 0
 		cnt = 0
+		labels = set()
 
 		for node2 in animation.childNodes:
 			if node2.nodeName == "frame" or node2.nodeName == "sequence":
@@ -604,6 +605,43 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				cnt = cnt + 1
 				for i in range(i1,i2 + 1):
 					framesid.add(i)
+			elif node2.nodeName == "end" or node2.nodeName == "jump" or node2.nodeName == "label" or node2.nodeName == "goto":
+				lastIndex1 = -1
+				lastIndex2 = -1
+				lastOffsetX = 0
+				lastOffsetY = 0
+				cnt = cnt + 1
+			elif node2.nodeName == "#text" or node2.nodeName == "#comment":
+				None
+			else:
+				showMsgSprite(file, "unknown animation tag: " + node2.nodeName + ", " + name, False)
+
+			if node2.nodeName == "jump":
+				try:
+					jaction = node2.attributes["action"].value
+				except:
+					jaction = ""
+				if jaction == "" or jaction is None:
+					showMsgSprite(file, "no action attribute in jump tag " + name, iserr)
+			elif node2.nodeName == "label":
+				try:
+					label = node2.attributes["name"].value
+				except:
+					label = ""
+				if label == "" or label is None:
+					showMsgSprite(file, "no name attribute in label tag " + name, iserr)
+				else:
+					if label in labels:
+						showMsgSprite(file, "duplicate label " + label + " " + name, iserr)
+					else:
+						labels.add(label)
+			elif node2.nodeName == "goto":
+				try:
+					label = node2.attributes["label"].value
+				except:
+					label = ""
+				if label == "" or label is None:
+					showMsgSprite(file, "no label attribute in goto tag " + name, iserr)
 
 		if cnt == 0:
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
@@ -883,7 +921,8 @@ def testItems(fileName, imgDir):
 				else:
 					testImageFile(imgDir + floor, fullPath, 0, "", True)
 
-
+			testItemReplace(id, node, "replace")
+		
 			if type != "usable" and type != "unusable" and type != "generic" \
 			and type != "equip-necklace" and type != "equip-1hand" \
 			and type != "equip-2hand" and type != "equip-ammo" \
@@ -895,6 +934,38 @@ def testItems(fileName, imgDir):
 		elif type != "":
 			print "warn: unknown type '" + type + "' for id=" + id
 			warnings = warnings + 1
+
+
+def testItemReplace(id, rootNode, name):
+	global warnings, errors
+	sprites = set()
+	for node in rootNode.getElementsByTagName(name):
+		if node.parentNode != rootNode:
+			continue
+		try:
+			sprite = node.attributes["sprite"].value
+		except:
+			print "error: reading replace sprite name, id=" + str(id)
+			continue
+		checkSpriteName(id, sprite)
+		for itemNode in node.getElementsByTagName("item"):
+			if itemNode.parentNode != node:
+				continue
+			#TODO here need check "from" and "to" for correct item id
+
+
+def checkSpriteName(id, name):
+	global warnings, errors
+	if name != "shoes" and name != "boot" and name != "boots" and name != "bottomclothes" \
+			and name != "bottom" and name != "pants" and name != "topclothes" and \
+			name != "top" and name != "torso" and name != "body" and name != "misc1" \
+			and name != "misc2" and name != "scarf" and name != "scarfs" and \
+			name != "hair" and name != "hat" and name != "hats" and name != "wings" \
+			and name != "glove" and name != "gloves" and name != "weapon" and \
+			name != "weapons" and name != "shield" and name != "shields" and \
+			name != "amulet" and name != "amulets" and name != "ring" and name != "rings":
+				print "error: unknown sprite name " + name + ", id=" + str(id)
+
 
 def testMonsters(fileName):
 	global warnings, errors
