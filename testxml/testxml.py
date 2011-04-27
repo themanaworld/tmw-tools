@@ -957,7 +957,8 @@ def testSounds(id, node, type):
 			errors = errors + 1
 
 		if type == "monster":
-			if event != "hit" and event != "miss" and event != "hurt" and event != "die":
+			if event != "hit" and event != "miss" and event != "hurt" and event != "die" \
+					and event != "move" and event != "sit" and event != "spawn":
 				print "error: incorrect sound event name " + event + " in id=" + id
 				errors = errors + 1
 		elif type == "item":
