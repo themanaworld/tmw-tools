@@ -574,6 +574,10 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				except:
 					showMsgSprite(file, "no sequence start or end index action: " + \
 							name + ", direction: " + direction, iserr)
+				try:
+					repeat = int(sequence.attributes["repeat"].value)
+				except:
+					repeat = 1
 					
 				if i1 >= numframes or i1 < 0:
 					showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
@@ -587,8 +591,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 							name + ", direction: " + direction, False)
 
 				if lastIndex1 == i1 and lastIndex2 == i2 and offsetX == lastOffsetX \
-				and offsetY == lastOffsetY and i1 == i2 and lastIndex1 == lastIndex2:
-					showMsgSprite(file, "duplicate sequence animation for start=" \
+				and offsetY == lastOffsetY:
+					showMsgSprite(file, "duplicate sequence animation for. May be need use repeat attribue? start=" \
 							+ str(i1) + ", end=" + str(i2) + " action: " + \
 							name + ", direction: " + direction, False)
 				else:
