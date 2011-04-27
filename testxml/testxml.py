@@ -42,6 +42,7 @@ warnings = 0
 errDict = set()
 safeDye = False
 borderSize = 20
+colorsList = set()
 
 testBadCollisions = False
 # number of tiles difference. after this amount tiles can be counted as incorrect
@@ -831,12 +832,18 @@ def testItems(fileName, imgDir):
 					testDye(id, imagecolor, "image=" + image0, "items.xml", True)
 				else:
 					testDyeMark(id, imagecolor, "image=" + image0, True)
+					if colors not in colorsList:
+						print "error: colors value " + colors + " not found in itemcolors.xml"
+						errors = errors + 1
 
 			if floorcolor != None and len(floorcolor) > 0:
 				if colors is None:
 					testDye(id, floorcolor, "floor=" + floor0, "items.xml", True)
 				else:
 					testByeMark(id, imagecolor, "floor=" + floor0, True);
+					if colors not in colorsList:
+						print "error: colors value " + colors + " not found in itemcolors.xml"
+						errors = errors + 1
 
 			if description == "":
 				print "warn: missing description attribute on id=" + id
@@ -1558,6 +1565,7 @@ def testParticlesDir(dir):
 			testParticle("0", dir + file, "")
 			safeDye = False
 
+
 def testSoundsDir(dir, sfxDir):
 	global errors, warnings
 
@@ -1576,6 +1584,63 @@ def testSoundsDir(dir, sfxDir):
 			fullName = dir + file
 			testSound(dir + file, sfxDir)
 
+
+def testItemColors(fileName):
+	global warnings, errors, safeDye, colorLists
+	print "Checking itemcolors.xml"
+	try:
+		dom = minidom.parse(parentDir + fileName)
+	except:
+		return
+
+	for node in dom.getElementsByTagName("list"):
+		if node.parentNode != dom.documentElement:
+			continue
+
+		try:
+			name = node.attributes["name"].value
+		except:
+			print "error: colors list dont have name"
+			errors = errors + 1
+			continue
+		if name in colorsList:
+			print "error: duplicate color list: " + name
+			errors = errors + 1
+			continue
+		colorsList.add(name)
+		colors = set()
+		names = set()
+		for colorNode in node.getElementsByTagName("color"):
+			if colorNode.parentNode != node:
+				continue
+			try:
+				id = colorNode.attributes["id"].value
+			except:
+				print "error: getting id in list: " + name
+				errors = errors + 1
+				continue
+			try:
+				colorName = colorNode.attributes["name"].value
+			except:
+				print "error: getting name in list: " + name
+				errors = errors + 1
+				continue
+			try:
+				colorDye = colorNode.attributes["value"].value
+			except:
+				print "error: getting color in list: " + name
+				errors = errors + 1
+			if id in colors:
+				print "error: color with id " + str(id) + " already in list: " + name
+				errors = errors + 1
+			else:
+				colors.add(id)
+			if colorName in names:
+				print "error: color with name \"" + colorName + "\" already in list: " + name
+				errors = errors + 1
+			else:
+				names.add(colorName)
+			testDyeColors(id, colorDye, colorDye, name, True)
 
 def haveXml(dir):
 	if not os.path.isdir(dir) or not os.path.exists(dir):
@@ -1606,6 +1671,7 @@ print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
 testDefaultFiles()
+testItemColors("/itemcolors.xml")
 testItems("/items.xml", iconsDir)
 testMonsters("/monsters.xml")
 testNpcs("/npcs.xml")
