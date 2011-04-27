@@ -593,7 +593,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 
 				if lastIndex1 == i1 and lastIndex2 == i2 and offsetX == lastOffsetX \
 				and offsetY == lastOffsetY:
-					showMsgSprite(file, "duplicate sequence animation for. May be need use repeat attribue? start=" \
+					showMsgSprite(file, "duplicate sequence animation. May be need use repeat attribue? for start=" \
 							+ str(i1) + ", end=" + str(i2) + " action: " + \
 							name + ", direction: " + direction, False)
 				else:
@@ -839,6 +839,21 @@ def testItems(fileName, imgDir):
 		except:
 			missile = ""
 
+		try:
+			drawBefore = node.attributes["drawBefore"].value
+		except:
+			drawBefore = ""
+
+		try:
+			drawAfter = node.attributes["drawAfter"].value
+		except:
+			drawAfter = ""
+
+		try:
+			drawPriority = int(node.attributes["drawPriority"].value)
+		except:
+			drawPriority = 0
+			
 
 		if type == "hairsprite":
 			if idI >= 0:
@@ -922,7 +937,12 @@ def testItems(fileName, imgDir):
 					testImageFile(imgDir + floor, fullPath, 0, "", True)
 
 			testItemReplace(id, node, "replace")
-		
+			if drawBefore != "":
+				checkSpriteName(id, drawBefore)
+			if drawAfter != "":
+				checkSpriteName(id, drawAfter)
+				
+
 			if type != "usable" and type != "unusable" and type != "generic" \
 			and type != "equip-necklace" and type != "equip-1hand" \
 			and type != "equip-2hand" and type != "equip-ammo" \
