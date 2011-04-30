@@ -1211,6 +1211,7 @@ def testMap(file, path):
 		tilesMap[tile.firstGid] = tile
 					
 
+	testTiles(file, tilesMap)
 	layers = dom.getElementsByTagName("layer")
 	if layers == None or len(layers) == 0:
 		showMsgFile(file, "map dont have layers", True)
@@ -1298,6 +1299,20 @@ def testMap(file, path):
 		showLayerErrors(file, warn1, "empty tile in lower layers", False)
 	if err1 != None and len(err1) > 0:
 		showLayerErrors(file, err1, "empty tile in all layers", True)
+
+
+def testTiles(file, tilesMap):
+	for firstGid in tilesMap:
+		for gid2 in tilesMap:
+			if firstGid != gid2:
+				tile1 = tilesMap[firstGid]
+				tile2 = tilesMap[gid2]
+				if (tile1.firstGid >= tile2.firstGid and tile1.firstGid <= tile2.lastGid) or \
+					(tile1.lastGid >= tile2.firstGid and tile1.lastGid <= tile2.lastGid):
+						showMsgFile(file, "overlaping tilesets gids \"" + tile1.name \
+								+ "\" and \"" + tile2.name + "\"", True)
+
+
 
 
 def reportAboutTiles(file, data):
