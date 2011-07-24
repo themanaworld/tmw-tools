@@ -644,7 +644,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				if label == "" or label is None:
 					showMsgSprite(file, "no label attribute in goto tag " + name, iserr)
 
-		if cnt == 0:
+		if cnt == 0 and name != "default":
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
 
 	if "default" not in aniset:
