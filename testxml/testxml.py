@@ -397,7 +397,8 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
 		return
 	imageset = imagesets[0]
-	
+
+	image = ""
 	try:
 		image = imageset.attributes["src"].value
 		image0 = image
