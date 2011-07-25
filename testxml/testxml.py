@@ -510,7 +510,10 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		animations = None
 	
 	if animations == None or len(animations) == 0:
-		showMsgSprite(file, "no animation tags in action: " + name, False)
+		if name != "default":
+			showMsgSprite(file, "no animation tags in action: " + name, False)
+		else:
+			return framesid
 
 	aniset = set()
 	for animation in animations:
@@ -644,7 +647,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				if label == "" or label is None:
 					showMsgSprite(file, "no label attribute in goto tag " + name, iserr)
 
-		if cnt == 0 and name != "default":
+		if cnt == 0:
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
 
 	if "default" not in aniset:
