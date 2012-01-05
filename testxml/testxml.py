@@ -554,7 +554,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					
 				if idx >= numframes or idx < 0:
 					showMsgSprite(file, "incorrect frame index " + str(idx) + \
-							" aciton: " + name + ", direction: "\
+							" action: " + name + ", direction: "\
 							+ direction, iserr)
 				else:
 					framesid.add(idx)
