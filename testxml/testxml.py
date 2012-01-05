@@ -440,12 +440,20 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
 	s1 = int(sizes[0] / int(width)) * int(width)
 	if sizes[0] != s1:
+		if s1 == 0:
+			tmp = int(width)
+		else:
+			tmp = s1
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
-		" (need " + str(s1) + ") is not multiply to frame size " + width + ", image:" + image, False)
+		" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
 	s2 = int(sizes[1] / int(height)) * int(height)
 	if sizes[1] != s2:
+		if s2 == 0:
+			tmp = int(height)
+		else:
+			tmp = s2;
 		showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
-		" (need " + str(s2) + ") is not multiply to frame size " + height + ", image:" + image, False)
+		" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
 	num = (s1 / int(width)) * (s2 / int(height))
 	if variants == 0 and variant > 0:
@@ -562,7 +570,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				and offsetY == lastOffsetY:
 					showMsgSprite(file, "duplicate frame animation for frame index=" \
 							+ str(idx) + " action: " + name + \
-							", direction: " + direction, False)
+							", direction: " + direction + "\n" + node2.toxml(), False)
+					#print node2.toxml()
 				else:
 					lastIndex1 = idx
 					lastIndex2 = -1
@@ -599,7 +608,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				and offsetY == lastOffsetY:
 					showMsgSprite(file, "duplicate sequence animation. May be need use repeat attribue? for start=" \
 							+ str(i1) + ", end=" + str(i2) + " action: " + \
-							name + ", direction: " + direction, False)
+							name + ", direction: " + direction + "\n" + node2.toxml(), False)
 				else:
 					lastIndex1 = i1
 					lastIndex2 = i2
@@ -636,7 +645,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					showMsgSprite(file, "no name attribute in label tag " + name, iserr)
 				else:
 					if label in labels:
-						showMsgSprite(file, "duplicate label " + label + " " + name, iserr)
+						showMsgSprite(file, "duplicate label " + label + " " + name + "\n" \
+							+ node2.toxml(), iserr)
 					else:
 						labels.add(label)
 			elif node2.nodeName == "goto":
@@ -1200,6 +1210,8 @@ def testMap(file, path):
 				s1 = int(width / int(tileWidth)) * int(tileWidth)
 
 				if width != s1:
+					if s1 == 0:
+						s1 = int(tileWidth)
 					showMsgFile(file, "image width " + str(width) + \
 							" (need " + str(s1) + ") is not multiply to tile size " + \
 							str(tileWidth) + ". " + source + ", " + name, False)
@@ -1208,6 +1220,8 @@ def testMap(file, path):
 
 				tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight))) - 1
 				if height != s2:
+					if s2 == 0:
+						s2 = int(tileHeight)
 					showMsgFile(file, "image width " + str(height) + \
 							" (need " + str(s2) + ") is not multiply to tile size " + \
 							str(tileHeight) + ". " + source + ", " + name, False)
