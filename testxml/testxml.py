@@ -439,7 +439,12 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		return
 	sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
 	s1 = int(sizes[0] / int(width)) * int(width)
-	if sizes[0] != s1:
+	if sizes[0] % 2 == 1:
+		stmp = sizes[0] - 1
+	else:
+		stmp = sizes[0]
+
+	if sizes[0] != s1 and stmp != s1:
 		if s1 == 0:
 			tmp = int(width)
 		else:
@@ -447,7 +452,12 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
 		" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
 	s2 = int(sizes[1] / int(height)) * int(height)
-	if sizes[1] != s2:
+	if sizes[1] % 2 == 1:
+		stmp = sizes[1] - 1
+	else:
+		stmp = sizes[1]
+
+	if sizes[1] != s2 and stmp != s2:
 		if s2 == 0:
 			tmp = int(height)
 		else:
@@ -766,6 +776,11 @@ def testImageFile(file, fullPath, sz, src, iserr):
 			+ "x" + str(sizes[1]) + ") should be (" + str(sz) + "x" \
 			+ str(sz) + ")", False)
 
+	if 2 * int(sizes[0] / 2) != sizes[0] or 2 * int(sizes[1] / 2) != sizes[1]:
+		showMsgFile(file, "image size should be power of two. If not some pixels can be"\
+				" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]),
+				False)
+				
 
 	return sizes	
 
