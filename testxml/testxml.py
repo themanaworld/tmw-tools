@@ -218,7 +218,7 @@ def testDye(id, color, text, src, iserr):
 			continue
 
 		if c != "R" and c != "G" and c != "B" and c != "Y" and c != "M" \
-			and c != "C" and c != "W":
+			and c != "C" and c != "W" and c != "S":
 				showMsg(id, "incorrect dye color: " + c + " in " + text, src, iserr)
 				continue
 		if testDyeInternal(id, col[2:], text, src, iserr) == False:
@@ -267,7 +267,7 @@ def testDyeMark(file, color, text, iserr):
 			continue
 		
 		if c != "R" and c != "G" and c != "B" and c != "Y" and c != "M" \
-			and c != "C" and c != "W":
+			and c != "C" and c != "W" and c != "S":
 			showMsgSprite(file, "dye make incorrect: " + text, iserr)
  			continue
 	return len(colors)
@@ -583,6 +583,46 @@ def testSpriteAction(file, name, action, numframes, iserr):
 			elif node2.nodeName == "sequence":
 				sequence = node2
 				try:
+					sframes = dyesplit2.split(sequence.attributes["value"].value)
+				except:
+					sframes = None
+				if sframes is not None:
+					for frm in sframes:
+						if frm != "p":
+							k = frm.find("-")
+							if k == 0 or k == len(frm) - 1:
+								showMsgSprite(file, "incorrect sequence value " + \
+										name + ", direction: " + direction, iserr)
+							elif k == -1:
+								#same as frame
+								idx = int(frm)
+								if idx >= numframes or idx < 0:
+									showMsgSprite(file, "incorrect frame index " + str(idx) + \
+											" action: " + name + ", direction: "\
+											+ direction, iserr)
+								else:
+									framesid.add(idx)
+							else:
+								#same as simple sequence
+								i1 = int(frm[:k])
+								i2 = int(frm[k + 1:])
+								if i1 >= numframes or i1 < 0:
+									showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
+										" action: " + name + ", direction: " + direction, iserr)
+								if i2 >= numframes or i2 < 0:
+									showMsgSprite(file, "incorrect end sequence index " + str(i2) + \
+										" action: " + name + ", direction: " + direction, iserr)
+								if i1 == i2:
+									showMsgSprite(file, "start and end sequence index is same. " \
+										+ "May be better use frame? action: " + \
+										name + ", direction: " + direction, False)
+
+								for i in range(i1,i2 + 1):
+									framesid.add(i)
+					cnt = cnt + 1
+					continue
+				
+				try:
 					i1 = int(sequence.attributes["start"].value)
 					i2 = int(sequence.attributes["end"].value)
 				except:
@@ -614,7 +654,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					lastIndex2 = i2
 					lastOffsetX = offsetX
 					lastOffsetY = offsetY
-				
+			
 				cnt = cnt + 1
 				for i in range(i1,i2 + 1):
 					framesid.add(i)
@@ -624,6 +664,14 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				lastOffsetX = 0
 				lastOffsetY = 0
 				cnt = cnt + 1
+			elif node2.nodeName == "pause":
+				try:
+					delay = int(node2.attributes["delay"].value)
+				except:
+					delay = 0
+				if delay <= 0:
+					showMsgSprite(file, "incorrect delay in pause tag " + name, iserr)
+
 			elif node2.nodeName == "#text" or node2.nodeName == "#comment":
 				None
 			else:
@@ -656,7 +704,6 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					label = ""
 				if label == "" or label is None:
 					showMsgSprite(file, "no label attribute in goto tag " + name, iserr)
-
 		if cnt == 0:
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
 
@@ -725,7 +772,7 @@ def testImageFile(file, fullPath, sz, src, iserr):
 def testSound(file, sfxDir):
 	fullPath = parentDir + "/" + sfxDir + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
-		print "errin:" + fullPath
+		print "error:" + fullPath
 		showMsgFile(file, "sound file not found", True)
 		return
 	try:
