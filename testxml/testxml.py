@@ -315,6 +315,7 @@ def testSprites(id, node, checkGender, isNormalDye, iserr):
 		else:
 			male = False
 			female = False
+			unisex = False
 			for sprite in sprites:
 				file = sprite.childNodes[0].data
 				if checkGender:
@@ -331,21 +332,22 @@ def testSprites(id, node, checkGender, isNormalDye, iserr):
 							showMsg(id, "double female sprite tag", "", iserr)
 						female = True
 					elif gender == "unisex":
-						if female == True or male == True:
-							showMsg(id, "gender sprite tag with unisex tag", "", False)
-						male = True
-						female = True
+						unisex = True
 				try:
 					variant = int(sprite.attributes["variant"].value)
 				except:
 					variant = 0
 				testSprite(id, file, variant, isNormalDye, iserr)
 			if checkGender:
-				if male == False:
+				if male == False and unisex == False:
 					showMsg(id, "no male sprite tag", "",iserr)
-				if female == False:
+				if female == False and unisex == False:
 					showMsg(id, "no female sprite tag", "", iserr)
-
+				if unisex == True and female == True and male == True:
+					showMsg(id, "gender sprite tag with unisex tag", "", iserr)
+				if unisex == False and male == False and female == False:
+					showMsg(id, "no any gender tags", "", iserr)
+	
 
 def testSprite(id, file, variant, isNormalDye, iserr):
 	global safeDye
