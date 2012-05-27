@@ -446,26 +446,39 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	else:
 		stmp = sizes[0]
 
+	if s1 == 0:
+		tmp = int(width)
+	else:
+		tmp = s1
 	if sizes[0] != s1 and stmp != s1:
-		if s1 == 0:
-			tmp = int(width)
-		else:
-			tmp = s1
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
 		" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
+
+	if tmp % 2 != 0:
+		showMsgSprite(fileLoc, "image size should be power of two. If not some pixels can be"\
+			" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]) + \
+			" (" + image + ")", False)
+	
 	s2 = int(sizes[1] / int(height)) * int(height)
 	if sizes[1] % 2 == 1:
 		stmp = sizes[1] - 1
 	else:
 		stmp = sizes[1]
 
+	if s2 == 0:
+		tmp = int(height)
+	else:
+		tmp = s2;
+
 	if sizes[1] != s2 and stmp != s2:
-		if s2 == 0:
-			tmp = int(height)
-		else:
-			tmp = s2;
 		showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
 		" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
+
+	if tmp % 2 != 0:
+		showMsgSprite(fileLoc, "image size should be power of two. If not some pixels can be"\
+			" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]) + \
+		" (" + image + ")", False)
+
 
 	num = (s1 / int(width)) * (s2 / int(height))
 	if variants == 0 and variant > 0:
@@ -536,6 +549,8 @@ def testSpriteAction(file, name, action, numframes, iserr):
 			return framesid
 
 	aniset = set()
+	delayTags = ("frame", "sequence", "pause")
+
 	for animation in animations:
 		try:
 			direction = animation.attributes["direction"].value
@@ -555,6 +570,17 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		labels = set()
 
 		for node2 in animation.childNodes:
+			if node2.nodeName in delayTags:
+				try:
+					delay = int(node2.attributes["delay"].value)
+				except:
+					delay = 0
+
+				if delay % 10 != 0:
+					showMsgSprite(file, "delay " + str(delay) + " must be power of 10 in action: " + name + \
+							", direction: " + direction, iserr)
+
+
 			if node2.nodeName == "frame" or node2.nodeName == "sequence":
 				try:
 					offsetX = int(node2.attributes["offsetX"].value)
@@ -778,10 +804,6 @@ def testImageFile(file, fullPath, sz, src, iserr):
 			+ "x" + str(sizes[1]) + ") should be (" + str(sz) + "x" \
 			+ str(sz) + ")", False)
 
-	if 2 * int(sizes[0] / 2) != sizes[0] or 2 * int(sizes[1] / 2) != sizes[1]:
-		showMsgFile(file, "image size should be power of two. If not some pixels can be"\
-				" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]),
-				False)
 				
 
 	return sizes	
@@ -1728,7 +1750,7 @@ def testSpritesDir(dir):
 			testSpritesDir(dir + file + "/")
 		if filtimages.search(file):
 			fullName = parentDir + "/" + spritesDir + dir + file
-			testImageFile(spritesDir + dir, fullName, 0, "", True)
+			testImageFile(spritesDir + dir, fullName, 0, spritesDir + dir + file, True)
 		elif filtxmls.search(file):
 			fullName = dir + file
 			safeDye = True
