@@ -578,7 +578,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 
 				if delay % 10 != 0:
 					showMsgSprite(file, "delay " + str(delay) + " must be power of 10 in action: " + name + \
-							", direction: " + direction, iserr)
+							", direction: " + direction, False)
 
 
 			if node2.nodeName == "frame" or node2.nodeName == "sequence":
