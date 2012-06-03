@@ -16,7 +16,7 @@ from xml.dom import minidom
 from PIL import Image
 import zlib
 
-filt = re.compile(".+[.](xml|tmx)", re.IGNORECASE)
+filt = re.compile(".+[.](xml|tmx|tsx)", re.IGNORECASE)
 filtmaps = re.compile(".+[.]tmx", re.IGNORECASE)
 filtimages = re.compile(".+[.]png", re.IGNORECASE)
 filtxmls = re.compile(".+[.]xml", re.IGNORECASE)
@@ -1216,6 +1216,17 @@ def testMap(file, path):
 	tilesMap = dict()
 
 	for tileset in dom.getElementsByTagName("tileset"):
+		try:
+			source = tileset.attributes["source"].value
+			if source is not None and source != "":
+				file2 = os.path.abspath(parentDir + os.path.sep + mapsDir + source)
+				if not os.path.isfile(file2):
+					showMsgFile(file, "missing source file in tileset " + source, True)
+
+				continue;
+		except:
+			None
+
 		name = readAttr(tileset, "name", "", "warning: missing tile name: " + file, False)
 		tileWidth = readAttrI(tileset, "tilewidth", mapTileWidth, \
 				"error: missing tile width in tileset: " + name + ", " + file, True)
