@@ -494,6 +494,16 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 
 	try:
 		includes = dom.getElementsByTagName("include")
+		for include in includes:
+			try:
+				incfile = include.attributes["file"].value
+				file2 = os.path.abspath(parentDir + os.path.sep + spritesDir + incfile)
+				if not os.path.isfile(file2):
+					showMsgSprite(fileLoc, "include file not exists " + incfile, True)
+			except:
+				showMsgSprite(fileLoc, "bad include", iserr)
+
+
 	except:
 		includes = None
 
