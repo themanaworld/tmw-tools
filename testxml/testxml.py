@@ -835,7 +835,11 @@ def testParticle(id, file, src):
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		showMsgFile(file, "particle file not found", True)
 		return
-	dom = minidom.parse(fullPath)
+	try:
+		dom = minidom.parse(fullPath)
+	except:
+		showMsgFile(file, "incorrect particle xml file", True)
+		return
 
 	nodes = dom.getElementsByTagName("particle")
 	if len(nodes) < 1:
