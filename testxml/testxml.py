@@ -587,7 +587,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					delay = 0
 
 				if delay % 10 != 0:
-					showMsgSprite(file, "delay " + str(delay) + " must be power of 10 in action: " + name + \
+					showMsgSprite(file, "delay " + str(delay) + " must be multiple of 10 in action: " + name + \
 							", direction: " + direction, False)
 
 
