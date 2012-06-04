@@ -371,6 +371,11 @@ def testSprite(id, file, variant, isNormalDye, iserr):
 		testSpriteFile(id, fullPath, file, spritesDir + file2, dnum, variant, iserr)
 		safeDye = oldSafe
 
+def powerOfTwo(num):
+	val = 1
+	while val < num:
+		val = val * 2
+	return val
 
 def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 	global safeDye
@@ -441,43 +446,51 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, iserr):
 		return
 	sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
 	s1 = int(sizes[0] / int(width)) * int(width)
-	if sizes[0] % 2 == 1:
-		stmp = sizes[0] - 1
-	else:
-		stmp = sizes[0]
+
+	sizesOGL = [0,1]
+	sizesOGL[0] = powerOfTwo(sizes[0])
+	sizesOGL[1] = powerOfTwo(sizes[1])
 
 	if s1 == 0:
 		tmp = int(width)
 	else:
 		tmp = s1
-	if sizes[0] != s1 and stmp != s1:
+	if sizes[0] != s1 and tmp != sizesOGL[0]: 
 		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
 		" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
 
-	if tmp % 2 != 0:
-		showMsgSprite(fileLoc, "image size should be power of two. If not some pixels can be"\
-			" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]) + \
-			" (" + image + ")", False)
+	if sizes[0] != sizesOGL[0]:
+		if sizesOGL[0] > sizes[0]:
+			txt = str(sizesOGL[0] / 2) + " or "
+		else:
+			txt = ""
+
+		showMsgSprite(fileLoc, "image width should be power of two. If not some pixels can be"\
+			" lost in OpenGL mode.\nCurrent image width " + str(sizes[0]) + \
+			". used in sprite width " + str(tmp) +
+			"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
 	
 	s2 = int(sizes[1] / int(height)) * int(height)
-	if sizes[1] % 2 == 1:
-		stmp = sizes[1] - 1
-	else:
-		stmp = sizes[1]
 
 	if s2 == 0:
 		tmp = int(height)
 	else:
 		tmp = s2;
 
-	if sizes[1] != s2 and stmp != s2:
+	if sizes[1] != s2 and tmp != sizesOGL[1]:
 		showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
 		" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
-	if tmp % 2 != 0:
-		showMsgSprite(fileLoc, "image size should be power of two. If not some pixels can be"\
-			" lost in OpenGL mode. Current size " + str(sizes[0]) + "x" + str(sizes[1]) + \
-		" (" + image + ")", False)
+	if sizes[1] != sizesOGL[1]:
+		if sizesOGL[1] > sizes[1]:
+			txt = str(sizesOGL[1] / 2) + " or "
+		else:
+			txt = ""
+
+		showMsgSprite(fileLoc, "image height should be power of two. If not some pixels can be"\
+			" lost in OpenGL mode.\nCurrent image height " + str(sizes[1]) + \
+			". used in sprite height " + str(tmp) +
+			"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
 
 
 	num = (s1 / int(width)) * (s2 / int(height))
