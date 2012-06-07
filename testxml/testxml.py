@@ -406,107 +406,119 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 	if imagesets is None or len(imagesets) < 1:
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
 		return
-	imageset = imagesets[0]
+	isets = set()
+	for imageset in imagesets:
+		try:
+			name = imageset.attributes["name"].value
+		except:
+			showMsgSprite(fileLoc, "imageset don't have name attribute", iserr)
+			name = None
+			
+		if name is not None:
+			if name in isets:
+				showMsgSprite(fileLoc, "imageset with name '" + name + "' already exists", iserr)
+			isets.add(name)
+			
+		image = ""
+		try:
+			image = imageset.attributes["src"].value
+			image0 = image
+			img = splitImage(image)
+			image = img[0]
+			imagecolor = img[1]
+		except:
+			showMsgSprite(fileLoc, "image attribute not exist: " + image, iserr)
+			continue
 
-	image = ""
-	try:
-		image = imageset.attributes["src"].value
-		image0 = image
-		img = splitImage(image)
-		image = img[0]
-		imagecolor = img[1]
-	except:
-		showMsgSprite(fileLoc, "image attribute not exist: " + image, iserr)
-		return
+		try:
+			width = imageset.attributes["width"].value
+		except:
+			showMsgSprite(fileLoc, "no width attribute", iserr)
+			continue
 
-	try:
-		width = imageset.attributes["width"].value
-	except:
-		showMsgSprite(fileLoc, "no width attribute", iserr)
-		return
-
-	try:
-		height = imageset.attributes["height"].value
-	except:
-		showMsgSprite(fileLoc, "no height attribute", iserr)
+		try:
+			height = imageset.attributes["height"].value
+		except:
+			showMsgSprite(fileLoc, "no height attribute", iserr)
 	
-	if imagecolor != "":
-		num = testDyeMark(fileLoc, imagecolor, image0, iserr)
-		if safeDye == False and dnum != num:
-			if dnum > num:
-				e = iserr
+		if imagecolor != "":
+			num = testDyeMark(fileLoc, imagecolor, image0, iserr)
+			if safeDye == False and dnum != num:
+				if dnum > num:
+					e = iserr
+				else:
+					e = False
+				showMsgSprite(fileLoc, "dye colors size not same in sprite (" + str(num) \
+				+ ") and in caller (" + str(dnum) + ", id=" + str(id) + ")", e)
+		elif safeDye == True and dnum > 0:
+				showMsgSprite(fileLoc, "dye set in sprite but not in caller (id=" + str(id) + ")", False)
+
+
+		fullPath = os.path.abspath(parentDir + "/" + image)
+		if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
+			showMsgSprite(fileLoc, "image file not exist: " + image, iserr)
+			continue
+		sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
+		s1 = int(sizes[0] / int(width)) * int(width)
+
+		sizesOGL = [0,1]
+		sizesOGL[0] = powerOfTwo(sizes[0])
+		sizesOGL[1] = powerOfTwo(sizes[1])
+
+		if s1 == 0:
+			tmp = int(width)
+		else:
+			tmp = s1
+		if sizes[0] != s1 and tmp != sizesOGL[0]: 
+			showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
+			" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
+
+		if sizes[0] != sizesOGL[0]:
+			if sizesOGL[0] > sizes[0]:
+				txt = str(sizesOGL[0] / 2) + " or "
 			else:
-				e = False
-			showMsgSprite(fileLoc, "dye colors size not same in sprite (" + str(num) \
-			+ ") and in caller (" + str(dnum) + ", id=" + str(id) + ")", e)
-	elif safeDye == True and dnum > 0:
-			showMsgSprite(fileLoc, "dye set in sprite but not in caller (id=" + str(id) + ")", False)
+				txt = ""
 
-
-	fullPath = os.path.abspath(parentDir + "/" + image)
-	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
-		showMsgSprite(fileLoc, "image file not exist: " + image, iserr)
-		return
-	sizes = testImageFile(image, fullPath, 0, " " + fileLoc, iserr)
-	s1 = int(sizes[0] / int(width)) * int(width)
-
-	sizesOGL = [0,1]
-	sizesOGL[0] = powerOfTwo(sizes[0])
-	sizesOGL[1] = powerOfTwo(sizes[1])
-
-	if s1 == 0:
-		tmp = int(width)
-	else:
-		tmp = s1
-	if sizes[0] != s1 and tmp != sizesOGL[0]: 
-		showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
-		" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
-
-	if sizes[0] != sizesOGL[0]:
-		if sizesOGL[0] > sizes[0]:
-			txt = str(sizesOGL[0] / 2) + " or "
-		else:
-			txt = ""
-
-		showMsgSprite(fileLoc, "image width should be power of two. If not some pixels can be"\
-			" lost in OpenGL mode.\nCurrent image width " + str(sizes[0]) + \
-			". used in sprite width " + str(tmp) +
-			"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
+			showMsgSprite(fileLoc, "image width should be power of two. If not some pixels can be"\
+				" lost in OpenGL mode.\nCurrent image width " + str(sizes[0]) + \
+				". used in sprite width " + str(tmp) +
+				"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
 	
-	s2 = int(sizes[1] / int(height)) * int(height)
+		s2 = int(sizes[1] / int(height)) * int(height)
 
-	if s2 == 0:
-		tmp = int(height)
-	else:
-		tmp = s2;
-
-	if sizes[1] != s2 and tmp != sizesOGL[1]:
-		showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
-		" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
-
-	if sizes[1] != sizesOGL[1]:
-		if sizesOGL[1] > sizes[1]:
-			txt = str(sizesOGL[1] / 2) + " or "
+		if s2 == 0:
+			tmp = int(height)
 		else:
-			txt = ""
+			tmp = s2;
 
-		showMsgSprite(fileLoc, "image height should be power of two. If not some pixels can be"\
-			" lost in OpenGL mode.\nCurrent image height " + str(sizes[1]) + \
-			". used in sprite height " + str(tmp) +
-			"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
+		if sizes[1] != s2 and tmp != sizesOGL[1]:
+			showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
+			" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
+
+		if sizes[1] != sizesOGL[1]:
+			if sizesOGL[1] > sizes[1]:
+				txt = str(sizesOGL[1] / 2) + " or "
+			else:
+				txt = ""
+
+			showMsgSprite(fileLoc, "image height should be power of two. If not some pixels can be"\
+				" lost in OpenGL mode.\nCurrent image height " + str(sizes[1]) + \
+				". used in sprite height " + str(tmp) +
+				"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
 
 
-	num = (s1 / int(width)) * (s2 / int(height))
-	if variants == 0 and variant > 0:
-		showMsgSprite(fileLoc, "missing variants attribute in sprite", iserr)
-	if variants > 0 and variant >= variants:
-		showMsgSprite(fileLoc, "variant number more then in variants attribute", iserr)
+		num = (s1 / int(width)) * (s2 / int(height))
+		if variants == 0 and variant > 0:
+			showMsgSprite(fileLoc, "missing variants attribute in sprite", iserr)
+		if variants > 0 and variant >= variants:
+			showMsgSprite(fileLoc, "variant number more then in variants attribute", iserr)
 
-	if variant > 0 and variant >= num:
-		showMsgSprite(fileLoc, "to big variant number " + str(variant) \
-		+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
-	if num < 1:
-		showMsgSprite(fileLoc, "image have zero frames: " + image, iserr)
+		if variant > 0 and variant >= num:
+			showMsgSprite(fileLoc, "to big variant number " + str(variant) \
+			+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
+		if num < 1:
+			showMsgSprite(fileLoc, "image have zero frames: " + image, iserr)
+
 
 	try:
 		includes = dom.getElementsByTagName("include")
