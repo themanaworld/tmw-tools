@@ -407,6 +407,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
 		return
 	isets = set()
+	imagesetnums = dict()
 	num = 0
 	for imageset in imagesets:
 		try:
@@ -519,7 +520,8 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			+ ". Frames number " + str(num) + ", id=" + str(id), iserr)
 		if num < 1:
 			showMsgSprite(fileLoc, "image have zero frames: " + image, iserr)
-
+		if name is not None and num > 0:
+			imagesetnums[name] = num
 
 	try:
 		includes = dom.getElementsByTagName("include")
@@ -556,6 +558,15 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			except:
 				showMsgSprite("no action name", iserr)
 				continue
+			try:
+				setname = action.attributes["imageset"].value
+			except:
+				setname = ""
+			if setname in imagesetnums:
+				num = imagesetnums[setname]
+			else:
+				num = 0
+				showMsgSprite(fileLoc, "using incorrect imageset name in action: " + name, iserr)
 			frameSet = frameSet | testSpriteAction(fileLoc, name, action, num, iserr)
 
 			if name in actset:
