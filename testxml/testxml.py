@@ -163,14 +163,27 @@ def loadPaths():
 		for node in dom.getElementsByTagName("option"):
 			if node.attributes["name"].value == "itemIcons":
 				iconsDir = node.attributes["value"].value
+				if iconsDir != "graphics/items/":
+					print "warn: itemIcons path has not default value."\
+							" Will be incampatible with old clients."
 			elif node.attributes["name"].value == "sprites":
 				spritesDir = node.attributes["value"].value
+				if spritesDir != "graphics/sprites/":
+					print "warn: sprites path has not default value."\
+							" Will be incampatible with old clients."
 			elif node.attributes["name"].value == "sfx":
 				sfxDir = node.attributes["value"].value
+
 			elif node.attributes["name"].value == "particles":
 				particlesDir = node.attributes["value"].value
+				if particlesDir != "graphics/particles/":
+					print "warn: particles path has not default value."\
+							" Will be incampatible with old clients."
 			elif node.attributes["name"].value == "maps":
 				mapsDir = node.attributes["value"].value
+				if mapsDir != "maps/":
+					print "warn: maps path has not default value."\
+							" Will be incampatible with old clients."
 			elif node.attributes["name"].value == "attackSfxFile":
 				attackSfxFile = node.attributes["value"].value
 			elif node.attributes["name"].value == "spriteErrorFile":
