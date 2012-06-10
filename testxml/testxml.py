@@ -155,7 +155,9 @@ def enumDirs(parentDir):
 				errors = errors + 1
 
 def loadPaths():
-	global warnings
+	global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, attackSfxFile, spriteErrorFile, \
+			levelUpEffectFile, portalEffectFile, minimapsDir, wallpapersDir, walpaperFile, \
+			musicDir
 	try:
 		dom = minidom.parse(parentDir + "/paths.xml")
 		for node in dom.getElementsByTagName("option"):
