@@ -407,6 +407,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 		showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
 		return
 	isets = set()
+	num = 0
 	for imageset in imagesets:
 		try:
 			name = imageset.attributes["name"].value
