@@ -494,7 +494,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			tmp = int(width)
 		else:
 			tmp = s1
-		if sizes[0] != s1 and tmp != sizesOGL[0]: 
+		if sizes[0] != s1 and tmp != sizesOGL[0] and sizes[0] != sizesOGL[0]: 
 			showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
 			" (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
 
@@ -516,7 +516,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 		else:
 			tmp = s2;
 
-		if sizes[1] != s2 and tmp != sizesOGL[1]:
+		if sizes[1] != s2 and tmp != sizesOGL[1] and sizes[1] != sizesOGL[1]:
 			showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
 			" (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
