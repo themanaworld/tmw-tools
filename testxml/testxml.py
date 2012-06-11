@@ -147,12 +147,20 @@ def enumDirs(parentDir):
 		file2 = os.path.abspath(parentDir + os.path.sep + file1)
 		if not os.path.isfile(file2):
 			enumDirs(file2)
-		elif filt.search(file1):
-			try:
-				minidom.parse(file2)
-			except xml.parsers.expat.ExpatError as err:
-				print "error: " + file2 + ", line=" + str(err.lineno) + ", char=" + str(err.offset)
-				errors = errors + 1
+		else:
+			if filt.search(file1):
+				try:
+					minidom.parse(file2)
+				except xml.parsers.expat.ExpatError as err:
+					print "error: " + file2 + ", line=" + str(err.lineno) + ", char=" + str(err.offset)
+					errors = errors + 1
+			if file1 != "testxml.py":
+				checkFilePermission(file2)
+
+def checkFilePermission(fullName):
+	if os.access(fullName, os.X_OK):
+		print "warn: execute flag on file: " + fullName
+
 
 def loadPaths():
 	global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, attackSfxFile, spriteErrorFile, \
