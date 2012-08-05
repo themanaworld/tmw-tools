@@ -14,6 +14,7 @@ import xml
 import csv
 import ogg.vorbis
 import StringIO
+import sys
 from xml.dom import minidom
 from PIL import Image
 import zlib
@@ -45,6 +46,7 @@ errDict = set()
 safeDye = False
 borderSize = 20
 colorsList = set()
+showAll = False
 
 testBadCollisions = False
 # number of tiles difference. after this amount tiles can be counted as incorrect
@@ -506,10 +508,11 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			else:
 				txt = ""
 
-			showMsgSprite(fileLoc, "image width should be power of two. If not image will be resized on the fly."\
-				"\nCurrent image width " + str(sizes[0]) + \
-				". used in sprite width " + str(tmp) +
-				"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
+			if showAll is True:
+				showMsgSprite(fileLoc, "image width should be power of two. If not image will be resized on the fly."\
+					"\nCurrent image width " + str(sizes[0]) + \
+					". used in sprite width " + str(tmp) +
+					"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
 	
 		s2 = int(sizes[1] / int(height)) * int(height)
 
@@ -528,10 +531,11 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			else:
 				txt = ""
 
-			showMsgSprite(fileLoc, "image height should be power of two. If not image will be resized on the fly."\
-				"\nCurrent image height " + str(sizes[1]) + \
-				". used in sprite height " + str(tmp) +
-				"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
+			if showAll is True:
+				showMsgSprite(fileLoc, "image height should be power of two. If not image will be resized on the fly."\
+					"\nCurrent image height " + str(sizes[1]) + \
+					". used in sprite height " + str(tmp) +
+					"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
 
 
 		num = (s1 / int(width)) * (s2 / int(height))
@@ -655,7 +659,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 				except:
 					delay = 0
 
-				if delay % 10 != 0:
+				if delay % 10 != 0 and showAll is True:
 					showMsgSprite(file, "delay " + str(delay) + " must be multiple of 10 in action: " + name + \
 							", direction: " + direction, False)
 
@@ -2040,6 +2044,10 @@ def detectClientData(dirs):
 	print "Cant detect client data directory"
 	exit(1)
 
+
+if len(sys.argv) == 2:
+	if sys.argv[1] == "all":
+		showAll = True
 
 showHeader()
 print "Detecting clientdata dir"
