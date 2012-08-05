@@ -11,7 +11,9 @@ import os
 import re
 import datetime
 import xml
+import csv
 import ogg.vorbis
+import StringIO
 from xml.dom import minidom
 from PIL import Image
 import zlib
@@ -504,8 +506,8 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			else:
 				txt = ""
 
-			showMsgSprite(fileLoc, "image width should be power of two. If not some pixels can be"\
-				" lost in OpenGL mode.\nCurrent image width " + str(sizes[0]) + \
+			showMsgSprite(fileLoc, "image width should be power of two. If not image will be resized on the fly."\
+				"\nCurrent image width " + str(sizes[0]) + \
 				". used in sprite width " + str(tmp) +
 				"\nallowed width " + txt + str(sizesOGL[0]) + " (" + image + ")", False)
 	
@@ -526,8 +528,8 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 			else:
 				txt = ""
 
-			showMsgSprite(fileLoc, "image height should be power of two. If not some pixels can be"\
-				" lost in OpenGL mode.\nCurrent image height " + str(sizes[1]) + \
+			showMsgSprite(fileLoc, "image height should be power of two. If not image will be resized on the fly."\
+				"\nCurrent image height " + str(sizes[1]) + \
 				". used in sprite height " + str(tmp) +
 				"\nallowed height " + txt + str(sizesOGL[1]) + " (" + image + ")", False)
 
@@ -1631,7 +1633,7 @@ def showLayerErrors(file, points, msg, iserr):
 
 def getLDV(arr, index):
 	return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
-		    | (arr[index + 3] << 24)
+		| (arr[index + 3] << 24)
 
 
 def getLDV2(arr, x, y, width, height, tilesMap):
@@ -1692,10 +1694,72 @@ def testLayer(file, node, name, width, height, layer, tiles):
 			arr = array.array("B")
 			arr.fromstring(layerData)
 			layer.arr = arr
+#			print file
+#			for item in arr:
+#				print item
+		elif encoding == "csv":
+			if compression != "":
+				showMsgFile(file, "not supported compression " + compression + \
+						" for csv layer format:" + name, True)
+			binData = data.childNodes[0].data.strip()
+			f = StringIO.StringIO(binData)
+			arr = list(csv.reader(f, delimiter=',', quotechar='|'))
+			layer.arr = []
+#			print file
+			for row in arr:
+				try:
+					for item in row:
+						if item != "":
+							nums = splitBytes(int(item))
+							layer.arr.append(nums[0])
+							layer.arr.append(nums[1])
+							layer.arr.append(nums[2])
+							layer.arr.append(nums[3])
+				except:
+					None
+
+			f.close()
+			arr = array.array('i', (layer.arr))
+			layer.arr = arr
+#			for item in arr:
+#				print item
+
+		elif encoding == "":
+			if compression != "":
+				showMsgFile(file, "not supported compression " + compression + \
+						" for xml layer format:" + name, True)
+
+			layer.arr = []
+			tiles = data.getElementsByTagName("tile")
+#			print file
+			for tile in tiles:
+				try:
+					gid = int(tile.attributes["gid"].value)
+				except:
+					showMsgFile(file, "incorrect xml layer format: " + name, True)
+					return layer
+				nums = splitBytes(gid)
+				layer.arr.append(nums[0])
+				layer.arr.append(nums[1])
+				layer.arr.append(nums[2])
+				layer.arr.append(nums[3])
+
+			arr = array.array('i', (layer.arr))
+			layer.arr = arr
+#			for item in arr:
+#				print item
+
 
 			# here may be i should check is tiles correct or not, but i will trust to tiled
 	return layer
 
+
+def splitBytes(num):
+	i1 = int(num % 256)
+	i2 = int(((num % 65536) - i1) / 256)
+	i3 = int(((num % 16777216) - i2 - i1) / 65536)
+	i4 = int(((num % 4294967296) - i3 - i2 - i1) / 16777216)
+	return (i1, i2, i3, i4)
 
 def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
 	width = 0
