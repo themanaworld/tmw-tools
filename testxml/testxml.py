@@ -1867,7 +1867,7 @@ def testMaps(dir):
 			testMap(mapsDir + file, dir + file)
 
 def testDefaultFiles():
-	print "Checking defult files"
+	print "Checking default files"
 	testSound(attackSfxFile, sfxDir)
 	testSprite("0", spriteErrorFile, 0, True, "", True)
 	testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
