@@ -619,7 +619,8 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 
 def testSpriteAction(file, name, action, numframes, iserr):
 	framesid = set()
-	
+
+	lastAttack = None
 	try:
 		animations = action.getElementsByTagName("animation")
 	except:
@@ -653,6 +654,9 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		labels = set()
 
 		for node2 in animation.childNodes:
+			if name == "attack" and node2.nodeName != "#text":
+				lastAttack = node2.nodeName
+				
 			if node2.nodeName in delayTags:
 				try:
 					delay = int(node2.attributes["delay"].value)
@@ -861,6 +865,10 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					delay = 0
 				if delay > 0 and delay < 5000:
 					showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, False)
+
+	elif name == "attack":
+		if lastAttack is not None and lastAttack != "end":
+			showMsgSprite(file, "last attack tag should be <end/> or attack animation can be infinite.", False)
 
 	return framesid
 
