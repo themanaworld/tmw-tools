@@ -40,6 +40,9 @@ portalEffectFile = "warparea.particle.xml"
 minimapsDir = "graphics/minimaps/"
 wallpapersDir = "graphics/images/"
 wallpaperFile = "login_wallpaper.png"
+newQuestSfx = ""
+completeQuestSfx = ""
+
 errors = 0
 warnings = 0
 errDict = set()
@@ -169,7 +172,7 @@ def checkFilePermission(fullName):
 def loadPaths():
 	global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, attackSfxFile, spriteErrorFile, \
 			levelUpEffectFile, portalEffectFile, minimapsDir, wallpapersDir, walpaperFile, \
-			musicDir
+			musicDir, newQuestSfx, completeQuestSfx
 	try:
 		dom = minidom.parse(parentDir + "/paths.xml")
 		for node in dom.getElementsByTagName("option"):
@@ -212,6 +215,11 @@ def loadPaths():
 				wallpaperFile = node.attributes["value"].value
 			elif node.attributes["name"].value == "music":
 				musicDir = node.attributes["value"].value
+			elif node.attributes["name"].value == "newQuestSfx":
+				newQuestSfx = node.attributes["value"].value
+			elif node.attributes["name"].value == "completeQuestSfx":
+				completeQuestSfx = node.attributes["value"].value
+
 	except:
 		print "warn: paths.xml not found"
 		warnings = warnings + 1
@@ -899,11 +907,14 @@ def testImageFile(file, fullPath, sz, src, iserr):
 
 	return sizes	
 
-def testSound(file, sfxDir):
+def testSound(file, sfxDir, msg):
 	fullPath = parentDir + "/" + sfxDir + file
 	if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
 		print "error:" + fullPath
-		showMsgFile(file, "sound file not found", True)
+		if msg != "":
+			showMsgFile(file, "sound file not found: " + msg , True)
+		else:
+			showMsgFile(file, "sound file not found", True)
 		return
 	try:
 		snd = ogg.vorbis.VorbisFile(fullPath)
@@ -1258,7 +1269,7 @@ def testSounds(id, node, type):
 				print "error: incorrect sound event name " + event + " in id=" + id
 				errors = errors + 1
 
-		testSound(sound.childNodes[0].data, sfxDir)
+		testSound(sound.childNodes[0].data, sfxDir, "")
 
 def testNpcs(file):
 	global warnings, errors
@@ -1866,9 +1877,45 @@ def testMaps(dir):
 		if filtmaps.search(file):
 			testMap(mapsDir + file, dir + file)
 
+def testDirExists(path):
+	global errors
+	fullName = parentDir + "/" + path
+	if not os.path.exists(fullName):
+		print "error: path '" + path + "' not exists."
+		errors = errors + 1
+	elif not os.path.isdir(fullName):
+		print "error: path '" + path + "' is incorrect directory."
+		errors = errors + 1
+		
+
 def testDefaultFiles():
+	global warnings
 	print "Checking default files"
-	testSound(attackSfxFile, sfxDir)
+	testDirExists(iconsDir)
+	testDirExists(spritesDir)
+	testDirExists(particlesDir)
+	testDirExists(minimapsDir)
+	testDirExists(mapsDir)
+	testDirExists(sfxDir)
+	testDirExists(musicDir)
+	testDirExists(wallpapersDir)
+
+	if attackSfxFile == "":
+		print "warn: parameter attackSfxFile in paths.xml is incorrect"
+		warnings = warnings + 1
+	else:
+		testSound(attackSfxFile, sfxDir, "attackSfxFile")
+	if newQuestSfx == "":
+		print "warn: parameter newQuestSfx in paths.xml is incorrect"
+		warnings = warnings + 1
+	else:
+		testSound(newQuestSfx, sfxDir, "newQuestsSfx")
+	if completeQuestSfx == "":
+		print "warn: parameter completeQuestSfx in paths.xml is incorrect"
+		warnings = warnings + 1
+	else:
+		testSound(completeQuestSfx, sfxDir, "completeQuestSfx")
+
 	testSprite("0", spriteErrorFile, 0, True, "", True)
 	testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
 	testParticle("0", particlesDir + portalEffectFile, "portalEffectFile")
@@ -1971,7 +2018,7 @@ def testSoundsDir(dir, sfxDir):
 			testSoundsDir(dir + file + "/", sfxDir)
 		elif filtogg.search(file):
 			fullName = dir + file
-			testSound(dir + file, sfxDir)
+			testSound(dir + file, sfxDir, "")
 
 
 def testItemColors(fileName):
