@@ -628,7 +628,6 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 def testSpriteAction(file, name, action, numframes, iserr):
 	framesid = set()
 
-	lastAttack = None
 	try:
 		animations = action.getElementsByTagName("animation")
 	except:
@@ -644,6 +643,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
 	delayTags = ("frame", "sequence", "pause")
 
 	for animation in animations:
+		lastAttack = None
 		try:
 			direction = animation.attributes["direction"].value
 		except:
@@ -840,6 +840,12 @@ def testSpriteAction(file, name, action, numframes, iserr):
 		if cnt == 0:
 			showMsgSprite(file, "no frames or sequences in action: " + name, iserr)
 
+		if name == "attack":
+			if lastAttack is not None and lastAttack != "end":
+				showMsgSprite(file, "last attack tag should be <end/> or attack animation "\
+						"can be infinite. direction: " + direction, False)
+
+
 	if "default" not in aniset:
 		if "down" not in aniset:
 			showMsgSprite(file, "no down direction in animation: " + name, iserr)
@@ -873,10 +879,6 @@ def testSpriteAction(file, name, action, numframes, iserr):
 					delay = 0
 				if delay > 0 and delay < 5000:
 					showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, False)
-
-	elif name == "attack":
-		if lastAttack is not None and lastAttack != "end":
-			showMsgSprite(file, "last attack tag should be <end/> or attack animation can be infinite.", False)
 
 	return framesid
 
