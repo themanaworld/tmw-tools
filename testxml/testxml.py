@@ -978,7 +978,11 @@ def testEmitters(id, file, parentNode, src):
 def testItems(fileName, imgDir):
 	global warnings, errors, safeDye
 	print "Checking items.xml"
-	dom = minidom.parse(parentDir + fileName)
+	try:
+		dom = minidom.parse(parentDir + fileName)
+	except:
+		print "error: " + fileName + " corrupted"
+		return
 	idset = set()
 	oldId = None
 	for node in dom.getElementsByTagName("item"):
@@ -1490,6 +1494,7 @@ def testMap(file, path):
 					str(mapHeight) + ": " + name, True)
 
 		obj = testLayer(file, layer, name, width, height, obj, tilesMap)
+		testOverSizedTiles(obj, tilesMap, file)
 
 	if fringe == None:
 		showMsgFile(file, "missing fringe layer", True)
@@ -1528,6 +1533,47 @@ def testMap(file, path):
 		showLayerErrors(file, warn1, "empty tile in lower layers", False)
 	if err1 != None and len(err1) > 0:
 		showLayerErrors(file, err1, "empty tile in all layers", True)
+
+
+def testOverSizedTiles(layer, tiles, file):
+	global warnings
+
+	if layer.name == "Fringe":
+		return
+	errList = [] 
+	for x in range(0, layer.width):
+		for y in range(0, layer.height):
+			idx = ((y * layer.width) + x) * 4
+			val = getLDV(layer.arr, idx)
+			if val == 0:
+				continue
+
+			tile = findTileByGid(tiles, val)
+			if tile is None:
+				# now ignoring, this happend because layer parser
+				# not support includes
+				None
+			elif tile.tileWidth > 32 and x + 1 < layer.width:
+				for x2 in (x + 1, x + 1 + int(tile.width / 32)):
+					idx = ((y * layer.width) + x2) * 4
+					val = getLDV(layer.arr, idx)
+					tile = findTileByGid(tiles, val)
+					if val > 0:
+						errList.append((x, y))
+						warnings = warnings + 1
+	if len(errList) == 0:
+		return
+	print "Oversized tile overlapped to next tile in layer " + layer.name + \
+			". Possible incorrect map drawing"
+	errStr = ""
+	k = 0
+	for err in errList:
+		errStr = errStr + str(err) + ", "
+		k = k + 1
+		if k > 100:
+			errStr = errStr + "..."
+			break
+	print errStr
 
 
 def testTiles(file, tilesMap):
