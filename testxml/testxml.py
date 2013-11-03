@@ -1,4 +1,4 @@
-#! /usr/bin/env python2.6
+#! /usr/bin/env python
 # -*- coding: utf8 -*-
 #
 # Copyright (C) 2010-2011  Evol Online
