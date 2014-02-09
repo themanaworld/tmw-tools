@@ -189,7 +189,7 @@ def parseitemnames(file):
                 if len(values) > 0: log.append("mob_db: Warning, item-line with ID %s doesn't even have 3 values. Skipped." % (values[0], len(values)))
             else:
                 id = int(values[0])
-                dic[id] = values[2]
+                dic[id] = "[[" + values[2].strip() + "]]"
     return dic
 
 
@@ -282,7 +282,7 @@ def printmonsters(monsters):
             sys.stdout.write('| align="center" | ' + traitstart + 'N/A' + traitend)
         else:
             if m.attackmin < m.attackmax:
-                sys.stdout.write('| align="center" | %dâ€“%d' % (m.attackmin, m.attackmax))
+                sys.stdout.write('| align="center" | %d / %d' % (m.attackmin, m.attackmax))
             else:
                 sys.stdout.write('| align="center" | %d' % m.attackmin)
             if m.mode >> 2 & 1 == 1:
