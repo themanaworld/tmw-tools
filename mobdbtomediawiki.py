@@ -3,7 +3,7 @@
 
 # Licensed under GNU General Public License
 
-import sys, os, datetime, math;
+import sys, os, re, datetime, math;
 
 
 # VARIOUS SETTINGS
@@ -14,13 +14,26 @@ debug = 0
 # Number of rows between table header
 headerafterrow = 10
 
+# ID formatting 
+idstart = '\'\'<span style="color:#969696;">'
+
+# Level Stats
+levelstatsstart = '\'\'<span style="color:#007700;font-size:12px;">'
+
 # Formatting of traits
 traitstart = '\'\'<span style="color:#ad1818">'
-traitend   = '</span>\'\''
 
 # Formatting of mutations
 mutationstart = '\'\'<span style="color:#4a4a4a">'
-mutationend   = '</span>\'\''
+
+# Formatting for drops
+dropstart = '\'\'<div style="-moz-column-count: 2;-moz-column-gap: 3px;column-count: 2;column-gap: 3px;font-size:12px;">'
+
+# End Span
+spanend   = '</span>\'\''
+
+# End Span
+divend   = '</div>\'\''
 
 ##########################################
 ##                                      ##
@@ -32,7 +45,7 @@ intro = []
 
 # Each appended line will automatically end with a line break
 
-intro.append("{{Category_monster}}")
+intro.append("[[Category:Monster]]")
 intro.append("{{Status_green}}")
 intro.append("")
 intro.append("'''Page last generated on %s.'''" % datetime.date.today())
@@ -41,7 +54,7 @@ intro.append("'''Warning:''' This reference might be out of date. The python scr
 intro.append("")
 intro.append("The monsters are sorted roughly by their fighting strength, calculated as <code>health_points * (attack_min + attack_max)</code>. For more information on the drops please see the [[item reference]].")
 intro.append("")
-intro.append("'''Key:''' HP is health points, DEF is defense, ATT is attack, EXP is the calculated base experience, JEXP is the job experience. The others are self-explanatory. Traits (such as aggressive) are written in " + traitstart + "italics" + traitend + ".")
+intro.append("'''Key:''' HP is health points, DEF is defense, ATT is attack, EXP is the calculated base experience, JEXP is the job experience. The others are self-explanatory. Traits (such as aggressive) are written in " + traitstart + "italics" + spanend + ".")
 intro.append("")
 
 
@@ -49,14 +62,12 @@ intro.append("")
 
 def printtableheader():
     print '! style="background:#efdead;" | Image'
-    print '! style="background:#efdead;" | Name'
-    print '! style="background:#efdead;" | ID'
+    print '! style="background:#efdead;" | Name (ID)'
     print '! style="background:#efdead;" | HP'
-    print '! style="background:#efdead;" | DEF'
-    print '! style="background:#efdead;" | ATT'
-    print '! style="background:#efdead;" | EXP'
-    print '! style="background:#efdead;" | JEXP'
-    print '! style="background:#efdead;" | Drops'
+    print '! style="background:#efdead;" | DEF/MDEF'
+    print '! style="background:#efdead;" | ATK<br/>MIN/MAX (RANGE)'
+    print '! style="background:#efdead;" | EXP/(JEXP)'
+    print '! style="background:#efdead;" | Drops (Rate %)'
     print '|-'
 
 
@@ -70,7 +81,9 @@ def saveint(string):
         return int(string)
     except:
         return 0
-        
+
+def splituppercase(string):
+    return re.sub(r'([a-z])([A-Z])', r'\1 \2', string) 
 
 def parsemonsters(file):
     objects = []
@@ -98,7 +111,7 @@ def parsemonsters(file):
             o.id             = saveint(values[0])   # Monster ID
             o.label          =         values[1].strip()    # The label (name) used in GM commands
             o.imgurl         = "[[Image:" + values[1].strip() + ".png]]"   # Name with Img Url
-            o.name           =         values[2].strip()    # The name known to the server (not to the client)
+            o.name           =         splituppercase(values[2].strip())    # The name known to the server (not to the client)
             o.level          = saveint(values[3])   # Level
             o.hp             = saveint(values[4])   # Health points
             o.sp             = saveint(values[5])   # SP
@@ -258,35 +271,39 @@ def printmonsters(monsters):
         print '| align="center" | %s' % m.imgurl
 
         # Name, Stationary/Assists traits and Mutations
-        sys.stdout.write('| %s' % m.name)
+        sys.stdout.write('| [[%s]] %s (%s) %s' % (m.name,idstart,m.id,spanend))
+        moblevel = "%s Level: %s" % (levelstatsstart,m.level)
+        mobstats = " %s/%s/%s/%s/%s/%s %s" % (m.strength, m.agility, m.vitality, m.intelligence, m.dexterity, m.luck,spanend)
         if m.mode >> 0 & 1 == 0:
-            sys.stdout.write('<br />' + traitstart + 'Stationary' + traitend)
-        if m.mode >> 3 & 1 == 1:
-            sys.stdout.write('<br />' + traitstart + 'Assists' + traitend)
+            sys.stdout.write('<br />%s - %s - %s %s %s' % (moblevel, mobstats,traitstart,'Stationary',spanend))
+        elif m.mode >> 3 & 1 == 1:
+            sys.stdout.write('<br />%s - %s - %s %s %s' % (moblevel, mobstats,traitstart,'Assists',spanend))
+        else:
+            sys.stdout.write('<br />%s - %s - %s %s %s' % (moblevel, mobstats, traitstart,'Mobile',spanend))
         if m.mutnr > 0:
             sys.stdout.write('<br />' + mutationstart + 'May mutate %d attribute' % m.mutnr)
             if m.mutnr > 1:
                 sys.stdout.write('s')
-            sys.stdout.write(' up to %d%%' % m.mutstr + mutationend)
+            sys.stdout.write(' up to %d%%' % m.mutstr + spanend)
         #else:
-        #    sys.stdout.write('<br />' + mutationstart + 'Does not mutate' + mutationend)
+        #    sys.stdout.write('<br />' + mutationstart + 'Does not mutate' + spanend)
         print
 
         # ID, Health and Defense
-        print '| align="center" | %d'   % m.id
         print '| align="center" | %d'   % m.hp
-        print '| align="center" | %d%%' % m.defense
+        print '| align="center" | %d%% / %d%%' % (m.defense,m.magicaldefense)
 
+        monsterrange = m.range1
         # Attack and No-attack/Aggressive traits
         if m.mode >> 7 & 1 == 0:
-            sys.stdout.write('| align="center" | ' + traitstart + 'N/A' + traitend)
+            sys.stdout.write('| align="center" | %s N/A %s (%d)' % (traitstart, spanend, monsterrange))
         else:
             if m.attackmin < m.attackmax:
-                sys.stdout.write('| align="center" | %d / %d' % (m.attackmin, m.attackmax))
+                sys.stdout.write('| align="center" | %d / %d (%d)' % (m.attackmin, m.attackmax, monsterrange))
             else:
-                sys.stdout.write('| align="center" | %d' % m.attackmin)
+                sys.stdout.write('| align="center" | %d (%d)' % (m.attackmin, monsterrange))
             if m.mode >> 2 & 1 == 1:
-                sys.stdout.write('<br />' + traitstart + 'Aggro' + traitend)
+                sys.stdout.write('<br />' + traitstart + 'Aggro' + spanend)
         print
 
         # Experience and Job experience, following *tmw-eathena*/src/map/mob.c
@@ -319,13 +336,13 @@ def printmonsters(monsters):
         else:
             calc_exp = m.experience
 
-        print '| align="center" | %d' % calc_exp
-        print '| align="center" | %d' % m.jobexperience
+        print '| align="center" | %d (%d)' % (calc_exp,m.jobexperience)
 
         # Drops and Looter trait
-        sys.stdout.write('| %s' % getdropstring(m))
+        sys.stdout.write('| %s %s' % (dropstart, getdropstring(m)))
         if m.mode >> 1 & 1 == 1:
-            sys.stdout.write('<br />' + traitstart + 'Picks up loot' + traitend)
+            sys.stdout.write('<br />' + traitstart + 'Picks up loot' + spanend)
+        sys.stdout.write(divend)
         print
 
         print '|-'
