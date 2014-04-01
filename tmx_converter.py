@@ -301,10 +301,10 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.state = State.FINAL
 
     def endDocument(self):
-        self.mobs.write('\n\n%s.gat,0,0,0|script|Mob%s|-1,\n{\n' % (self.base, self.base))
+        self.mobs.write('\n\n%s.gat,0,0,0|script|Mob%s|-1,\n{\n    end;\n' % (self.base, self.base))
         for mob_id in sorted(self.mob_ids):
-            self.mobs.write('On%d:\n    set @mobID, %d;\n    callfunc "MobPoints";\n    end;\n\n' % (mob_id, mob_id))
-        self.mobs.write('    end;\n}\n')
+            self.mobs.write('\nOn%d:\n    set @mobID, %d;\n    callfunc "MobPoints";\n    end;\n' % (mob_id, mob_id))
+        self.mobs.write('}\n')
         self.imports.write('// Map %s: %s\n' % (self.base, self.name))
         self.imports.write('// %s\n' % MESSAGE)
         self.imports.write('map: %s.gat\n' % self.base)
