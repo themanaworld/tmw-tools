@@ -1,0 +1,51 @@
+## config for tmwa-map-wrapper
+# Must be in $PATH even though it's not executable.
+
+echo "You need to either set the oauth secret" >&2
+echo "or use a hard-coded list instead of list_issues" >&2
+echo "Then, delete these lines" >&2
+exit 1
+
+server_data=~/tmwa-server-data
+client_data=~/tmwa-client-data
+tmw_tools=~/tmw-tools
+
+list_issues()
+{
+python -c '
+
+# replace this with one of your oauth keys from github (no permissions needed)
+oauth = "0123456789abcdef0123456789abcdef01234567"
+
+import requests
+issues = requests.get("https://api.github.com/search/issues", params={"q": "repo:'$1' type:pr state:open label:test"}, headers={"Authorization": "token %s" % oauth, "Accept": "application/vnd.github.v3+json"})
+issues.raise_for_status()
+for issue in issues.json["items"]:
+    print(issue["number"])
+' | sort -n
+}
+
+
+server_main_branch=origin/master
+
+server_extra_branches=(
+    origin/stable
+    $(list_issues themanaworld/tmwa-server-data | sed 's|^|origin/pr/|;')
+)
+
+client_main_branch=origin/master
+
+client_extra_branches=(
+    $(list_issues themanaworld/tmwa-client-data | sed 's|^|origin/pr/|;')
+)
+unset list_issues
+
+start_dir=$server_data/world/map
+motd=$start_dir/conf/motd.txt
+magic_conf=$start_dir/conf/magic-secrets.conf
+
+expected_life=60
+trouble_sleep=60
+normal_sleep=5
+
+ulimit -c unlimited
