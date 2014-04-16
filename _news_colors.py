@@ -22,7 +22,7 @@
 
 import cgi
 
-__all__ = ['make_html_colors_dict', 'make_txt_colors_dict']
+__all__ = ['make_html_colors_dict', 'make_txt_colors_dict', 'make_forum_colors_dict']
 
 class Color(object):
     __slots__ = ('txt', 'rgb')
@@ -80,6 +80,45 @@ def make_html_colors_dict():
     for k, v in color_dict.items():
         r[k] = '<font color="#%06x">' % v.rgb
         r['/' + k] = '</font>'
+    return r
+
+
+class ForumDate(object):
+    __slots__ = ()
+    def __format__(self, date):
+        return '[i]%s[/i]' % date
+
+class ForumLink(object):
+    __slots__ = ()
+    def __format__(self, target):
+        return '[url=%s]%s[/url]' % (target, target)
+
+class ForumSignature(object):
+    __slots__ = ()
+    def __format__(self, author):
+        return '-[i]%s[/i]' % author
+
+class ForumTitle(object):
+    __slots__ = ()
+    def __format__(self, title):
+        # no color here
+        # (we really need someone to do CSS)
+        return 'put this in the post title: %s' % title
+
+def make_forum_colors_dict():
+    r = {
+        'date': ForumDate(),
+        'link': ForumLink(),
+        'author': ForumSignature(),
+        'title': ForumTitle(),
+        'ul' : '[list]',
+        '/ul': '[/list]',
+        'li' : '[*]',
+        '/li': '',
+    }
+    for k, v in color_dict.items():
+        r[k] = '[color=#%06x]' % v.rgb
+        r['/' + k] = '[/color]'
     return r
 
 # Here be dragons

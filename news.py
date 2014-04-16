@@ -79,9 +79,24 @@ class TxtWriter(BasicWriter):
         #self.stream.write('Did you really read down this far?\n')
         pass
 
+class ForumWriter(BasicWriter):
+    # unlike the other writers, the forum writer only generates the latest
+    __slots__ = ('done')
+    def start(self):
+        self.done = False
+    def put(self, entry):
+        if self.done:
+            return
+        entry = entry.format(**colors.make_forum_colors_dict())
+        self.stream.write(entry)
+        self.done = True
+    def finish(self):
+        pass
+
 def create_writers(outdir):
     yield TxtWriter(os.path.join(outdir, 'news.txt'))
     yield HtmlWriter(os.path.join(outdir, 'news.html'))
+    yield ForumWriter(os.path.join(outdir, 'news.phpbb.txt'))
 
 def main(outdir, indir=None):
     if indir is None:
