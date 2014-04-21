@@ -147,7 +147,12 @@ def showFooter():
 
 def enumDirs(parentDir):
 	global warnings, errors
-	files = os.listdir(parentDir) 
+	try:
+		files = os.listdir(parentDir)
+	except OSError:
+		print "Directory error: " + parentDir
+		warnings = warnings + 1
+		return
 	for file1 in files:
 		if file1[0] == ".":
 			continue
