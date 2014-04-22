@@ -10,7 +10,7 @@ import re
 CLIENT_DATA_ROOT = os.path.realpath(
     os.path.join(
         os.path.dirname(__file__),
-        u'..',
+        u'../../client-data',
     )
 )
 
@@ -67,7 +67,7 @@ class MinimapRenderer(object):
         mrf, map_raster = tempfile.mkstemp(suffix='.png')
         tmxrasterizer_cmd = [
             platform_programs.get('tmxrasterizer'),
-            '--tilesize', str(self.tilesize),
+            '--tilesize', str(self.tilesize), '--hide-layer', 'Collision',
         ]
         if self.useAntiAliasing:
             tmxrasterizer_cmd.append('--anti-aliasing')
