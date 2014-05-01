@@ -55,7 +55,7 @@ MESSAGE = 'This file is generated automatically. All manually changes will be re
 CLIENT_MAPS = 'maps'
 SERVER_WLK = 'data'
 SERVER_NPCS = 'npc'
-SERVER_MOB_DB = 'db/mob_db.txt'
+TMWA_MAP_CONF = 'conf/tmwa-map.conf'
 NPC_MOBS = '_mobs.txt'
 NPC_WARPS = '_warps.txt'
 NPC_IMPORTS = '_import.txt'
@@ -328,16 +328,17 @@ def main(argv):
     if check_mobs:
         global mob_names
         mob_names = {}
-        with open(posixpath.join(server_data, SERVER_MOB_DB)) as mob_db:
-            for line in mob_db:
-                if not line.strip():
-                    continue
-                if line.startswith('#'):
-                    continue
-                if line.startswith('//'):
-                    continue
-                k, v, _ = line.split(',', 2)
-                mob_names[int(k)] = v.strip()
+        with open(posixpath.join(server_data, TMWA_MAP_CONF)) as mob_dbs:
+            for mob_db_line in mob_dbs:
+                if mob_db_line.startswith('mob_db:'):
+                    with open(posixpath.join(server_data, mob_db_line.split(':')[1].strip())) as mob_db:
+                        for line in mob_db:
+                            if not line.strip():
+                                continue
+                            if line.startswith('//'):
+                                continue
+                            k, v, _ = line.split(',', 2)
+                            mob_names[int(k)] = v.strip()
 
     npc_master = []
     map_basenames = []
