@@ -3,7 +3,7 @@
 
 ##    _news_colors.py - colors that can be used in news
 ##
-##    Copyright © 2012 Ben Longbons <b.r.longbons@gmail.com>
+##    Copyright © 2012-2014 Ben Longbons <b.r.longbons@gmail.com>
 ##
 ##    This file is part of The Mana World (Athena server)
 ##
@@ -76,6 +76,8 @@ def make_html_colors_dict():
         '/ul': '</ul>',
         'li' : '<li>',
         '/li': '</li>',
+        'b' : '<b>',
+        '/b': '</b>',
     }
     for k, v in color_dict.items():
         r[k] = '<font color="#%06x">' % v.rgb
@@ -115,6 +117,8 @@ def make_forum_colors_dict():
         '/ul': '[/list]',
         'li' : '[*]',
         '/li': '',
+        'b' : '[b]',
+        '/b': '[/b]',
     }
     for k, v in color_dict.items():
         r[k] = '[color=#%06x]' % v.rgb
@@ -205,3 +209,6 @@ def generate_txt_colors():
 
     yield 'li', StackPusher(tag_stack, 'li', None, '* ')
     yield '/li', StackPopper(tag_stack, 'li', None, '')
+
+    yield 'b', '##B'
+    yield '/b', '##b'
