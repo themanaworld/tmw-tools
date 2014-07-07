@@ -295,14 +295,14 @@ def testDyeColors(id, color, text, src, iserr):
             continue
     return len(colors)
 
-def testDyeMark(file, color, text, iserr):
+def testDyeChannel(file, color, text, iserr):
     if len(color) < 1:
-        showMsgSprite(file, "dye mark size to small:" + text, iserr)
+        showMsgSprite(file, "dye channel size to small:" + text, iserr)
         return -1
     colors = dyesplit1.split(color)
     for c in colors:
         if len(c) != 1:
-            showMsgSprite(file, "dye mark incorrect size: " + text, iserr)
+            showMsgSprite(file, "dye channel incorrect size: " + text, iserr)
             continue
         if c != "R" and c != "G" and c != "B" and c != "Y" and c != "M" \
             and c != "C" and c != "W" and c != "S":
@@ -481,7 +481,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
             showMsgSprite(fileLoc, "no height attribute", iserr)
 
         if imagecolor != "":
-            num = testDyeMark(fileLoc, imagecolor, image0, iserr)
+            num = testDyeChannel(fileLoc, imagecolor, image0, iserr)
             if safeDye == False and dnum != num:
                 if dnum > num:
                     e = iserr
@@ -1111,7 +1111,7 @@ def testItems(fileName, imgDir):
                 if colors is None:
                     testDye(id, imagecolor, "image=" + image0, fileName, True)
                 else:
-                    testDyeMark(id, imagecolor, "image=" + image0, True)
+                    testDyeChannel(id, imagecolor, "image=" + image0, True)
                     if colors not in colorsList:
                         print "error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml"
                         errors = errors + 1
@@ -1120,7 +1120,7 @@ def testItems(fileName, imgDir):
                 if colors is None:
                     testDye(id, floorcolor, "floor=" + floor0, fileName, True)
                 else:
-                    testByeMark(id, imagecolor, "floor=" + floor0, True);
+                    testDyeChannel(id, imagecolor, "floor=" + floor0, True);
                     if colors not in colorsList:
                         print "error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml"
                         errors = errors + 1
