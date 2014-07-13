@@ -14,7 +14,7 @@ output=~/www/updates
 
 function apply_function()
 {
-    $1  misc-xml    charcreation.xml ea-skills.xml effects.xml emotes.xml hair.xml paths.xml settings.xml skills.xml status-effects.xml units.xml
+    $1  misc-xml    charcreation.xml ea-skills.xml effects.xml emotes.xml hair.xml paths.xml skills.xml status-effects.xml units.xml equipmentwindow.xml features.xml weapons.xml
     $1  emotes      graphics/emotes/
     $1  images      graphics/images/
     $1  items       graphics/items/
