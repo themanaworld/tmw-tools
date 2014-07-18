@@ -14,7 +14,7 @@ output=~/www/updates
 
 function apply_function()
 {
-    $1  misc-xml    charcreation.xml ea-skills.xml effects.xml emotes.xml hair.xml paths.xml skills.xml status-effects.xml units.xml equipmentwindow.xml features.xml weapons.xml
+    $1  misc        *.* COPYING rules/
     $1  emotes      graphics/emotes/
     $1  images      graphics/images/
     $1  items       graphics/items/
@@ -23,11 +23,10 @@ function apply_function()
     $1  skills      graphics/skills/
     $1  sprites     graphics/sprites/
     $1  tiles       graphics/tiles/
-    $1  item-xml    items.xml
-    $1  map-xml     maps.xml
+    $1  items       items/
     $1  maps        maps/
-    $1  mob-xml     monsters.xml
-    $1  npc-xml     npcs.xml
+    $1  mob         monsters/
+    $1  npc         npcs/
     $1  sfx         sfx/
     $1  tsx         tilesets/
 }
