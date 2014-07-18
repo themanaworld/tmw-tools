@@ -14,21 +14,21 @@ output=~/www/updates
 
 function apply_function()
 {
-    $1  misc        *.* COPYING rules/
-    $1  emotes      graphics/emotes/
-    $1  images      graphics/images/
-    $1  items       graphics/items/
-    $1  minimaps    graphics/minimaps/
-    $1  particles   graphics/particles/
-    $1  skills      graphics/skills/
-    $1  sprites     graphics/sprites/
-    $1  tiles       graphics/tiles/
-    $1  items       items/
-    $1  maps        maps/
-    $1  mob         monsters/
-    $1  npc         npcs/
-    $1  sfx         sfx/
-    $1  tsx         tilesets/
+    $1  misc                *.* COPYING rules/
+    $1  graphics-emotes     graphics/emotes/
+    $1  graphics-images     graphics/images/
+    $1  graphics-items      graphics/items/
+    $1  graphics-minimaps   graphics/minimaps/
+    $1  graphics-particles  graphics/particles/
+    $1  graphics-skills     graphics/skills/
+    $1  graphics-sprites    graphics/sprites/
+    $1  graphics-tiles      graphics/tiles/
+    $1  items               items/
+    $1  maps                maps/
+    $1  monsters            monsters/
+    $1  npcs                npcs/
+    $1  sfx                 sfx/
+    $1  tilesets            tilesets/
 }
 
 function add_resource()
