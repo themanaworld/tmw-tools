@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim: set sts=2 sw=2: -->
+<!--
+  Last updated for ManaPlus v1.4.7.19-21-g58f499d
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:its="http://www.w3.org/2005/11/its" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/2005/11/its" schemaLocation="dl/its.xsd"/>
+  <!--
+    XML::getBoolProperty
+  -->
+  <xs:simpleType name="bool">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- roots, with their children nearby -->
+  <!--
+    This is used by local config files and by updates files
+    Configuration::init/ConfigurationObject::initFromXML
+      branding
+                            portable.xml
+                            command-line
+      config
+                            <configdir>/test.xml
+                            <configdir>/config.xml
+      serverConfig
+                            <configdir>/<server>/config.xml
+      paths
+                            paths.xml
+      features
+              featuresFile  features.xml
+  -->
+  <xs:element name="configuration" type="root_configuration"/>
+  <xs:complexType name="root_configuration">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="list">
+        <xs:complexType>
+          <!-- what manaplus does is actually impossible to represent -->
+          <!-- TODO in a future version fix this horrible abuse of XML -->
+          <xs:choice>
+            <xs:element name="nested_conf_1" type="configuration" maxOccurs="unbounded"/>
+            <xs:element name="nested_conf_2" type="configuration" maxOccurs="unbounded"/>
+          </xs:choice>
+          <xs:attribute name="name" type="nested_configuration" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="option">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+          <xs:attribute name="value" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="nested_configuration">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="nested_conf_1"/>
+      <xs:enumeration value="nested_conf_2"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Theme::readSkin
+                      <lots of stuff>.xml
+  -->
+  <xs:element name="skinset" type="root_skinset"/>
+  <xs:complexType name="root_skinset">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="widget">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="part">
+              <xs:complexType>
+                <xs:attribute name="type" type="widget_part_type" use="required"/>
+                <xs:attribute name="xpos" type="xs:int" default="0"/>
+                <xs:attribute name="ypos" type="xs:int" default="0"/>
+                <xs:attribute name="width" type="xs:int" default="1"/>
+                <xs:attribute name="height" type="xs:int" default="1"/>
+              </xs:complexType>
+            </xs:element>
+            <!-- only if full skin (?) -->
+            <xs:element name="option">
+              <xs:complexType>
+                <!-- some of these are handled specially, but it's still stringy -->
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="value" type="xs:int" use="required"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+          <xs:attribute name="type" type="widget_type" use="required"/>
+          <xs:attribute name="xpos" type="xs:int" default="0"/>
+          <xs:attribute name="ypos" type="xs:int" default="0"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="image" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="widget_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Window"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="widget_part_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="top-left-corner"/>
+      <xs:enumeration value="standart"/>
+      <xs:enumeration value="up"/>
+      <xs:enumeration value="hstart"/>
+      <xs:enumeration value="in"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="top-edge"/>
+      <xs:enumeration value="highlighted"/>
+      <xs:enumeration value="down"/>
+      <xs:enumeration value="hmiddle"/>
+      <xs:enumeration value="in-highlighted"/>
+      <xs:enumeration value="checked"/>
+      <xs:enumeration value="top-right-corner"/>
+      <xs:enumeration value="pressed"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="hend"/>
+      <xs:enumeration value="out"/>
+      <xs:enumeration value="disabled"/>
+      <xs:enumeration value="left-edge"/>
+      <xs:enumeration value="disabled"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="hgrip"/>
+      <xs:enumeration value="out-highlighted"/>
+      <xs:enumeration value="disabled-checked"/>
+      <xs:enumeration value="bg-quad"/>
+      <xs:enumeration value="vstart"/>
+      <xs:enumeration value="normal-highlighted"/>
+      <xs:enumeration value="right-edge"/>
+      <xs:enumeration value="vmiddle"/>
+      <xs:enumeration value="checked-highlighted"/>
+      <xs:enumeration value="bottom-left-corner"/>
+      <xs:enumeration value="vend"/>
+      <xs:enumeration value="bottom-edge"/>
+      <xs:enumeration value="vgrip"/>
+      <xs:enumeration value="bottom-right-corner"/>
+      <xs:enumeration value="closeImage"/>
+      <xs:enumeration value="closeImageHighlighted"/>
+      <xs:enumeration value="stickyImageUp"/>
+      <xs:enumeration value="stickyImageDown"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Theme::loadColors
+                        colors.xml
+  -->
+  <xs:element name="colors" type="root_colors"/>
+  <xs:complexType name="root_colors">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="progressbar">
+        <xs:complexType>
+          <xs:attribute name="id" type="colors_progressbar_id" use="required"/>
+          <xs:attribute name="color" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="palette">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="color">
+              <xs:complexType>
+                <xs:attribute name="id" type="colors_palette_id" use="required"/>
+                <xs:attribute name="color" type="xs:string" use="required"/>
+                <xs:attribute name="effect" type="colors_palette_effect" use="required"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+          <xs:attribute name="id" type="xs:int" use="required"/>
+          <xs:attribute name="color" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="colors_progressbar_id">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="HP"/>
+      <xs:enumeration value="HP_POISON"/>
+      <xs:enumeration value="MP"/>
+      <xs:enumeration value="NO_MP"/>
+      <xs:enumeration value="EXP"/>
+      <xs:enumeration value="INVY_SLOTS"/>
+      <xs:enumeration value="WEIGHT"/>
+      <xs:enumeration value="JOB"/>
+      <xs:enumeration value="UPDATE"/>
+      <xs:enumeration value="MONEY"/>
+      <xs:enumeration value="ARROWS"/>
+      <xs:enumeration value="STATUS"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="colors_palette_id">
+    <xs:restriction base="xs:string">
+      <!-- colors.xml, the _OUTLINE version must come after the base -->
+      <xs:enumeration value="BROWSERBOX"/>
+      <xs:enumeration value="BROWSERBOX_OUTLINE"/>
+      <xs:enumeration value="SELFNICK"/>
+      <xs:enumeration value="SELFNICK_OUTLINE"/>
+      <xs:enumeration value="TEXT"/>
+      <xs:enumeration value="TEXT_OUTLINE"/>
+      <xs:enumeration value="CARET"/>
+      <xs:enumeration value="SHADOW"/>
+      <xs:enumeration value="OUTLINE"/>
+      <xs:enumeration value="BORDER"/>
+      <xs:enumeration value="PROGRESS_BAR"/>
+      <xs:enumeration value="PROGRESS_BAR_OUTLINE"/>
+      <xs:enumeration value="BUTTON"/>
+      <xs:enumeration value="BUTTON_OUTLINE"/>
+      <xs:enumeration value="BUTTON_DISABLED"/>
+      <xs:enumeration value="BUTTON_DISABLED_OUTLINE"/>
+      <xs:enumeration value="BUTTON_HIGHLIGHTED"/>
+      <xs:enumeration value="BUTTON_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="BUTTON_PRESSED"/>
+      <xs:enumeration value="BUTTON_PRESSED_OUTLINE"/>
+      <xs:enumeration value="CHECKBOX"/>
+      <xs:enumeration value="CHECKBOX_OUTLINE"/>
+      <xs:enumeration value="DROPDOWN"/>
+      <xs:enumeration value="DROPDOWN_OUTLINE"/>
+      <xs:enumeration value="LABEL"/>
+      <xs:enumeration value="LABEL_OUTLINE"/>
+      <xs:enumeration value="LISTBOX"/>
+      <xs:enumeration value="LISTBOX_OUTLINE"/>
+      <xs:enumeration value="LISTBOX_SELECTED"/>
+      <xs:enumeration value="LISTBOX_SELECTED_OUTLINE"/>
+      <xs:enumeration value="RADIOBUTTON"/>
+      <xs:enumeration value="RADIOBUTTON_OUTLINE"/>
+      <xs:enumeration value="POPUP"/>
+      <xs:enumeration value="POPUP_OUTLINE"/>
+      <xs:enumeration value="TAB"/>
+      <xs:enumeration value="TAB_OUTLINE"/>
+      <xs:enumeration value="TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="TAB_SELECTED"/>
+      <xs:enumeration value="TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="TEXTBOX"/>
+      <xs:enumeration value="TEXTFIELD"/>
+      <xs:enumeration value="TEXTFIELD_OUTLINE"/>
+      <xs:enumeration value="WINDOW"/>
+      <xs:enumeration value="WINDOW_OUTLINE"/>
+      <xs:enumeration value="PARTY_CHAT_TAB"/>
+      <xs:enumeration value="PARTY_CHAT_TAB_OUTLINE"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB_OUTLINE"/>
+      <xs:enumeration value="GUILD_CHAT_TAB"/>
+      <xs:enumeration value="GUILD_CHAT_TAB_OUTLINE"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB_OUTLINE"/>
+      <xs:enumeration value="GM_CHAT_TAB"/>
+      <xs:enumeration value="GM_CHAT_TAB_OUTLINE"/>
+      <xs:enumeration value="PARTY_CHAT_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="PARTY_CHAT_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="GUILD_CHAT_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="GUILD_CHAT_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="GM_CHAT_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="GM_CHAT_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="PARTY_CHAT_TAB_SELECTED"/>
+      <xs:enumeration value="PARTY_CHAT_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB_SELECTED"/>
+      <xs:enumeration value="PARTY_SOCIAL_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="GUILD_CHAT_TAB_SELECTED"/>
+      <xs:enumeration value="GUILD_CHAT_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB_SELECTED"/>
+      <xs:enumeration value="GUILD_SOCIAL_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="GM_CHAT_TAB_SELECTED"/>
+      <xs:enumeration value="GM_CHAT_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="BACKGROUND"/>
+      <xs:enumeration value="BACKGROUND_GRAY"/>
+      <xs:enumeration value="SCROLLBAR_GRAY"/>
+      <xs:enumeration value="DROPDOWN_SHADOW"/>
+      <xs:enumeration value="HIGHLIGHT"/>
+      <xs:enumeration value="HIGHLIGHT_OUTLINE"/>
+      <xs:enumeration value="TAB_FLASH"/>
+      <xs:enumeration value="TAB_FLASH_OUTLINE"/>
+      <xs:enumeration value="TAB_PLAYER_FLASH"/>
+      <xs:enumeration value="TAB_PLAYER_FLASH_OUTLINE"/>
+      <xs:enumeration value="SHOP_WARNING"/>
+      <xs:enumeration value="ITEM_EQUIPPED"/>
+      <xs:enumeration value="ITEM_EQUIPPED_OUTLINE"/>
+      <xs:enumeration value="ITEM_NOT_EQUIPPED"/>
+      <xs:enumeration value="ITEM_NOT_EQUIPPED_OUTLINE"/>
+      <xs:enumeration value="CHAT"/>
+      <xs:enumeration value="CHAT_OUTLINE"/>
+      <xs:enumeration value="GM"/>
+      <xs:enumeration value="GM_OUTLINE"/>
+      <xs:enumeration value="GLOBAL"/>
+      <xs:enumeration value="GLOBAL_OUTLINE"/>
+      <xs:enumeration value="PLAYER"/>
+      <xs:enumeration value="PLAYER_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB"/>
+      <xs:enumeration value="WHISPER_TAB_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB_HIGHLIGHTED"/>
+      <xs:enumeration value="WHISPER_TAB_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE_HIGHLIGHTED"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE_HIGHLIGHTED_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB_SELECTED"/>
+      <xs:enumeration value="WHISPER_TAB_SELECTED_OUTLINE"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE_SELECTED"/>
+      <xs:enumeration value="WHISPER_TAB_OFFLINE_SELECTED_OUTLINE"/>
+      <xs:enumeration value="IS"/>
+      <xs:enumeration value="IS_OUTLINE"/>
+      <xs:enumeration value="SERVER"/>
+      <xs:enumeration value="SERVER_OUTLINE"/>
+      <xs:enumeration value="LOGGER"/>
+      <xs:enumeration value="LOGGER_OUTLINE"/>
+      <xs:enumeration value="HYPERLINK"/>
+      <xs:enumeration value="HYPERLINK_OUTLINE"/>
+      <xs:enumeration value="UNKNOWN_ITEM"/>
+      <xs:enumeration value="UNKNOWN_ITEM_OUTLINE"/>
+      <xs:enumeration value="GENERIC"/>
+      <xs:enumeration value="GENERIC_OUTLINE"/>
+      <xs:enumeration value="HEAD"/>
+      <xs:enumeration value="HEAD_OUTLINE"/>
+      <xs:enumeration value="USABLE"/>
+      <xs:enumeration value="USABLE_OUTLINE"/>
+      <xs:enumeration value="TORSO"/>
+      <xs:enumeration value="TORSO_OUTLINE"/>
+      <xs:enumeration value="ONEHAND"/>
+      <xs:enumeration value="ONEHAND_OUTLINE"/>
+      <xs:enumeration value="LEGS"/>
+      <xs:enumeration value="LEGS_OUTLINE"/>
+      <xs:enumeration value="FEET"/>
+      <xs:enumeration value="FEET_OUTLINE"/>
+      <xs:enumeration value="TWOHAND"/>
+      <xs:enumeration value="TWOHAND_OUTLINE"/>
+      <xs:enumeration value="SHIELD"/>
+      <xs:enumeration value="SHIELD_OUTLINE"/>
+      <xs:enumeration value="RING"/>
+      <xs:enumeration value="RING_OUTLINE"/>
+      <xs:enumeration value="NECKLACE"/>
+      <xs:enumeration value="NECKLACE_OUTLINE"/>
+      <xs:enumeration value="ARMS"/>
+      <xs:enumeration value="ARMS_OUTLINE"/>
+      <xs:enumeration value="AMMO"/>
+      <xs:enumeration value="AMMO_OUTLINE"/>
+      <xs:enumeration value="SERVER_VERSION_NOT_SUPPORTED"/>
+      <xs:enumeration value="SERVER_VERSION_NOT_SUPPORTED_OUTLINE"/>
+      <xs:enumeration value="WARNING"/>
+      <xs:enumeration value="WARNING_OUTLINE"/>
+      <xs:enumeration value="CHARM"/>
+      <xs:enumeration value="CHARM_OUTLINE"/>
+      <xs:enumeration value="PLAYER_ADVANCED"/>
+      <xs:enumeration value="PLAYER_ADVANCED_OUTLINE"/>
+      <xs:enumeration value="BUBBLE_NAME"/>
+      <xs:enumeration value="BUBBLE_NAME_OUTLINE"/>
+      <xs:enumeration value="BUBBLE_TEXT"/>
+      <xs:enumeration value="BUBBLE_TEXT_OUTLINE"/>
+      <xs:enumeration value="BLACK"/>
+      <xs:enumeration value="BLACK_OUTLINE"/>
+      <xs:enumeration value="RED"/>
+      <xs:enumeration value="RED_OUTLINE"/>
+      <xs:enumeration value="GREEN"/>
+      <xs:enumeration value="GREEN_OUTLINE"/>
+      <xs:enumeration value="BLUE"/>
+      <xs:enumeration value="BLUE_OUTLINE"/>
+      <xs:enumeration value="ORANGE"/>
+      <xs:enumeration value="ORANGE_OUTLINE"/>
+      <xs:enumeration value="YELLOW"/>
+      <xs:enumeration value="YELLOW_OUTLINE"/>
+      <xs:enumeration value="PINK"/>
+      <xs:enumeration value="PINK_OUTLINE"/>
+      <xs:enumeration value="PURPLE"/>
+      <xs:enumeration value="PURPLE_OUTLINE"/>
+      <xs:enumeration value="GRAY"/>
+      <xs:enumeration value="GRAY_OUTLINE"/>
+      <xs:enumeration value="BROWN"/>
+      <xs:enumeration value="BROWN_OUTLINE"/>
+      <xs:enumeration value="STATUSBAR_ON"/>
+      <xs:enumeration value="STATUSBAR_OFF"/>
+      <xs:enumeration value="TABLE_BACKGROUND"/>
+      <xs:enumeration value="SLOTS_BAR"/>
+      <xs:enumeration value="SLOTS_BAR_OUTLINE"/>
+      <xs:enumeration value="HP_BAR"/>
+      <xs:enumeration value="HP_BAR_OUTLINE"/>
+      <xs:enumeration value="MP_BAR"/>
+      <xs:enumeration value="MP_BAR_OUTLINE"/>
+      <xs:enumeration value="NO_MP_BAR"/>
+      <xs:enumeration value="NO_MP_BAR_OUTLINE"/>
+      <xs:enumeration value="XP_BAR"/>
+      <xs:enumeration value="XP_BAR_OUTLINE"/>
+      <xs:enumeration value="WEIGHT_BAR"/>
+      <xs:enumeration value="WEIGHT_BAR_OUTLINE"/>
+      <xs:enumeration value="MONEY_BAR"/>
+      <xs:enumeration value="MONEY_BAR_OUTLINE"/>
+      <xs:enumeration value="ARROWS_BAR"/>
+      <xs:enumeration value="ARROWS_BAR_OUTLINE"/>
+      <xs:enumeration value="STATUS_BAR"/>
+      <xs:enumeration value="STATUS_BAR_OUTLINE"/>
+      <xs:enumeration value="JOB_BAR"/>
+      <xs:enumeration value="JOB_BAR_OUTLINE"/>
+      <xs:enumeration value="OLDCHAT"/>
+      <xs:enumeration value="OLDCHAT_OUTLINE"/>
+      <xs:enumeration value="AWAYCHAT"/>
+      <xs:enumeration value="AWAYCHAT_OUTLINE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="colors_palette_effect">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="STATIC"/>
+      <xs:enumeration value="PULSE"/>
+      <xs:enumeration value="SPECTRUM"/>
+      <xs:enumeration value="RAINBOW"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Theme::loadInfo
+                        info.xml
+  -->
+  <xs:element name="info" type="root_info"/>
+  <xs:complexType name="root_info">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="copyright" type="xs:string"/>
+      <xs:element name="font" type="xs:string"/>
+      <xs:element name="boldFont" type="xs:string"/>
+      <xs:element name="particleFont" type="xs:string"/>
+      <xs:element name="helpFont" type="xs:string"/>
+      <xs:element name="secureFont" type="xs:string"/>
+      <xs:element name="npcFont" type="xs:string"/>
+      <xs:element name="japanFont" type="xs:string"/>
+      <xs:element name="chinaFont" type="xs:string"/>
+      <xs:element name="fontSize" type="xs:int"/>
+      <xs:element name="npcfontSize" type="xs:int"/>
+      <xs:element name="guialpha" type="xs:float"/>
+      <!-- the below must not occur before the default ones above -->
+      <!-- TODO in a future version fix this moderate abuse of XML -->
+      <!-- <= 120 dpi -->
+      <xs:element name="fontSize_low" type="xs:int"/>
+      <xs:element name="npcfontSize_low" type="xs:int"/>
+      <!-- <= 160 dpi -->
+      <xs:element name="fontSize_medium" type="xs:int"/>
+      <xs:element name="npcfontSize_medium" type="xs:int"/>
+      <!-- <= 213 dpi -->
+      <xs:element name="fontSize_tv" type="xs:int"/>
+      <xs:element name="npcfontSize_tv" type="xs:int"/>
+      <!-- <= 240 dpi -->
+      <xs:element name="fontSize_high" type="xs:int"/>
+      <xs:element name="npcfontSize_high" type="xs:int"/>
+      <!-- <= 320 dpi -->
+      <xs:element name="fontSize_xhigh" type="xs:int"/>
+      <xs:element name="npcfontSize_xhigh" type="xs:int"/>
+      <!-- <= 480 dpi (max) -->
+      <xs:element name="fontSize_xxhigh" type="xs:int"/>
+      <xs:element name="npcfontSize_xxhigh" type="xs:int"/>
+    </xs:choice>
+  </xs:complexType>
+  <!--
+    ServerDialog::loadServers
+    serverlistplus.xml
+  -->
+  <xs:element name="serverlist" type="root_serverlist"/>
+  <xs:complexType name="root_serverlist">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="server">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="connection">
+              <xs:complexType>
+                <xs:attribute name="hostname" type="xs:string" use="required"/>
+                <xs:attribute name="althostname" type="xs:string" use="optional"/>
+                <xs:attribute name="port" type="xs:ushort" use="optional"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="registerUrl" type="xs:string"/>
+            <xs:element name="onlineListUrl" type="xs:string"/>
+            <xs:element name="support" type="xs:string"/>
+            <xs:element name="persistentIp" type="xs:boolean"/>
+            <xs:element name="updateMirror" type="xs:string"/>
+            <!-- TODO in a future version fix this horrible abuse of XML -->
+            <xs:element name="description_ru" type="xs:string"/>
+            <xs:element name="description_fr" type="xs:string"/>
+            <xs:element name="description_pt" type="xs:string"/>
+            <xs:element name="description_es" type="xs:string"/>
+            <xs:element name="description_ja" type="xs:string"/>
+            <xs:element name="description_de" type="xs:string"/>
+            <xs:element name="description_pl" type="xs:string"/>
+            <xs:element name="description_pt_BR" type="xs:string"/>
+            <xs:element name="description_it" type="xs:string"/>
+            <xs:element name="description_vls" type="xs:string"/>
+            <xs:element name="description_id" type="xs:string"/>
+            <xs:element name="description_zh_CN" type="xs:string"/>
+            <xs:element name="description_nl_BE" type="xs:string"/>
+            <xs:element name="description_nl" type="xs:string"/>
+          </xs:choice>
+          <xs:attribute name="type" type="serverlist_server_type" use="required"/>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+          <xs:attribute name="minVersion" type="xs:string" use="optional"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="version" type="xs:int" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="serverlist_server_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="tmwathena"/>
+      <xs:enumeration value="evol"/>
+      <xs:enumeration value="eathena"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    <updaterwindow>:loadXMLFile
+    resources.xml
+  -->
+  <xs:element name="updates" type="root_updates"/>
+  <xs:complexType name="root_updates">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="update" type="updates_update"/>
+      <xs:element name="mod" type="updates_update"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="updates_update">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="hash" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="updates_update_type" use="required"/>
+    <xs:attribute name="description" type="xs:string" use="optional"/>
+    <xs:attribute name="group" type="xs:string" use="optional"/> <!-- only for 'mod'? -->
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+    <xs:attribute name="notVersion" type="xs:string" use="optional"/>
+    <xs:attribute name="required" type="yesno" default="yes"/>
+  </xs:complexType>
+  <xs:simpleType name="updates_update_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="data"/>
+      <xs:enumeration value="music"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="yesno">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="yes"/>
+      <xs:enumeration value="no"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
