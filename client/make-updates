@@ -29,6 +29,7 @@ function apply_function()
     $1  npcs                npcs/
     $1  sfx                 sfx/
     $1  tilesets            tilesets/
+    $1  translations        translations/
 }
 
 function add_resource()
