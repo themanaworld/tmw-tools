@@ -934,16 +934,28 @@ def testParticle(id, file, src):
         showMsgFile(file, "incorrect particle xml file", True)
         return
 
-    nodes = dom.getElementsByTagName("particle")
+    nodes = dom.documentElement.childNodes
     if len(nodes) < 1:
         showMsgFile(file, "missing particle tags", False)
     else:
         for node in nodes:
-            testEmitters(id, file, node, file)
+            for emitter in node.childNodes:
+                testEmitters(id, file, emitter, file, 0)
 
 
-def testEmitters(id, file, parentNode, src):
-    for node in parentNode.getElementsByTagName("property"):
+def testEmitters(id, file, parentNode, src, level):
+#    print "check file: " + file
+#    print "parent node: " + parentNode.nodeName
+#    print "level: " + str(level)
+    foundLifeTime = False;
+    for node in parentNode.childNodes:
+#        print "node: " + node.nodeName
+        if node.nodeName == "emitter":
+#            print "found emitter"
+            testEmitters(id, file, node, src, level + 1)
+            continue
+        elif node.nodeName != "property":
+            continue
         try:
             name = node.attributes["name"].value
         except:
@@ -954,6 +966,15 @@ def testEmitters(id, file, parentNode, src):
             value = node.attributes["value"].value
         except:
             value = None
+
+        if value == None:
+            try:
+                value = node.attributes["min"].value
+                value = node.attributes["max"].value
+            except:
+                value = None
+
+#        print "name=" + name
 
         if name == "image":
             if value == None:
@@ -969,18 +990,31 @@ def testEmitters(id, file, parentNode, src):
                 showMsgFile(file, "image file not exist: " + image, True)
             else:
                 testImageFile(image, fullName, 0, " " + file,True)
-    for node in parentNode.getElementsByTagName("emitter"):
-        testEmitters(id, file, node, src)
+        elif name == "lifetime":
+            if value == None:
+                showMsgFile(file, "missing attribute value in emitter" \
+                        " lifetime attribute", True)
+            if value == "":
+                if level > 0 and foundLifeTime == False:
+                    showMsgFile(file, "in emmiter lifetime attribute must be set and not equal -1", True);
+            else:
+#                print "found lifetime"
+                foundLifeTime = True;
+
+
+    if level > 0 and foundLifeTime == False:
+#        print "life time missing"
+        showMsgFile(file, "in emmiter lifetime attribute must be set and not equal -1", True);
 
 
 
 def testItems(fileName, imgDir):
     global warnings, errors, safeDye
-    print "Checking " + fileName
+#    print "Checking " + fileName
     try:
         dom = minidom.parse(parentDir + fileName)
     except:
-        print "error: " + fileName + ": corrupted"
+        print "error: " + parentDir + fileName + ": corrupted"
         return
     idset = set()
     oldId = None
@@ -991,7 +1025,7 @@ def testItems(fileName, imgDir):
                 if name == "":
                     errors = errors + 1
                     print "error: " + fileName + ": Empty include name";
-                testItems(name, imgDir)
+                testItems("/" + name, imgDir)
             except:
                 errors = errors + 1
                 print "error: " + fileName + ": Broken include tag";
@@ -1218,7 +1252,7 @@ def checkSpriteName(id, name):
 
 def testMonsters(fileName):
     global warnings, errors
-    print "Checking " + fileName
+#    print "Checking " + fileName
     dom = minidom.parse(parentDir + fileName)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -1228,7 +1262,7 @@ def testMonsters(fileName):
                 if name == "":
                     errors = errors + 1
                     print "error: " + fileName + ": Empty include name";
-                testMonsters(name)
+                testMonsters("/" + name)
             except:
                 errors = errors + 1
                 print "error: " + fileName + ": Broken include tag";
@@ -1307,7 +1341,7 @@ def testSounds(id, node, type):
 
 def testNpcs(file):
     global warnings, errors
-    print "Checking " + file
+#    print "Checking " + file
     dom = minidom.parse(parentDir + file)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -1317,7 +1351,7 @@ def testNpcs(file):
                 if name == "":
                     errors = errors + 1
                     print "error: " + fileName + ": Empty include name";
-                testNpcs(name)
+                testNpcs("/" + name)
             except:
                 errors = errors + 1
                 print "error: " + fileName + ": Broken include tag";
