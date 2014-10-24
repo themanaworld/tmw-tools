@@ -1041,8 +1041,8 @@
       deadMessagesPatchFile:   deadmessages_patch.xml
       deadMessagesPatchDir:    deadmessages.d/*.xml
   -->
-  <xs:element name="dead-messages" type="root_dead-messages"/>
-  <xs:complexType name="root_dead-messages">
+  <xs:element name="messages" type="root_messages"/>
+  <xs:complexType name="root_messages">
     <xs:sequence>
       <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -1336,6 +1336,12 @@
     <xs:attribute name="variants" type="xs:int" use="optional"/>
     <xs:attribute name="variant_offset" type="xs:int" use="optional"/>
   </xs:complexType>
+  <!--
+    WeaponsDB::load
+      weaponsFile:        weapons.xml
+      weaponsPatchFile:   weapons_patch.xml
+      weaponsPatchDir:    weapons.d/*.xml
+  -->
   <xs:element name="weapons" type="root_weapons"/>
   <xs:complexType name="root_weapons">
     <xs:choice maxOccurs="unbounded">
