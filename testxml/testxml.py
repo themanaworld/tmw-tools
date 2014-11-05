@@ -978,9 +978,10 @@ def testItems(fileName, imgDir):
     global warnings, errors, safeDye
     print "Checking " + fileName
     try:
-        dom = minidom.parse(parentDir + fileName)
-    except:
+        dom = minidom.parse(parentDir + "/" + fileName)
+    except Exception as err:
         print "error: " + fileName + ": corrupted"
+        print err
         return
     idset = set()
     oldId = None
@@ -1205,7 +1206,8 @@ def testItemReplace(id, rootNode, name):
 
 def checkSpriteName(id, name):
     global warnings, errors
-    if name != "shoes" and name != "boot" and name != "boots" and name != "bottomclothes" \
+    if name != "race" and name != "type" and name != "shoes" and name != "boot" and \
+            name != "boots" and name != "bottomclothes" \
             and name != "bottom" and name != "pants" and name != "topclothes" and \
             name != "top" and name != "torso" and name != "body" and name != "misc1" \
             and name != "misc2" and name != "scarf" and name != "scarfs" and \
@@ -1219,7 +1221,7 @@ def checkSpriteName(id, name):
 def testMonsters(fileName):
     global warnings, errors
     print "Checking " + fileName
-    dom = minidom.parse(parentDir + fileName)
+    dom = minidom.parse(parentDir + "/" + fileName)
     idset = set()
     for node in dom.documentElement.childNodes:
         if node.nodeName == "include":
@@ -1308,7 +1310,7 @@ def testSounds(id, node, type):
 def testNpcs(file):
     global warnings, errors
     print "Checking " + file
-    dom = minidom.parse(parentDir + file)
+    dom = minidom.parse(parentDir + "/" + file)
     idset = set()
     for node in dom.documentElement.childNodes:
         if node.nodeName == "include":
@@ -1320,7 +1322,7 @@ def testNpcs(file):
                 testNpcs(name)
             except:
                 errors = errors + 1
-                print "error: " + fileName + ": Broken include tag";
+                print "error: " + file + ": Broken include tag";
             continue
         if node.nodeName != "npc":
             continue
@@ -2110,7 +2112,7 @@ def testItemColors(fileName):
     global warnings, errors, safeDye, colorLists
     print "Checking itemcolors.xml"
     try:
-        dom = minidom.parse(parentDir + fileName)
+        dom = minidom.parse(parentDir + "/" + fileName)
     except:
         return
 
