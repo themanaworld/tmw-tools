@@ -263,7 +263,7 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%s.gat,%d,%d,%d,%d' % (self.base, obj.x, obj.y, obj.w, obj.h),
                         'monster',
                         obj.name,
-                        '%d,%d,%d,%d,Mob%s::On%d\n' % (mob_id, obj.max_beings, obj.ea_spawn, obj.ea_death, self.base, mob_id),
+                        '%d,%d,%dms,%dms,Mob%s::On%d\n' % (mob_id, obj.max_beings, obj.ea_spawn, obj.ea_death, self.base, mob_id),
                     ])
                 )
             elif isinstance(obj, Warp):
@@ -305,7 +305,7 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.state = State.FINAL
 
     def endDocument(self):
-        self.mobs.write('\n\n%s.gat,0,0,0|script|Mob%s|-1,\n{\n    end;\n' % (self.base, self.base))
+        self.mobs.write('\n\n%s.gat,0,0,0|script|Mob%s|-1\n{\n    end;\n' % (self.base, self.base))
         for mob_id in sorted(self.mob_ids):
             self.mobs.write('\nOn%d:\n    set @mobID, %d;\n    callfunc "MobPoints";\n    end;\n' % (mob_id, mob_id))
         self.mobs.write('}\n')
