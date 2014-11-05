@@ -276,11 +276,14 @@ class ContentHandler(xml.sax.ContentHandler):
                     obj.dest_tile_x =  obj.dest_x / 32;
                     obj.dest_tile_y =  obj.dest_y / 32;
 
+                obj_name = obj.name[:23]
+                if obj.name != obj_name:
+                    print('Warning: warp name truncated: %r -> %r' % (obj.name, obj_name))
                 self.warps.write(
                     SEPARATOR.join([
                         '%s.gat,%d,%d' % (self.base, obj.x, obj.y),
                         'warp',
-                        obj.name,
+                        obj_name,
                         '%d,%d,%s.gat,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_tile_x, obj.dest_tile_y),
                     ])
                 )
