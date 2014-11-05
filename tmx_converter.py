@@ -40,6 +40,7 @@ other_object_types = set([
     'npc', # not interpreted by client
     'script', # for ManaServ
     'fixme', # flag for things that didn't have a type before
+    'music',
 ])
 
 # Somebody has put ManaServ fields in our data!
