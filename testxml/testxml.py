@@ -2193,7 +2193,7 @@ if len(sys.argv) == 2:
 
 showHeader()
 print "Detecting clientdata dir"
-detectClientData([".", "..", parentDir])
+detectClientData([".", "..", "../../client-data", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
