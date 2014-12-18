@@ -1186,7 +1186,8 @@ def testItemReplace(id, rootNode, name):
         try:
             sprite = node.attributes["sprite"].value
         except:
-            print "error: reading replace sprite name, id=" + str(id)
+            if len(node.attributes) != 0:
+                print "error: reading replace sprite name, id=" + str(id)
             continue
         checkSpriteName(id, sprite)
         for itemNode in node.getElementsByTagName("item"):
