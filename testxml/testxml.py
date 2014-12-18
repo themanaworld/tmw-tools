@@ -1570,7 +1570,7 @@ def testMap(file, path):
 
 
 def testOverSizedTiles(layer, tiles, file):
-    global warnings
+    global warnings, errors
 
     if layer.name == "Fringe":
         return
@@ -1597,8 +1597,9 @@ def testOverSizedTiles(layer, tiles, file):
                         warnings = warnings + 1
     if len(errList) == 0:
         return
-    print "Oversized tile overlapped to next tile in layer " + layer.name + \
+    print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
             ". Possible incorrect map drawing"
+    errors = errors + 1
     errStr = ""
     k = 0
     for err in errList:
