@@ -33,15 +33,12 @@ particlesDir = "graphics/particles/"
 sfxDir = "sfx/"
 musicDir = "music/"
 mapsDir = "maps/"
-attackSfxFile = "fist-swish.ogg"
 spriteErrorFile = "error.xml"
 levelUpEffectFile = "levelup.particle.xml"
 portalEffectFile = "warparea.particle.xml"
 minimapsDir = "graphics/minimaps/"
 wallpapersDir = "graphics/images/"
 wallpaperFile = "login_wallpaper.png"
-newQuestSfx = ""
-completeQuestSfx = ""
 
 errors = 0
 warnings = 0
@@ -174,9 +171,9 @@ def checkFilePermission(fullName):
 
 
 def loadPaths():
-    global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, attackSfxFile, spriteErrorFile, \
+    global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, spriteErrorFile, \
             levelUpEffectFile, portalEffectFile, minimapsDir, wallpapersDir, walpaperFile, \
-            musicDir, newQuestSfx, completeQuestSfx
+            musicDir
     try:
         dom = minidom.parse(parentDir + "/paths.xml")
         for node in dom.getElementsByTagName("option"):
@@ -203,8 +200,6 @@ def loadPaths():
                 if mapsDir != "maps/":
                     print "warn: maps path has not default value."\
                             " Will be incampatible with old clients."
-            elif node.attributes["name"].value == "attackSfxFile":
-                attackSfxFile = node.attributes["value"].value
             elif node.attributes["name"].value == "spriteErrorFile":
                 spriteErrorFile = node.attributes["value"].value
             elif node.attributes["name"].value == "levelUpEffectFile":
@@ -219,10 +214,6 @@ def loadPaths():
                 wallpaperFile = node.attributes["value"].value
             elif node.attributes["name"].value == "music":
                 musicDir = node.attributes["value"].value
-            elif node.attributes["name"].value == "newQuestSfx":
-                newQuestSfx = node.attributes["value"].value
-            elif node.attributes["name"].value == "completeQuestSfx":
-                completeQuestSfx = node.attributes["value"].value
 
     except:
         print "warn: paths.xml not found"
@@ -1986,22 +1977,6 @@ def testDefaultFiles():
     testDirExists(sfxDir)
     testDirExists(musicDir)
     testDirExists(wallpapersDir)
-
-    if attackSfxFile == "":
-        print "warn: parameter attackSfxFile in paths.xml is incorrect"
-        warnings = warnings + 1
-    else:
-        testSound(attackSfxFile, sfxDir, "attackSfxFile")
-    if newQuestSfx == "":
-        print "warn: parameter newQuestSfx in paths.xml is incorrect"
-        warnings = warnings + 1
-    else:
-        testSound(newQuestSfx, sfxDir, "newQuestsSfx")
-    if completeQuestSfx == "":
-        print "warn: parameter completeQuestSfx in paths.xml is incorrect"
-        warnings = warnings + 1
-    else:
-        testSound(completeQuestSfx, sfxDir, "completeQuestSfx")
 
     testSprite("0", spriteErrorFile, 0, True, "", True)
     testParticle("0", particlesDir + levelUpEffectFile, "levelUpEffectFile")
