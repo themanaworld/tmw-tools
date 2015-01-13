@@ -425,6 +425,10 @@
                   <xs:attribute name="soundHitDelay" type="xs:int" use="optional"/>
                   <xs:attribute name="soundMiss" type="xs:string" use="optional"/>
                   <xs:attribute name="soundMissDelay" type="xs:int" use="optional"/>
+                  <xs:attribute name="alwaysVisible" type="bool" use="optional" default="false"/>
+                  <xs:attribute name="owner" type="xs:string" use="optional" default="player"/>
+                  <xs:attribute name="errorText" type="xs:string" use="optional"/>
+                  <xs:attribute name="invokeCmd" type="xs:string" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:choice>
