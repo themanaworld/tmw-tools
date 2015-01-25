@@ -91,8 +91,6 @@ class Mob(Object):
 class Warp(Object):
     __slots__ = (
         'dest_map',
-        'dest_x',
-        'dest_y',
         'dest_tile_x',
         'dest_tile_y',
     ) + other_warp_fields
@@ -267,16 +265,6 @@ class ContentHandler(xml.sax.ContentHandler):
                     ])
                 )
             elif isinstance(obj, Warp):
-                nx = hasattr(obj, 'dest_tile_x')
-                ny = hasattr(obj, 'dest_tile_y')
-                ox = hasattr(obj, 'dest_x')
-                oy = hasattr(obj, 'dest_y')
-                assert nx == ny != ox == oy, 'Error: mixed coordinate properties exist.'
-
-                if ox:
-                    obj.dest_tile_x =  obj.dest_x / 32;
-                    obj.dest_tile_y =  obj.dest_y / 32;
-
                 obj_name = obj.name[:23]
                 if obj.name != obj_name:
                     print('Warning: warp name truncated: %r -> %r' % (obj.name, obj_name))
