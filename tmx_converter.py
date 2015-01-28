@@ -52,7 +52,7 @@ other_warp_fields = (
 
 TILESIZE = 32
 SEPARATOR = '|'
-MESSAGE = 'This file is generated automatically. All manually changes will be removed when running the Converter.'
+MESSAGE = 'This file is generated automatically. All manually added changes will be removed when running the Converter.'
 CLIENT_MAPS = 'maps'
 SERVER_WLK = 'data'
 SERVER_NPCS = 'npc'
