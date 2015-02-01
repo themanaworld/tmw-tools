@@ -67,7 +67,7 @@ class MinimapRenderer(object):
         mrf, map_raster = tempfile.mkstemp(suffix='.png')
         tmxrasterizer_cmd = [
             platform_programs.get('tmxrasterizer'),
-            '--tilesize', str(self.tilesize), '--hide-layer', 'Collision',
+            '--tilesize', str(self.tilesize), '--hide-layer', 'Collision', '--ignore-visibility',
         ]
         if self.useAntiAliasing:
             tmxrasterizer_cmd.append('--anti-aliasing')
