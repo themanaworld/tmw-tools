@@ -265,9 +265,10 @@ class ContentHandler(xml.sax.ContentHandler):
                     ])
                 )
             elif isinstance(obj, Warp):
-                obj_name = obj.name[:23]
+                obj_name = obj.name[:19]
                 if obj.name != obj_name:
                     print('Warning: warp name truncated: %r -> %r' % (obj.name, obj_name))
+                obj_name += "#" + str(main.name_unique)
                 self.warps.write(
                     SEPARATOR.join([
                         '%s,%d,%d' % (self.base, obj.x, obj.y),
@@ -276,6 +277,7 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_tile_x, obj.dest_tile_y),
                     ])
                 )
+                main.name_unique += 1
 
         if name == u'data':
             if self.state is State.DATA:
@@ -317,6 +319,7 @@ def main(argv):
     tmx_dir = posixpath.join(client_data, CLIENT_MAPS)
     wlk_dir = posixpath.join(server_data, SERVER_WLK)
     npc_dir = posixpath.join(server_data, SERVER_NPCS)
+    main.name_unique = 0;
     if check_mobs:
         global mob_names
         mob_names = {}
