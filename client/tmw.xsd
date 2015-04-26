@@ -381,8 +381,8 @@
       comma-separated list. (xsd spec says they should be space-separated).
     -->
     <!-- TODO fix this horrible abuse of XML-->
-    <xs:attribute name="complete" type="xs:int" use="optional"/>
-    <xs:attribute name="incomplete" type="xs:int" use="optional"/>
+    <xs:attribute name="complete" type="xs:string" use="optional"/>
+    <xs:attribute name="incomplete" type="xs:string" use="optional"/>
   </xs:complexType>
   <!--
     QuestsWindow::loadEffect
