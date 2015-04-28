@@ -15,7 +15,6 @@ output=~/www/updates
 function apply_function()
 {
     $1  misc                *.* COPYING rules/
-    $1  graphics-emotes     graphics/emotes/
     $1  graphics-images     graphics/images/ graphics/guiicons/
     $1  graphics-items      graphics/items/
     $1  graphics-minimaps   graphics/minimaps/
