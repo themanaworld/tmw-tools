@@ -296,7 +296,7 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.state = State.FINAL
 
     def endDocument(self):
-        self.mobs.write('\n\n%s,0,0,0|script|Mob%s|-1\n{\n    end;\n' % (self.base, self.base))
+        self.mobs.write('\n\n%s,0,0,0|script|Mob%s|32767\n{\n    end;\n' % (self.base, self.base))
         for mob_id in sorted(self.mob_ids):
             self.mobs.write('\nOn%d:\n    set @mobID, %d;\n    callfunc "MobPoints";\n    end;\n' % (mob_id, mob_id))
         self.mobs.write('}\n')
