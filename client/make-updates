@@ -27,6 +27,7 @@ function apply_function()
     $1  maps                maps/
     $1  monsters            monsters/
     $1  npcs                npcs/
+    $1  quests              quests/
     $1  sfx                 sfx/
     $1  tilesets            tilesets/
 }
