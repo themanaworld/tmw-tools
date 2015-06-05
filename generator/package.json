@@ -1,0 +1,21 @@
+{
+    "name": "tmw-xml-converter",
+    "version": "0.0.1",
+    "description": "Converts from xml to db",
+    "contributors": [{
+            "name": "mekolat",
+            "email": "mekolat@users.noreply.github.com"
+    }],
+    "bin": {
+        "main": "./main"
+    },
+    "main": "main.js",
+    "bugs": {
+        "url": "https://github.com/themanaworld/tmw-tools/issues"
+    },
+    "dependencies": {
+        "xml-parser": "~1.2.0"
+    },
+    "private": true,
+    "license": "AGPL"
+}
