@@ -14,9 +14,9 @@ output=~/www/updates
 
 function apply_function()
 {
-    $1  misc                *.* COPYING rules/
+    $1  misc                *.* COPYING rules/ graphics/gui/
     $1  graphics-emotes     graphics/emotes/
-    $1  graphics-images     graphics/images/ graphics/guiicons/
+    $1  graphics-images     graphics/images/ graphics/guiicons/ images/ icons/ graphics/flags/
     $1  graphics-items      graphics/items/
     $1  graphics-minimaps   graphics/minimaps/
     $1  graphics-particles  graphics/particles/
@@ -30,6 +30,9 @@ function apply_function()
     $1  quests              quests/
     $1  sfx                 sfx/
     $1  tilesets            tilesets/
+    $1  translations        translations/
+    $1  themes              themes/
+    $1  help                help/
 }
 
 function add_resource()
