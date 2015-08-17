@@ -1094,7 +1094,7 @@ def testItems(fileName, imgDir):
         or type == "equip-arms" or type == "equip-legs" or type == "equip-head" \
         or type == "equip-shield" or type == "equip-1hand" or type == "equip-2hand" \
         or type == "equip-charm" or type == "equip-ammo" or type == "equip-neck" \
-        or type == "equip-ring":
+        or type == "equip-ring" or type == "card":
             if image == "":
                 print "error: " + fileName + ": missing image attribute on id=" + id
                 errors = errors + 1
