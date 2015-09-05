@@ -132,7 +132,7 @@ def printSeparator():
 def showHeader():
     print "Evol client data validator."
     print "Run at: " + datetime.datetime.now().isoformat()
-    print "http://www.gitorious.org/evol/evol-tools/blobs/master/testxml/testxml.py"
+    print "https://gitlab.com/evol/evol-tools/blob/master/testxml/testxml.py"
     printSeparator()
 
 def showFooter():
