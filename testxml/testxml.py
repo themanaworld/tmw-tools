@@ -1589,13 +1589,22 @@ def testOverSizedTiles(layer, tiles, file):
                 # not support includes
                 None
             elif tile.tileWidth > 32 and x + 1 < layer.width:
-                for x2 in (x + 1, x + 1 + int(tile.width / 32)):
+                for x2 in range(x + 1, x + 1 + int(tile.width / 32), 1):
                     idx = ((y * layer.width) + x2) * 4
                     val = getLDV(layer.arr, idx)
                     tile = findTileByGid(tiles, val)
                     if val > 0:
                         errList.append((x, y))
                         warnings = warnings + 1
+            elif tile.tileHeight > 32 and y - 1 > 0:
+                for y2 in range(y - 1, y - 1 - int(tile.height / 32), -1):
+                    idx = ((y2 * layer.width) + x) * 4
+                    val = getLDV(layer.arr, idx)
+                    tile = findTileByGid(tiles, val)
+                    if val > 0:
+                        errList.append((x, y))
+                        warnings = warnings + 1
+
     if len(errList) == 0:
         return
     print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
