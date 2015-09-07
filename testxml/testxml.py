@@ -1310,7 +1310,7 @@ def testNpcs(file):
                 name = node.attributes["name"].value
                 if name == "":
                     errors = errors + 1
-                    print "error: " + fileName + ": Empty include name";
+                    print "error: " + file + ": Empty include name";
                 testNpcs(name)
             except:
                 errors = errors + 1
@@ -1322,12 +1322,12 @@ def testNpcs(file):
         try:
             id = node.attributes["id"].value
         except:
-            print "error: " + fileName + ": no id for npc"
+            print "error: " + file + ": no id for npc"
             errors = errors + 1
             continue
 
         if id in idset:
-            print "error: " + fileName + ": duplicate npc id=" + id
+            print "error: " + file + ": duplicate npc id=" + id
         else:
             idset.add(id)
 
