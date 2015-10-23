@@ -1120,6 +1120,10 @@ def testItems(fileName, imgDir):
             if description == "":
                 print "warn: " + fileName + ": missing description attribute on id=" + id
                 warnings = warnings + 1
+            elif description == ".":
+                print "warn: " + fileName + ": broken description attribute on id=" + id
+                warnings = warnings + 1
+
             if missile != "":
                 testParticle(id, missile, fileName)
 
