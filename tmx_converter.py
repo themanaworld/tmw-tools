@@ -133,7 +133,6 @@ class ContentHandler(xml.sax.ContentHandler):
         self.imports = imports
         self.object = None
         self.mob_ids = set()
-        self.name_unique = 0;
 
     def setDocumentLocator(self, loc):
         self.locator = loc
@@ -266,19 +265,13 @@ class ContentHandler(xml.sax.ContentHandler):
                     ])
                 )
             elif isinstance(obj, Warp):
-                obj_name = obj.name[:15]
-                if obj.name != obj_name:
-                    print('Warning: warp name truncated: %r -> %r' % (obj.name, obj_name))
-                obj_name += "#%s%d" % (self.base,self.name_unique)
                 self.warps.write(
                     SEPARATOR.join([
                         '%s,%d,%d' % (self.base, obj.x, obj.y),
                         'warp',
-                        obj_name,
                         '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_tile_x, obj.dest_tile_y),
                     ])
                 )
-                self.name_unique += 1
 
         if name == u'data':
             if self.state is State.DATA:
