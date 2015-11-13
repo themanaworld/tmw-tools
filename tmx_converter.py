@@ -266,9 +266,15 @@ class ContentHandler(xml.sax.ContentHandler):
                     ])
                 )
             elif isinstance(obj, Warp):
-                obj_name = obj.name[:15]
+                # example obj_name: "To Regions B#botcheck16"
+                # 23 = max length of the whole warp name
+                # 1 = the # char between the base name and the unique id
+                # len(self.base) = space for the base name
+                # len(self.name_unique) = space for unique id; allows for warps
+                #                         with the same name
+                obj_name = obj.name[:23 - 1 - len(self.base) - len(str(self.name_unique))]
                 if obj.name != obj_name:
-                    print('Warning: warp name truncated: %r -> %r' % (obj.name, obj_name))
+                    print('Note: warp name truncated: %r -> %r' % (obj.name, obj_name))
                 obj_name += "#%s%d" % (self.base,self.name_unique)
                 self.warps.write(
                     SEPARATOR.join([
