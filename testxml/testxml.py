@@ -256,20 +256,22 @@ def testDye(id, color, text, src, iserr):
 
 
 def testDyeInternal(id, col, text, src, iserr):
-    if col[0] != "#":
+    oldPalette = col[0] == "#"
+    if oldPalette == False and col[0] != "@":
         showMsg(id, "incorrect dye colors: " + text, src, iserr)
         return False
 
-    paletes = dyesplit2.split(col[1:])
-    for palete in paletes:
-        if len(palete) != 6:
-            showMsg(id, "incorrect dye palete: " + text, src, iserr)
-            return False
-
-        for char in palete.lower():
-            if (char < '0' or char > '9') and (char < 'a' or char > 'f'):
+    if oldPalette:
+        paletes = dyesplit2.split(col[1:])
+        for palete in paletes:
+            if len(palete) != 6:
                 showMsg(id, "incorrect dye palete: " + text, src, iserr)
                 return False
+
+            for char in palete.lower():
+                if (char < '0' or char > '9') and (char < 'a' or char > 'f'):
+                    showMsg(id, "incorrect dye palete: " + text, src, iserr)
+                    return False
     return True
 
 
