@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.w3.org/1999/xlink" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import schemaLocation="xmlspec-its.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:attribute name="type">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="simple"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attributeGroup name="show">
+    <xs:attribute name="show" use="optional" form="qualified">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="embed"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="actuate">
+    <xs:attribute name="actuate" use="optional" form="qualified">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="onLoad"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="show1">
+    <xs:attribute name="show" use="optional" form="qualified">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="replace"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="actuate1">
+    <xs:attribute name="actuate" use="optional" form="qualified">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="onRequest"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="show2">
+    <xs:attribute name="show" use="optional" form="qualified">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="new"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+    <xs:attributeGroup name="its-type">
+        <xs:attribute name="type" use="optional">
+    <xs:annotation>
+      <xs:documentation>Type of pointer to external rules files.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="simple">
+          <xs:annotation>
+            <xs:documentation>Simple link.</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="its-href">
+    <xs:attribute name="href" type="xs:anyURI" use="optional">
+    <xs:annotation>
+      <xs:documentation>Pointer to external rules files.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>    
+    </xs:attributeGroup>
+</xs:schema>

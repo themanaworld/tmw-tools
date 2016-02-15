@@ -1,0 +1,1526 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) -2016  The Mana World Development Team
+     Copyright (C) 2016  Evol Online developers
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:its="http://www.w3.org/2005/11/its" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/2005/11/its" schemaLocation="its.xsd"/>
+  <!-- stuff up here is used everywhere-->
+  <xs:element name="include" type="include"/>
+  <xs:complexType name="include">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="empty"/>
+  <!--
+    XML::getBoolProperty
+  -->
+  <xs:simpleType name="bool">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- roots, with their children nearby -->
+  <!--
+    EffectManager::loadXmlFile
+      effectsFile:        effects.xml
+      effectsPatchFile:   effects_patch.xml
+      effectsPatchDir:    effects.d/*.xml
+  -->
+  <xs:element name="being-effects" type="root_being-effects"/>
+  <xs:complexType name="root_being-effects">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="effect">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="particle" type="xs:string" use="optional"/>
+            <xs:attribute name="audio" type="xs:string" use="optional"/>
+            <xs:attribute name="sprite" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    Configuration::init/ConfigurationObject::initFromXML
+      branding
+                            portable.xml
+                            command-line
+      config
+                            <configdir>/test.xml
+                            <configdir>/config.xml
+      serverConfig
+                            <configdir>/<server>/config.xml
+      paths
+                            paths.xml
+      features
+              featuresFile  features.xml
+  -->
+  <xs:element name="configuration" type="root_configuration"/>
+  <xs:complexType name="root_configuration">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="list">
+          <xs:complexType>
+            <!-- what manaplus does is actually impossible to represent -->
+            <!-- TODO in a future version fix this horrible abuse of XML -->
+            <xs:choice>
+              <xs:element name="nested_conf_1" type="root_configuration" maxOccurs="unbounded"/>
+              <xs:element name="nested_conf_2" type="root_configuration" maxOccurs="unbounded"/>
+            </xs:choice>
+            <xs:attribute name="name" type="nested_configuration" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="option">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="nested_configuration">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="nested_conf_1"/>
+      <xs:enumeration value="nested_conf_2"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Particle::addEffect(file|dye, x, y, rot)
+  -->
+  <xs:element name="effect" type="root_effect"/>
+  <xs:complexType name="root_effect">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="particle">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="particle_extras" minOccurs="0" maxOccurs="unbounded"/>
+              <!-- this should probably be required to go first -->
+              <xs:choice minOccurs="0">
+                <xs:element name="animation" type="animation_1"/>
+                <xs:element name="rotation" type="animation_1"/>
+                <xs:element name="image" type="xs:string"/>
+              </xs:choice>
+              <xs:group ref="particle_extras" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="position-x" type="xs:float" default="0"/>
+            <xs:attribute name="position-y" type="xs:float" default="0"/>
+            <xs:attribute name="position-z" type="xs:float" default="0"/>
+            <!-- TODO is this really? It was so unusual, but it's common. -->
+            <xs:attribute name="lifetime" type="xs:int" use="optional"/>
+            <xs:attribute name="size-adjustable" type="bool" default="false"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="particle_extras">
+    <xs:choice>
+      <xs:element name="emitter" type="particle_emitter"/>
+      <xs:element name="deatheffect" type="death_effect"/>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="death_effect">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="on-floor" type="bool" default="true"/>
+        <xs:attribute name="on-sky" type="bool" default="true"/>
+        <xs:attribute name="on-other" type="bool" default="false"/>
+        <xs:attribute name="on-impact" type="bool" default="true"/>
+        <xs:attribute name="on-timeout" type="bool" default="true"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!--
+    SimpleAnimation::initializeAnimation
+  -->
+  <xs:complexType name="animation_1">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="frame">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="index" type="xs:int" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="sequence">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="start" type="xs:int" use="required"/>
+          <xs:attribute name="end" type="xs:int" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="end" type="empty"/>
+    </xs:choice>
+    <xs:attribute name="imageset" type="xs:string" use="required"/>
+    <xs:attribute name="width" type="xs:int" use="required"/>
+    <xs:attribute name="height" type="xs:int" use="required"/>
+  </xs:complexType>
+  <!--
+    ParticleEmitter::ParticleEmitter
+  -->
+  <xs:complexType name="animation_2">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="frame">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="index" type="xs:int" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="sequence">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="start" type="xs:int" use="required"/>
+          <xs:attribute name="end" type="xs:int" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="end" type="empty"/>
+    </xs:choice>
+    <xs:attribute name="imageset" type="xs:string" use="required"/>
+    <xs:attribute name="width" type="xs:int" use="required"/>
+    <xs:attribute name="height" type="xs:int" use="required"/>
+    <xs:attribute name="subX" type="xs:int" use="optional"/>
+    <xs:attribute name="subY" type="xs:int" use="optional"/>
+    <xs:attribute name="subWidth" type="xs:int" use="optional"/>
+    <xs:attribute name="subHeight" type="xs:int" use="optional"/>
+  </xs:complexType>
+  <!--
+    SpriteDef::loadAnimation
+  -->
+  <xs:complexType name="animation_3">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="frame">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="index" type="xs:int" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="sequence">
+        <xs:complexType>
+          <xs:attributeGroup ref="frame_or_sequence_attrs"/>
+          <xs:attribute name="start" type="xs:int" use="optional"/>
+          <xs:attribute name="end" type="xs:int" use="optional"/>
+          <xs:attribute name="value" type="xs:string" use="optional"/>
+          <xs:attribute name="repeat" type="xs:int" default="1"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="end" type="empty"/>
+      <xs:element name="jump">
+        <xs:complexType>
+          <xs:attribute name="action" type="xs:string" use="required"/>
+          <xs:attribute name="rand" type="xs:int" default="100"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="label">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="goto">
+        <xs:complexType>
+          <xs:attribute name="label" type="xs:string" use="required"/>
+          <xs:attribute name="rand" type="xs:int" default="100"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="direction" default="default">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="default"/>
+          <xs:enumeration value="up"/>
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+          <xs:enumeration value="down"/>
+          <xs:enumeration value="upleft"/>
+          <xs:enumeration value="upright"/>
+          <xs:enumeration value="downleft"/>
+          <xs:enumeration value="downright"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:attributeGroup name="frame_or_sequence_attrs">
+    <xs:attribute name="delay" type="xs:int" default="0"/>
+    <xs:attribute name="offsetX" type="xs:int" default="0"/>
+    <xs:attribute name="offsetY" type="xs:int" default="0"/>
+    <xs:attribute name="rand" type="xs:int" default="100"/>
+  </xs:attributeGroup>
+  <!--
+    ParticleEmitter::ParticleEmitter
+  -->
+  <xs:complexType name="particle_emitter">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="property">
+        <xs:complexType>
+          <!-- TODO in a future version fix this horrible abuse of XML -->
+          <xs:attribute name="name" type="particle_property" use="required"/>
+          <!-- type varies depending on property -->
+          <xs:attribute name="value" type="xs:string" use="optional"/>
+          <xs:attribute name="min" type="xs:float" use="optional"/>
+          <xs:attribute name="max" type="xs:float" use="optional"/>
+          <xs:attribute name="change-func" default="none">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="none"/>
+                <xs:enumeration value="saw"/>
+                <xs:enumeration value="sawtooth"/>
+                <xs:enumeration value="sine"/>
+                <xs:enumeration value="sinewave"/>
+                <xs:enumeration value="triangle"/>
+                <xs:enumeration value="square"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="change-amplitude" type="xs:float" use="optional"/>
+          <xs:attribute name="change-period" type="xs:int" use="optional"/>
+          <xs:attribute name="change-phase" type="xs:int" use="optional"/>
+          <!-- only for subimage -->
+          <xs:attribute name="x" type="xs:int" use="optional"/>
+          <xs:attribute name="y" type="xs:int" use="optional"/>
+          <xs:attribute name="width" type="xs:int" use="optional"/>
+          <xs:attribute name="height" type="xs:int" use="optional"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="emitter" type="particle_emitter"/>
+      <xs:element name="rotation" type="animation_2"/>
+      <xs:element name="animation" type="animation_2"/>
+      <xs:element name="deatheffect" type="death_effect"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="particle_property">
+    <xs:restriction base="xs:string">
+      <!-- xs:float -->
+      <xs:enumeration value="position-x"/>
+      <!-- xs:float -->
+      <xs:enumeration value="position-y"/>
+      <!-- xs:float -->
+      <xs:enumeration value="position-z"/>
+      <!-- xs:string -->
+      <xs:enumeration value="image"/>
+      <!-- xs:string for value, also xs:int for x/w/width/height -->
+      <xs:enumeration value="subimage"/>
+      <!-- xs:float -->
+      <xs:enumeration value="horizontal-angle"/>
+      <!-- xs:float -->
+      <xs:enumeration value="vertical-angle"/>
+      <!-- xs:float -->
+      <xs:enumeration value="power"/>
+      <!-- xs:float -->
+      <xs:enumeration value="gravity"/>
+      <!-- xs:int -->
+      <xs:enumeration value="randomness"/>
+      <!-- xs:int -->
+      <xs:enumeration value="randomnes"/>
+      <!-- xs:float -->
+      <xs:enumeration value="bounce"/>
+      <!-- xs:int -->
+      <xs:enumeration value="lifetime"/>
+      <!-- xs:int -->
+      <xs:enumeration value="output"/>
+      <!-- xs:int -->
+      <xs:enumeration value="output-pause"/>
+      <!-- xs:float -->
+      <xs:enumeration value="acceleration"/>
+      <!-- xs:float -->
+      <xs:enumeration value="die-distance"/>
+      <!-- xs:float -->
+      <xs:enumeration value="momentum"/>
+      <!-- xs:int -->
+      <xs:enumeration value="fade-out"/>
+      <!-- xs:int -->
+      <xs:enumeration value="fade-in"/>
+      <!-- xs:float -->
+      <xs:enumeration value="alpha"/>
+      <!-- ignored -->
+      <xs:enumeration value="follow-parent"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    QuestsWindow::loadXmlFile
+      questsFile:        quests.xml
+      questsPatchFile:   quests_patch.xml
+      questsPatchDir:    quests.d/*.xml
+  -->
+  <xs:element name="quests" type="root_quests"/>
+  <xs:complexType name="root_quests">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="var">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="quest" type="quests_var_quest"/>
+              <xs:element name="effect" type="quests_var_effect"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    QuestsWindow::loadQuest
+  -->
+  <xs:complexType name="quests_var_quest">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="text" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="reward" type="xs:string"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="group" type="xs:string" use="required"/>
+    <!--
+      For all known quests, exactly one of these is provided, with a single
+      integer value. However, manaplus actually parses both, and as a
+      comma-separated list. (xsd spec says they should be space-separated).
+    -->
+    <!-- TODO fix this horrible abuse of XML-->
+    <xs:attribute name="complete" type="xs:string" use="optional"/>
+    <xs:attribute name="incomplete" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <!--
+    QuestsWindow::loadEffect
+  -->
+  <xs:complexType name="quests_var_effect">
+    <xs:attribute name="map" type="xs:string" use="required"/>
+    <xs:attribute name="npc" type="xs:int" use="required"/>
+    <xs:attribute name="effect" type="xs:int" use="required"/>
+    <!-- Really a comma-separated list, but xsd wants space-separated -->
+    <!-- TODO fix this horrible abuse of XML-->
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!--
+    SkillDialog::loadXmlFile
+      skillsFile or skillsFile2:  skills.xml or ea-skills.xml (but these were backwards before v1.4.1.18)
+      skillsPatchFile:            skills_patch.xml
+      skillsPatchDir:             skills.d/*.xml
+  -->
+  <xs:element name="skills" type="root_skills"/>
+  <xs:complexType name="root_skills">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="set">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="skill">
+                <xs:complexType>
+                  <!-- By code, sometimes 'id' is 'var', but I don't see it in the wild. -->
+                  <xs:attribute name="id" type="xs:int" default="-1"/>
+                  <xs:attribute name="var" type="xs:int" default="-1"/>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                  <xs:attribute name="useButton" type="xs:string" default="Use"/>
+                  <xs:attribute name="owner" type="xs:string" use="optional" default="player"/>
+                  <xs:attribute name="errorText" type="xs:string" use="optional"/>
+                  <xs:attribute name="alwaysVisible" type="bool" use="optional" default="false"/>
+                  <xs:attribute name="castingSrcEffectId" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingDstEffectId" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingAction" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingRideAction" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingSkyAction" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingWaterAction" type="xs:string" use="optional"/>
+                  <xs:attribute name="useTextParameter" type="bool" default="false"/>
+                  <xs:attribute name="icon" type="xs:string" use="optional"/>
+                  <xs:attribute name="level" type="xs:int" default="0"/>
+                  <xs:attribute name="shortName" type="xs:string" use="optional"/>
+                  <xs:attribute name="description" type="xs:string" use="optional"/>
+                  <xs:attribute name="particle" type="xs:string" use="optional"/>
+                  <xs:attribute name="soundHit" type="xs:string" use="optional"/>
+                  <xs:attribute name="soundHitDelay" type="xs:int" use="optional"/>
+                  <xs:attribute name="soundMiss" type="xs:string" use="optional"/>
+                  <xs:attribute name="soundMissDelay" type="xs:int" use="optional"/>
+                  <xs:attribute name="invokeCmd" type="xs:string" use="optional"/>
+                  <xs:attribute name="levelUpEffectId" type="xs:int" use="optional"/>
+                  <xs:attribute name="removeEffectId" type="xs:int" use="optional"/>
+                  <xs:attribute name="hitEffectId" type="xs:int" use="optional"/>
+                  <xs:attribute name="missEffectId" type="xs:int" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!--
+    SkillUnitDb::load
+  -->
+  <xs:element name="skillunits" type="root_skillunits"/>
+  <xs:complexType name="root_skillunits">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="skillunit">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="include"/>
+                <xs:element name="particlefx" type="xs:string"/>
+                <xs:element name="sprite">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="variant" type="xs:int" default="0"/>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" default="skill"/>
+            <xs:attribute name="targetSelection" type="bool" default="true"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!--
+    EquipmentWindow::fillBoxes
+      equipmentWindowFile:  equipmentwindow.xml
+  -->
+  <xs:element name="equipment" type="root_equipment"/>
+  <xs:complexType name="root_equipment">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="page" type="equipment_page"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="image" type="xs:string" default="equipmentbox.png"/>
+  </xs:complexType>
+
+  <!--
+    EquipmentWindow::loadPage
+  -->
+  <xs:complexType name="equipment_page">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="playerbox" type="equipment_playerbox"/>
+      <xs:element name="slot" type="equipment_slot"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <!--
+    EquipmentWindow::loadPlayerBox
+  -->
+  <xs:complexType name="equipment_playerbox">
+    <xs:attribute name="x" type="xs:int" use="required"/>
+    <xs:attribute name="y" type="xs:int" use="required"/>
+    <xs:attribute name="width" type="xs:int" use="required"/>
+    <xs:attribute name="height" type="xs:int" use="required"/>
+  </xs:complexType>
+  <!--
+    EquipmentWindow::loadSlot
+  -->
+  <xs:complexType name="equipment_slot">
+    <xs:attribute name="name" type="equipment_slot_name" use="required"/>
+    <xs:attribute name="x" type="xs:int" use="required"/>
+    <xs:attribute name="y" type="xs:int" use="required"/>
+    <xs:attribute name="image" type="xs:int" default="0"/>
+  </xs:complexType>
+  <xs:simpleType name="equipment_slot_name">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="topclothes"/>
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="torso"/>
+      <xs:enumeration value="body"/>
+      <xs:enumeration value="slot0"/>
+      <xs:enumeration value="glove"/>
+      <xs:enumeration value="gloves"/>
+      <xs:enumeration value="slot1"/>
+      <xs:enumeration value="hat"/>
+      <xs:enumeration value="hats"/>
+      <xs:enumeration value="slot2"/>
+      <xs:enumeration value="bottomclothes"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="pants"/>
+      <xs:enumeration value="slot3"/>
+      <xs:enumeration value="shoes"/>
+      <xs:enumeration value="boot"/>
+      <xs:enumeration value="boots"/>
+      <xs:enumeration value="slot4"/>
+      <xs:enumeration value="misc1"/>
+      <xs:enumeration value="cape"/>
+      <xs:enumeration value="slot5"/>
+      <xs:enumeration value="wings"/>
+      <xs:enumeration value="slot6"/>
+      <xs:enumeration value="misc2"/>
+      <xs:enumeration value="scarf"/>
+      <xs:enumeration value="scarfs"/>
+      <xs:enumeration value="slot7"/>
+      <xs:enumeration value="weapon"/>
+      <xs:enumeration value="weapons"/>
+      <xs:enumeration value="slot8"/>
+      <xs:enumeration value="shield"/>
+      <xs:enumeration value="shields"/>
+      <xs:enumeration value="slot9"/>
+      <xs:enumeration value="arrow"/>
+      <xs:enumeration value="arrows"/>
+      <xs:enumeration value="ammo"/>
+      <xs:enumeration value="slot10"/>
+      <xs:enumeration value="amulet"/>
+      <xs:enumeration value="amulets"/>
+      <xs:enumeration value="slot11"/>
+      <xs:enumeration value="ring"/>
+      <xs:enumeration value="rings"/>
+      <xs:enumeration value="slot12"/>
+      <xs:enumeration value="slot13"/>
+      <xs:enumeration value="slot14"/>
+      <xs:enumeration value="slot15"/>
+      <xs:enumeration value="slot16"/>
+      <xs:enumeration value="slot17"/>
+      <xs:enumeration value="slot18"/>
+      <xs:enumeration value="slot19"/>
+      <xs:enumeration value="slot20"/>
+      <xs:enumeration value="slot21"/>
+      <xs:enumeration value="slot22"/>
+      <xs:enumeration value="slot23"/>
+      <xs:enumeration value="slot24"/>
+      <xs:enumeration value="slot25"/>
+      <xs:enumeration value="slot26"/>
+      <xs:enumeration value=""/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Units::loadXMLFile
+      unitsFile:        units.xml
+      unitsPatchFile:   units_patch.xml
+      unitsPatchDir:    units.d/*.xml
+  -->
+  <xs:element name="units" type="root_units"/>
+  <xs:complexType name="root_units">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="unit">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="level">
+                <xs:complexType>
+                  <xs:attribute name="symbol" type="xs:string" use="required"/>
+                  <xs:attribute name="count" type="xs:int" use="required"/>
+                  <xs:attribute name="round" type="xs:int" use="optional"/>
+                  <xs:attribute name="separator" type="xs:string" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            <xs:attribute name="type" type="units_unit_type" use="required"/>
+            <xs:attribute name="conversion" type="xs:int" default="1"/>
+            <xs:attribute name="mix" type="yesno" default="no"/>
+            <xs:attribute name="base" type="xs:string" default="¤"/>
+            <xs:attribute name="round" type="xs:int" default="2"/>
+            <xs:attribute name="separator" type="xs:string" default=" "/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="units_unit_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="currency"/>
+      <xs:enumeration value="weight"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="yesno">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="yes"/>
+      <xs:enumeration value="no"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    StatusEffect::loadXmlFile
+      statusEffectsFile:        status-effects.xml
+      statusEffectsPatchFile:   status-effects_patch.xml
+      statusEffectsPatchDir:    status-effects.d/*.xml
+  -->
+  <xs:element name="status-effects" type="root_status-effects"/>
+  <xs:complexType name="root_status-effects">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="status-effect">
+          <xs:complexType>
+            <xs:attribute name="block-id" type="xs:int" use="optional"/>
+            <xs:attributeGroup ref="status_or_stun_attrs"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="stun-effect">
+          <xs:complexType>
+            <xs:attributeGroup ref="status_or_stun_attrs"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="status_or_stun_attrs">
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="start-message" type="xs:string" use="optional"/>
+    <xs:attribute name="start-audio" type="xs:string" use="optional"/>
+    <xs:attribute name="start-particle" type="xs:string" use="optional"/>
+    <xs:attribute name="icon" type="xs:string" use="optional"/>
+    <xs:attribute name="action" type="xs:string" use="optional"/>
+    <xs:attribute name="persistent-particle-effect" type="yesno" use="optional"/>
+    <xs:attribute name="end-message" type="xs:string" use="optional"/>
+    <xs:attribute name="end-audio" type="xs:string" use="optional"/>
+    <xs:attribute name="end-particle" type="xs:string" use="optional"/>
+  </xs:attributeGroup>
+  <!--
+    maps and tilesets omitted, they have a DTD from tiled
+  -->
+  <!--
+    EmoteDB::loadXmlFile
+      emotesFile:        emotes.xml
+      emotesPatchFile:   emotes.xml
+      emotesPatchDir:    emotes.d/*.xml
+    EmoteDB::loadSpecialXmlFile
+                         manaplus_emotes.xml
+  -->
+  <xs:element name="emotes" type="root_emotes"/>
+  <xs:complexType name="root_emotes">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="emote">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" use="required"/>
+                      <xs:attribute name="name" type="xs:string" use="required"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <!-- altid is only in manaplus_emotes.xml -->
+            <xs:attribute name="altid" type="xs:int" use="optional"/>
+            <xs:attribute name="time" type="xs:int" default="500"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    NPCDB::loadXmlFile
+      npcsFile:        npcs.xml
+      npcsPatchFile:   npcs.xml
+      npcsPatchDir:    npcs.d/*.xml
+  -->
+  <xs:element name="npcs" type="root_npcs"/>
+  <xs:complexType name="root_npcs">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="npc">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+              <xs:element name="menu">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                  <xs:attribute name="command" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="targetSelection" type="bool" default="true"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+            <xs:attribute name="avatar" type="xs:unsignedShort" default="0"/>
+            <xs:attribute name="allowDelete" type="bool" default="true"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="being_basic_attributes">
+    <xs:attribute name="targetCursor" type="cursor" default="medium"/>
+    <!--
+      default for hoverCursor varies:
+        npc: "talk"
+        monster: "attack"
+        pet: "talk"
+    -->
+    <xs:attribute name="hoverCursor" type="xs:string" use="optional"/>
+    <xs:attribute name="targetOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="targetOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="nameOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="nameOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="sortOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="hpBarOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="hpBarOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="walkType" type="xs:string" default="walk"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="cursor">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="small"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="large"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    ItemDB::loadXmlFile
+      itemsFile:        items.xml
+      itemsPatchFile:   items_patch.xml
+      itemsPatchDir:    items.d/*.xml
+  -->
+  <xs:element name="items" type="root_items"/>
+  <xs:complexType name="root_items">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="item">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite" type="items_item_sprite"/>
+              <xs:element name="particlefx" type="xs:string"/>
+              <xs:element name="sound" type="items_item_sound"/>
+              <xs:element name="floor" type="items_item_floor"/>
+              <xs:element name="replace" type="items_item_replace"/>
+              <xs:element name="drawAfter" type="items_item_draworder"/>
+              <xs:element name="drawBefore" type="items_item_draworder"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="type" type="items_item_type" default="other"/>
+            <xs:attribute name="weight" type="xs:int" default="0"/>
+            <xs:attribute name="view" type="xs:int" default="0"/>
+            <xs:attribute name="name" type="xs:string" default="unnamed"/>
+            <xs:attribute name="image" type="xs:string" use="optional"/>
+            <xs:attribute name="floor" type="xs:string" use="optional"/>
+            <xs:attribute name="description" type="xs:string" use="optional"/>
+            <xs:attribute name="attack-action" type="xs:string" use="optional"/>
+            <xs:attribute name="skyattack-action" type="xs:string" use="optional"/>
+            <xs:attribute name="waterattack-action" type="xs:string" use="optional"/>
+            <xs:attribute name="drawBefore" type="xs:string" use="optional"/>
+            <xs:attribute name="drawAfter" type="xs:string" use="optional"/>
+            <xs:attribute name="pet" type="xs:int" default="0"/>
+            <xs:attribute name="maxFloorOffset" type="xs:int" default="0"/>
+            <xs:attribute name="useButton" type="xs:string" use="optional"/>
+            <xs:attribute name="useButton2" type="xs:string" use="optional"/>
+            <xs:attribute name="colors" type="xs:string" use="optional"/>
+            <xs:attribute name="iconColors" type="xs:string" use="optional"/>
+            <xs:attribute name="cardColor" type="xs:int" use="optional"/>
+            <!-- Can't use both tag and tag1; tag has precedence. -->
+            <xs:attribute name="tag" type="xs:string" use="optional"/>
+            <xs:attribute name="tag1" type="xs:string" use="optional"/>
+            <xs:attribute name="tag2" type="xs:string" use="optional"/>
+            <xs:attribute name="tag3" type="xs:string" use="optional"/>
+            <xs:attribute name="drawPriority" type="xs:int" default="0"/>
+            <xs:attribute name="attack-range" type="xs:int" default="0"/>
+            <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+            <xs:attribute name="hit-effect-id" type="xs:string" use="optional"/>
+            <xs:attribute name="critical-hit-effect-id" type="xs:string" use="optional"/>
+            <xs:attribute name="miss-effect-id" type="xs:string" use="optional"/>
+            <xs:attribute name="sellProtected" type="bool" default="false"/>
+            <xs:attribute name="pickupCursor" type="xs:string" default="pickup"/>
+            <xs:attribute name="attack" type="xs:string" use="optional"/>
+            <xs:attribute name="criticalattack" type="xs:string" use="optional"/>
+            <xs:attribute name="mattack" type="xs:string" use="optional"/>
+            <xs:attribute name="defense" type="xs:string" use="optional"/>
+            <xs:attribute name="criticaldefense" type="xs:string" use="optional"/>
+            <xs:attribute name="mdefense" type="xs:string" use="optional"/>
+            <xs:attribute name="hp" type="xs:string" use="optional"/>
+            <xs:attribute name="mp" type="xs:string" use="optional"/>
+            <xs:attribute name="level" type="xs:string" use="optional"/>
+            <xs:attribute name="speed" type="xs:string" use="optional"/>
+            <xs:attribute name="range" type="xs:string" use="optional"/>
+            <xs:attribute name="flee" type="xs:string" use="optional"/>
+            <xs:attribute name="str" type="xs:string" use="optional"/>
+            <xs:attribute name="agi" type="xs:string" use="optional"/>
+            <xs:attribute name="vit" type="xs:string" use="optional"/>
+            <xs:attribute name="int" type="xs:string" use="optional"/>
+            <xs:attribute name="dex" type="xs:string" use="optional"/>
+            <xs:attribute name="luck" type="xs:string" use="optional"/>
+            <xs:attribute name="effect" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="items_item_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="generic"/>
+      <xs:enumeration value="other"/>
+      <xs:enumeration value="usable"/>
+      <xs:enumeration value="equip-1hand"/>
+      <xs:enumeration value="equip-2hand"/>
+      <xs:enumeration value="equip-torso"/>
+      <xs:enumeration value="equip-arms"/>
+      <xs:enumeration value="equip-head"/>
+      <xs:enumeration value="equip-legs"/>
+      <xs:enumeration value="equip-shield"/>
+      <xs:enumeration value="equip-ring"/>
+      <xs:enumeration value="equip-charm"/>
+      <xs:enumeration value="equip-necklace"/>
+      <xs:enumeration value="equip-neck"/>
+      <xs:enumeration value="equip-feet"/>
+      <xs:enumeration value="equip-ammo"/>
+      <xs:enumeration value="card"/>
+      <xs:enumeration value="racesprite"/>
+      <xs:enumeration value="hairsprite"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="items_item_sprite">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="variant" type="xs:int" default="0"/>
+        <xs:attribute name="race" type="xs:int" default="0"/>
+        <xs:attribute name="gender" default="unisex">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="unisex"/>
+              <xs:enumeration value="male"/>
+              <xs:enumeration value="female"/>
+              <xs:enumeration value="other"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="items_item_sound">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="event" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="hit"/>
+              <xs:enumeration value="strike"/>
+              <xs:enumeration value="miss"/>
+              <xs:enumeration value="use"/>
+              <xs:enumeration value="equip"/>
+              <xs:enumeration value="unequip"/>
+              <xs:enumeration value="drop"/>
+              <xs:enumeration value="pickup"/>
+              <xs:enumeration value="take"/>
+              <xs:enumeration value="put"/>
+              <xs:enumeration value="usecard"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="delay" type="xs:int" default="0"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="items_item_floor">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="sprite">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="variant" type="xs:int" default="0"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="particlefx" type="xs:string"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="items_item_replace">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="item">
+        <xs:complexType>
+          <xs:attribute name="from" type="xs:int" use="optional"/>
+          <xs:attribute name="to" type="xs:int" use="optional"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="sprite" type="items_item_x_sprite" use="optional"/>
+    <xs:attribute name="direction" type="items_item_x_direction" default="all"/>
+  </xs:complexType>
+  <xs:complexType name="items_item_draworder">
+    <xs:attribute name="name" type="items_item_x_sprite" use="required"/>
+    <xs:attribute name="priority" type="xs:int" use="optional"/>
+    <xs:attribute name="direction" type="items_item_x_direction" default="all"/>
+  </xs:complexType>
+  <xs:simpleType name="items_item_x_sprite">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="race"/>
+      <xs:enumeration value="type"/>
+      <xs:enumeration value="shoes"/>
+      <xs:enumeration value="boot"/>
+      <xs:enumeration value="boots"/>
+      <xs:enumeration value="bottomclothes"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="pants"/>
+      <xs:enumeration value="topclothes"/>
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="torso"/>
+      <xs:enumeration value="body"/>
+      <xs:enumeration value="misc1"/>
+      <xs:enumeration value="misc2"/>
+      <xs:enumeration value="scarf"/>
+      <xs:enumeration value="scarfs"/>
+      <xs:enumeration value="hair"/>
+      <xs:enumeration value="hat"/>
+      <xs:enumeration value="hats"/>
+      <xs:enumeration value="wings"/>
+      <xs:enumeration value="glove"/>
+      <xs:enumeration value="gloves"/>
+      <xs:enumeration value="weapon"/>
+      <xs:enumeration value="weapons"/>
+      <xs:enumeration value="shield"/>
+      <xs:enumeration value="shields"/>
+      <xs:enumeration value="amulet"/>
+      <xs:enumeration value="amulets"/>
+      <xs:enumeration value="ring"/>
+      <xs:enumeration value="rings"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="items_item_x_direction">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="down"/>
+      <xs:enumeration value="downleft"/>
+      <xs:enumeration value="leftdown"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="upleft"/>
+      <xs:enumeration value="leftup"/>
+      <xs:enumeration value="up"/>
+      <xs:enumeration value="upright"/>
+      <xs:enumeration value="rightup"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="downright"/>
+      <xs:enumeration value="rightdown"/>
+      <xs:enumeration value="downall"/>
+      <xs:enumeration value="upall"/>
+      <xs:enumeration value="died"/>
+      <!-- handled by implicit else -->
+      <xs:enumeration value="all"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    SoundDB::loadXmlFile
+      soundsFile:        sounds.xml
+      soundsPatchFile:   sounds_patch.xml
+      soundsPatchDir:    sounds.d/*.xml
+  -->
+  <xs:element name="sounds" type="root_sounds"/>
+  <xs:complexType name="root_sounds">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="sound">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    ColorDB::loadHair
+      hairColorFile:        hair.xml
+      hairColorPatchFile:   hair.xml
+      hairColorPatchDir:    hair.d/*.xml
+    ColorDB::loadColorLists
+      itemColorFile:        itemcolors.xml
+      itemColorPatchFile:   itemcolors_patch.xml
+      itemColorPatchDir:    itemcolors.d/*.xml
+  -->
+  <xs:element name="colors" type="root_colors"/>
+  <xs:complexType name="root_colors">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice>
+        <!-- hair.xml -->
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="include"/>
+          <xs:element name="color" type="colors_color"/>
+        </xs:choice>
+        <!-- itemcolors.xml -->
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="include"/>
+          <xs:element name="list">
+            <xs:complexType>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="color" type="colors_color"/>
+              </xs:choice>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="colors_color">
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!--
+    MapDB::loadInfo
+      mapsFile:        maps.xml
+      mapsPatchFile:   maps_patch.xml
+      mapsPatchDir:    maps.d/*.xml
+  -->
+  <xs:element name="maps" type="root_maps"/>
+  <xs:complexType name="root_maps">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="map" type="maps_map"/>
+        <xs:element name="atlas" type="maps_atlas"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- MapDB::readMap -->
+  <xs:complexType name="maps_map">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="atlas">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!-- MapDB::readMap -->
+  <xs:complexType name="maps_atlas">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <!--
+    MapDB::loadRemap
+      mapsRemapFile:  maps/remap.xml
+  -->
+  <xs:element name="remap" type="root_remap"/>
+  <xs:complexType name="root_remap">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <!-- TODO <xs:element ref="include"/> -->
+        <xs:element name="map">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    DeadDB::loadXmlFile
+      deadMessagesFile:        deadmessages.xml
+      deadMessagesPatchFile:   deadmessages_patch.xml
+      deadMessagesPatchDir:    deadmessages.d/*.xml
+  -->
+  <xs:element name="messages" type="root_messages"/>
+  <xs:complexType name="root_messages">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="message" type="xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    AvatarDB::loadXmlFile
+      avatarsFile:        avatars.xml
+      avatarsPatchFile:   avatars_patch.xml
+      avatarsPatchDir:    avatars.d/*.xml
+  -->
+  <xs:element name="avatars" type="root_avatars"/>
+  <xs:complexType name="root_avatars">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="avatar">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="targetOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="targetOffsetY" type="xs:int" default="0"/>
+            <xs:attribute name="width" type="xs:int" default="0"/>
+            <xs:attribute name="height" type="xs:int" default="0"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    MonsterDB::loadXmlFile
+      monstersFile:        monsters.xml
+      monstersPatchFile:   monsters_patch.xml
+      monstersPatchDir:    monsters.d/*.xml
+  -->
+  <xs:element name="monsters" type="root_monsters"/>
+  <xs:complexType name="root_monsters">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="monster">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="sound">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="event" type="monster_sound_event" use="required"/>
+                      <xs:attribute name="delay" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="attack">
+                <xs:complexType>
+                  <xs:attribute name="id" type="xs:int" use="required"/>
+                  <xs:attribute name="effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="hit-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="critical-hit-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="miss-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="action" type="xs:string" default="attack"/>
+                  <xs:attribute name="skyaction" type="xs:string" default="skyattack"/>
+                  <xs:attribute name="wateraction" type="xs:string" default="waterattack"/>
+                  <xs:attribute name="rideaction" type="xs:string" default="waterattack"/>
+                  <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="maxHP" type="xs:int" use="optional"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+            <xs:attribute name="colors" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+    <!-- really optional with default="1002", but that's not sane -->
+    <xs:attribute name="offset" type="xs:int" default="1002"/>
+  </xs:complexType>
+  <xs:simpleType name="monster_sound_event">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="hit"/>
+      <xs:enumeration value="miss"/>
+      <xs:enumeration value="hurt"/>
+      <xs:enumeration value="die"/>
+      <xs:enumeration value="move"/>
+      <xs:enumeration value="sit"/>
+      <xs:enumeration value="sittop"/>
+      <xs:enumeration value="spawn"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    NpcDialogDB::load
+  -->
+  <xs:element name="dialogs" type="root_npc_dialogs"/>
+  <xs:complexType name="root_npc_dialogs">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="dialog" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="menu" type="npc_dialogs_menu"/>
+                <xs:element name="inventory" type="npc_dialogs_inventory"/>
+              </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="hideText" type="bool"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="include"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="npc_dialogs_menu">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="button">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" default=""/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+            <xs:attribute name="x" type="xs:int" default="0"/>
+            <xs:attribute name="y" type="xs:int" default="0"/>
+            <xs:attribute name="image" type="xs:string" default=""/>
+            <xs:attribute name="imageWidth" type="xs:int" default="16"/>
+            <xs:attribute name="imageHeight" type="xs:int" default="16"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="image">
+          <xs:complexType>
+            <xs:attribute name="image" type="xs:string" use="required"/>
+            <xs:attribute name="x" type="xs:int" default="0"/>
+            <xs:attribute name="y" type="xs:int" default="0"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="text">
+          <xs:complexType>
+            <xs:attribute name="text" type="xs:string" use="required"/>
+            <xs:attribute name="x" type="xs:int" default="0"/>
+            <xs:attribute name="y" type="xs:int" default="0"/>
+            <xs:attribute name="width" type="xs:int" default="20"/>
+            <xs:attribute name="height" type="xs:int" default="20"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="npc_dialogs_inventory">
+    <xs:attribute name="cell" type="xs:string" default=""/>
+    <xs:attribute name="columns" type="xs:int" default="10000"/>
+  </xs:complexType>
+
+  <!--
+    PETDB::loadXmlFile
+      petsFile:        pets.xml
+      petsPatchFile:   pets_patch.xml
+      petsPatchDir:    pets.d/*.xml
+  -->
+  <xs:element name="pets" type="root_pets"/>
+  <xs:complexType name="root_pets">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="pet">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="targetSelection" type="bool" default="true"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+            <xs:attribute name="startFollowDistance" type="xs:int" default="3"/>
+            <xs:attribute name="followDistance" type="xs:int" default="0"/>
+            <xs:attribute name="warpDistance" type="xs:int" default="11"/>
+            <xs:attribute name="walkSpeed" type="xs:int" default="0"/>
+            <xs:attribute name="offsetX" type="xs:int" default="0"/>
+            <xs:attribute name="offsetY" type="xs:int" default="1"/>
+            <xs:attribute name="sitOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="sitOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="moveOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="moveOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="deadOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="deadOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="attackOffsetX" type="xs:int" use="optional"/>
+            <xs:attribute name="attackOffsetY" type="xs:int" use="optional"/>
+            <xs:attribute name="thinkTime" type="xs:int" default="500"/>
+            <xs:attribute name="directionType" type="xs:int" default="1"/>
+            <xs:attribute name="sitDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    ModDB::loadXmlFile
+      modsFile:        mods.xml
+      modsPatchFile:   mods_patch.xml
+      modsPatchDir:    mods.d/*.xml
+  -->
+  <xs:element name="mods" type="root_mods"/>
+  <xs:complexType name="root_mods">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="mod">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="description" type="xs:string" use="optional"/>
+            <xs:attribute name="help" type="xs:string" use="optional"/>
+            <xs:attribute name="localdir" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    CharDB::load
+      charCreationFile:   charcreation.xml
+  -->
+  <xs:element name="chars" type="root_chars"/>
+  <xs:complexType name="root_chars">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <!-- TODO <xs:element ref="include"/> -->
+        <xs:element name="haircolor">
+          <xs:complexType>
+            <xs:attribute name="min" type="xs:int" use="required"/>
+            <xs:attribute name="max" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="hairstyle">
+          <xs:complexType>
+            <xs:attribute name="min" type="xs:int" use="required"/>
+            <xs:attribute name="max" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="look">
+          <xs:complexType>
+            <xs:attribute name="min" type="xs:int" use="required"/>
+            <xs:attribute name="max" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="stat">
+          <xs:complexType>
+            <xs:attribute name="min" type="xs:int" use="required"/>
+            <xs:attribute name="max" type="xs:int" use="required"/>
+            <xs:attribute name="sum" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="race">
+          <xs:complexType>
+            <xs:attribute name="min" type="xs:int" use="required"/>
+            <xs:attribute name="max" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="item">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <!--
+    SpriteDef::load
+    SpriteDef::loadSprite
+  -->
+  <xs:element name="sprite" type="root_sprite"/>
+  <xs:complexType name="root_sprite">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <!-- SpriteDef::includeSprite -->
+        <xs:element name="include">
+          <xs:complexType>
+            <xs:attribute name="file" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <!-- SpriteDef::loadImageSet -->
+        <xs:element name="imageset">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="width" type="xs:int" use="required"/>
+            <xs:attribute name="height" type="xs:int" use="required"/>
+            <xs:attribute name="src" type="xs:string" use="required"/>
+            <xs:attribute name="offsetX" type="xs:int" default="0"/>
+            <xs:attribute name="offsetY" type="xs:int" default="0"/>
+          </xs:complexType>
+        </xs:element>
+        <!-- SpriteDef::loadAction -->
+        <xs:element name="action">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <!-- SpriteDef::loadAnimation -->
+              <xs:element name="animation" type="animation_3"/>
+            </xs:choice>
+            <!-- TODO mostly enum? -->
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="imageset" type="xs:string" use="required"/>
+            <xs:attribute name="hp" type="xs:int" default="100"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="variants" type="xs:int" use="optional"/>
+    <xs:attribute name="variant_offset" type="xs:int" use="optional"/>
+  </xs:complexType>
+  <!--
+    WeaponsDB::load
+      weaponsFile:        weapons.xml
+      weaponsPatchFile:   weapons_patch.xml
+      weaponsPatchDir:    weapons.d/*.xml
+  -->
+  <xs:element name="weapons" type="root_weapons"/>
+  <xs:complexType name="root_weapons">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="swords" type="weapons_items"/>
+      <xs:element name="bows" type="weapons_items"/>
+      <xs:element name="shields" type="weapons_items"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="weapons_items">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="item">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:integer" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+</xs:schema>
