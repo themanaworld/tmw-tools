@@ -825,7 +825,9 @@
             <xs:attribute name="waterattack-action" type="xs:string" use="optional"/>
             <xs:attribute name="drawBefore" type="xs:string" use="optional"/>
             <xs:attribute name="drawAfter" type="xs:string" use="optional"/>
+<!-- dont use legacy features
             <xs:attribute name="pet" type="xs:int" default="0"/>
+-->
             <xs:attribute name="maxFloorOffset" type="xs:int" default="0"/>
             <xs:attribute name="useButton" type="xs:string" use="optional"/>
             <xs:attribute name="useButton2" type="xs:string" use="optional"/>
@@ -1379,6 +1381,7 @@
             <xs:attribute name="sitDirectionType" type="xs:int" default="1"/>
             <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
             <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
+            <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
