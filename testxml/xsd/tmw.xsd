@@ -1246,7 +1246,8 @@
             <xs:attribute name="id" type="xs:int" use="required"/>
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attributeGroup ref="being_basic_attributes"/>
-            <xs:attribute name="maxHP" type="xs:int" use="optional"/>
+<!-- disable attributes for outdated servers
+            <xs:attribute name="maxHP" type="xs:int" use="optional"/> -->
             <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
             <xs:attribute name="colors" type="xs:string" use="optional"/>
           </xs:complexType>
