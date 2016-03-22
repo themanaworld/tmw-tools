@@ -655,12 +655,8 @@
         <xs:element ref="include"/>
         <xs:element name="status-effect">
           <xs:complexType>
+            <!-- legacy attribute only for old clients -->
             <xs:attribute name="block-id" type="xs:int" use="optional"/>
-            <xs:attributeGroup ref="status_or_stun_attrs"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="stun-effect">
-          <xs:complexType>
             <xs:attributeGroup ref="status_or_stun_attrs"/>
           </xs:complexType>
         </xs:element>
@@ -668,7 +664,7 @@
     </xs:sequence>
   </xs:complexType>
   <xs:attributeGroup name="status_or_stun_attrs">
-    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="id" type="xs:int" use="optional"/>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="start-message" type="xs:string" use="optional"/>
     <xs:attribute name="start-audio" type="xs:string" use="optional"/>
@@ -679,6 +675,10 @@
     <xs:attribute name="end-message" type="xs:string" use="optional"/>
     <xs:attribute name="end-audio" type="xs:string" use="optional"/>
     <xs:attribute name="end-particle" type="xs:string" use="optional"/>
+    <xs:attribute name="option" type="xs:int" use="optional"/>
+    <xs:attribute name="opt1" type="xs:int" use="optional"/>
+    <xs:attribute name="opt2" type="xs:int" use="optional"/>
+    <xs:attribute name="opt3" type="xs:int" use="optional"/>
   </xs:attributeGroup>
   <!--
     maps and tilesets omitted, they have a DTD from tiled
