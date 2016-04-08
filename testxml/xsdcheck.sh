@@ -23,9 +23,11 @@ check emotes.xml
 check equipmentwindow.xml
 check evol.manaplus
 check features.xml
+check homunculuses.xml
 check itemcolors.xml
 check items.xml
 check maps.xml
+check mercenaries.xml
 check mods.xml
 check monsters.xml
 check npcdialogs.xml

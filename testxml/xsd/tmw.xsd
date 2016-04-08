@@ -1388,6 +1388,111 @@
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
+
+  <!-- probably not all tags correct here -->
+  <xs:element name="homunculuses" type="root_homunculuses"/>
+  <xs:complexType name="root_homunculuses">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="homunculus">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="targetSelection" type="bool" default="true"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+            <xs:attribute name="startFollowDistance" type="xs:int" default="3"/>
+            <xs:attribute name="followDistance" type="xs:int" default="0"/>
+            <xs:attribute name="warpDistance" type="xs:int" default="11"/>
+            <xs:attribute name="walkSpeed" type="xs:int" default="0"/>
+            <xs:attribute name="offsetX" type="xs:int" default="0"/>
+            <xs:attribute name="offsetY" type="xs:int" default="1"/>
+            <xs:attribute name="sitOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="sitOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="moveOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="moveOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="deadOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="deadOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="attackOffsetX" type="xs:int" use="optional"/>
+            <xs:attribute name="attackOffsetY" type="xs:int" use="optional"/>
+            <xs:attribute name="thinkTime" type="xs:int" default="500"/>
+            <xs:attribute name="directionType" type="xs:int" default="1"/>
+            <xs:attribute name="sitDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
+            <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- probably not all tags correct here -->
+  <xs:element name="mercenaries" type="root_mercenaries"/>
+  <xs:complexType name="root_mercenaries">
+    <xs:sequence>
+      <xs:element ref="its:rules" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="mercenary">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="variant" type="xs:int" default="0"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="particlefx" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="targetSelection" type="bool" default="true"/>
+            <xs:attributeGroup ref="being_basic_attributes"/>
+            <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
+            <xs:attribute name="startFollowDistance" type="xs:int" default="3"/>
+            <xs:attribute name="followDistance" type="xs:int" default="0"/>
+            <xs:attribute name="warpDistance" type="xs:int" default="11"/>
+            <xs:attribute name="walkSpeed" type="xs:int" default="0"/>
+            <xs:attribute name="offsetX" type="xs:int" default="0"/>
+            <xs:attribute name="offsetY" type="xs:int" default="1"/>
+            <xs:attribute name="sitOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="sitOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="moveOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="moveOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="deadOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="deadOffsetY" type="xs:int" default="1"/>
+            <xs:attribute name="attackOffsetX" type="xs:int" use="optional"/>
+            <xs:attribute name="attackOffsetY" type="xs:int" use="optional"/>
+            <xs:attribute name="thinkTime" type="xs:int" default="500"/>
+            <xs:attribute name="directionType" type="xs:int" default="1"/>
+            <xs:attribute name="sitDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
+            <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
+            <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
   <!--
     ModDB::loadXmlFile
       modsFile:        mods.xml
