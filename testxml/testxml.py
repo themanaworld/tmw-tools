@@ -591,7 +591,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
             try:
                 name = action.attributes["name"].value
             except:
-                showMsgSprite("no action name", iserr)
+                showMsgSprite(fileLoc, "no action name", iserr)
                 continue
             try:
                 hp = action.attributes["hp"].value
@@ -1271,7 +1271,7 @@ def testTargetCursor(id, node, file):
     try:
         targetCursor = node.attributes["targetCursor"].value
         if targetCursor != "small" and targetCursor != "medium" and targetCursor != "large":
-            showMsgFile(id, "unknown target cursor " + targetCursor)
+            showMsgFile(id, "unknown target cursor " + targetCursor, True)
     except:
         None
 
