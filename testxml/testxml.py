@@ -47,6 +47,7 @@ safeDye = False
 borderSize = 20
 colorsList = set()
 showAll = False
+silent = False
 
 testBadCollisions = False
 # number of tiles difference. after this amount tiles can be counted as incorrect
@@ -502,8 +503,9 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
         else:
             tmp = s1
         if sizes[0] != s1 and tmp != sizesOGL[0] and sizes[0] != sizesOGL[0]:
-            showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
-            " (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
+            if silent != True:
+                showMsgSprite(fileLoc, "image width " + str(sizes[0]) + \
+                " (need " + str(tmp) + ") is not multiply to frame size " + width + ", image:" + image, False)
 
         if sizes[0] != sizesOGL[0]:
             if sizesOGL[0] > sizes[0]:
@@ -525,8 +527,9 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
             tmp = s2;
 
         if sizes[1] != s2 and tmp != sizesOGL[1] and sizes[1] != sizesOGL[1]:
-            showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
-            " (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
+            if silent != True:
+                showMsgSprite(fileLoc, "image height " + str(sizes[1]) + \
+                " (need " + str(tmp) + ") is not multiply to frame size " + height + ", image:" + image, False)
 
         if sizes[1] != sizesOGL[1]:
             if sizesOGL[1] > sizes[1]:
@@ -614,10 +617,12 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
                     errIds = errIds + str(i) + ","
                 i = i + 1
             if len(errIds) > 0:
-                showMsgSprite(fileLoc, "unused frames: " + errIds[0:len(errIds)-1], False)
+                if silent != True:
+                    showMsgSprite(fileLoc, "unused frames: " + errIds[0:len(errIds)-1], False)
 
     if checkAction != "" and checkAction not in actset:
-        showMsgSprite(fileLoc, "no attack action '" + checkAction + "' in sprite", iserr)
+        if silent != True:
+            showMsgSprite(fileLoc, "no attack action '" + checkAction + "' in sprite", iserr)
 
 
 def testSpriteAction(file, name, action, numframes, iserr):
@@ -1601,7 +1606,8 @@ def testOverSizedTiles(layer, tiles, file):
                     tile = findTileByGid(tiles, val)
                     if val > 0:
                         errList.append((x, y))
-                        warnings = warnings + 1
+                        if silent != True:
+                            warnings = warnings + 1
             elif tile.tileHeight > 32 and y - 1 > 0:
                 for y2 in range(y - 1, y - 1 - int(tile.height / 32), -1):
                     idx = ((y2 * layer.width) + x) * 4
@@ -1609,22 +1615,24 @@ def testOverSizedTiles(layer, tiles, file):
                     tile = findTileByGid(tiles, val)
                     if val > 0:
                         errList.append((x, y))
-                        warnings = warnings + 1
+                        if silent != True:
+                            warnings = warnings + 1
 
     if len(errList) == 0:
         return
-    print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
-            ". Possible incorrect map drawing"
-    errors = errors + 1
-    errStr = ""
-    k = 0
-    for err in errList:
-        errStr = errStr + str(err) + ", "
-        k = k + 1
-        if k > 100:
-            errStr = errStr + "..."
-            break
-    print errStr
+    if silent != True:
+        print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
+                ". Possible incorrect map drawing"
+        errors = errors + 1
+        errStr = ""
+        k = 0
+        for err in errList:
+            errStr = errStr + str(err) + ", "
+            k = k + 1
+            if k > 100:
+                errStr = errStr + "..."
+                break
+        print errStr
 
 
 def testTiles(file, tilesMap):
@@ -1992,7 +2000,8 @@ def testDefaultFiles():
     testDirExists(minimapsDir)
     testDirExists(mapsDir)
     testDirExists(sfxDir)
-    testDirExists(musicDir)
+    if silent != True:
+        testDirExists(musicDir)
     testDirExists(wallpapersDir)
 
     testSprite("0", spriteErrorFile, 0, True, "", True)
@@ -2182,6 +2191,8 @@ def detectClientData(dirs):
 if len(sys.argv) == 2:
     if sys.argv[1] == "all":
         showAll = True
+    elif sys.argv[1] == "silent":
+        silent = True
 
 showHeader()
 print "Detecting clientdata dir"
@@ -2209,3 +2220,5 @@ testSoundsDir("", sfxDir)
 print "Checking music dir"
 testSoundsDir("", musicDir)
 showFooter()
+if errors > 0:
+    exit(1)
