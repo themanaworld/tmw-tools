@@ -594,6 +594,10 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
                 showMsgSprite("no action name", iserr)
                 continue
             try:
+                hp = action.attributes["hp"].value
+            except:
+                hp = ""
+            try:
                 setname = action.attributes["imageset"].value
             except:
                 setname = ""
@@ -604,10 +608,10 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
                 showMsgSprite(fileLoc, "using incorrect imageset name in action: " + name, iserr)
             frameSet = frameSet | testSpriteAction(fileLoc, name, action, num, iserr)
 
-            if name in actset:
+            if name + "|" + hp in actset:
                 showMsgSprite(fileLoc, "duplicate action: " + name, iserr)
                 continue
-            actset.add(name)
+            actset.add(name + "|" + hp)
 
         if len(frameSet) > 0:
             errIds = ""
