@@ -780,6 +780,7 @@
     <xs:attribute name="sortOffsetY" type="xs:int" default="0"/>
     <xs:attribute name="hpBarOffsetX" type="xs:int" default="0"/>
     <xs:attribute name="hpBarOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="quickActionEffect" type="xs:int" default="-1"/>
     <xs:attribute name="walkType" type="xs:string" default="walk"/>
   </xs:attributeGroup>
   <xs:simpleType name="cursor">
