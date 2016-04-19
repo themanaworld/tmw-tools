@@ -58,6 +58,7 @@ SERVER_WLK = 'data'
 SERVER_NPCS = 'npc'
 TMWA_MAP_CONF = 'conf/tmwa-map.conf'
 NPC_MOBS = '_mobs.txt'
+NPC_NODES = '_nodes.txt'
 NPC_WARPS = '_warps.txt'
 NPC_IMPORTS = '_import.txt'
 NPC_MASTER_IMPORTS = NPC_IMPORTS
@@ -88,6 +89,13 @@ class Mob(Object):
         self.ea_spawn = 0
         self.ea_death = 0
 
+class Node(Object):
+    __slots__ = (
+        'subtype'
+    )
+    def __init__(self):
+        self.subtype = 0
+
 class Warp(Object):
     __slots__ = (
         'dest_map',
@@ -109,13 +117,16 @@ class ContentHandler(xml.sax.ContentHandler):
         'base',     # base name of current map
         'npc_dir',  # world/map/npc/<base>
         'mobs',     # open file to _mobs.txt
+        'nodes',     # open file to _nodes.txt
         'warps',    # open file to _warps.txt
         'imports',  # open file to _import.txt
         'name',     # name property of the current map
         'object',   # stores properties of the latest <object> tag
         'mob_ids',  # set of all mob types that spawn here
+        'node_types', # set of all node types that appear here
+        'node_objs', # set of all node objects that appear here
     )
-    def __init__(self, out, npc_dir, mobs, warps, imports):
+    def __init__(self, out, npc_dir, mobs, warps, imports, nodes):
         xml.sax.ContentHandler.__init__(self)
         self.locator = None
         self.out = open(out, 'w')
@@ -129,10 +140,13 @@ class ContentHandler(xml.sax.ContentHandler):
         self.base = posixpath.basename(npc_dir)
         self.npc_dir = npc_dir
         self.mobs = mobs
+        self.nodes = nodes
         self.warps = warps
         self.imports = imports
         self.object = None
         self.mob_ids = set()
+        self.node_types = set()
+        self.node_objs = set()
 
     def setDocumentLocator(self, loc):
         self.locator = loc
@@ -162,6 +176,8 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.mobs.write('// %s mobs\n\n' % self.name)
                 self.warps.write('// %s\n' % MESSAGE)
                 self.warps.write('// %s warps\n\n' % self.name)
+                self.nodes.write('// %s\n' % MESSAGE)
+                self.nodes.write('// %s nodes\n\n' % self.name)
 
             if name == u'tileset':
                 self.tilesets.add(int(attr[u'firstgid']))
@@ -208,6 +224,13 @@ class ContentHandler(xml.sax.ContentHandler):
                     y += h/2
                     w -= 2
                     h -= 2
+                elif obj_type == 'node':
+                    self.object = Node()
+                    w += x - 1
+                    h += y - 1
+                    if w == x and h == y:
+                        w = 0
+                        h = 0
                 else:
                     if obj_type not in other_object_types:
                         print('Unknown object type:', obj_type, file=sys.stderr)
@@ -261,7 +284,7 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%s,%d,%d,%d,%d' % (self.base, obj.x, obj.y, obj.w, obj.h),
                         'monster',
                         obj.name,
-                        '%d,%d,%dms,%dms,Mob%s::On%d\n' % (mob_id, obj.max_beings, obj.ea_spawn, obj.ea_death, self.base, mob_id),
+                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, obj.ea_spawn, obj.ea_death),
                     ])
                 )
             elif isinstance(obj, Warp):
@@ -272,6 +295,9 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_tile_x, obj.dest_tile_y),
                     ])
                 )
+            elif isinstance(obj, Node):
+                self.node_types.add(obj.name)
+                self.node_objs.add(obj)
 
         if name == u'data':
             if self.state is State.DATA:
@@ -289,10 +315,34 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.state = State.FINAL
 
     def endDocument(self):
-        self.mobs.write('\n\n%s,0,0,0|script|Mob%s|32767\n{\n    end;\n' % (self.base, self.base))
-        for mob_id in sorted(self.mob_ids):
-            self.mobs.write('\nOn%d:\n    set @mobID, %d;\n    callfunc "MobPoints";\n    end;\n' % (mob_id, mob_id))
-        self.mobs.write('}\n')
+        if len(self.node_types) > 0:
+            self.nodes.write('%s,0,0,0|script|Node%s|32767\n{\n    end;\nOnInit:\n' % (self.base, self.base))
+            for ntype in sorted(self.node_types):
+                self.nodes.write('    setarray .m$, "_N-%s"' % (ntype))
+                for nm in self.node_objs:
+                    self.nodes.write(', "%s"' % (self.base))
+                self.nodes.write(';\n    setarray .x1, "_N-%s"' % (ntype))
+                for nx in self.node_objs:
+                    self.nodes.write(', %d' % (nx.x))
+                self.nodes.write(';\n    setarray .y1, "_N-%s"' % (ntype))
+                for ny in self.node_objs:
+                    self.nodes.write(', %d' % (ny.y))
+                self.nodes.write(';\n    setarray .x2, "_N-%s"' % (ntype))
+                for nw in self.node_objs:
+                    self.nodes.write(', %d' % (nw.w))
+                self.nodes.write(';\n    setarray .y2, "_N-%s"' % (ntype))
+                for nh in self.node_objs:
+                    self.nodes.write(', %d' % (nh.h))
+                self.nodes.write(';\n    setarray .id, "_N-%s"' % (ntype))
+                for nt in self.node_objs:
+                    self.nodes.write(', %d' % (nt.subtype))
+                self.nodes.write(';\n')
+                # TODO don't make .id, .x2, .y2 when they are empty
+                # TODO custom properties
+                self.nodes.write('    donpcevent "_N-%s::OnMaybeStart";\n' % (ntype))
+            self.nodes.write('    destroy;\n}\n')
+        else:
+            self.nodes.write('// (no nodes)\n')
         self.imports.write('// Map %s: %s\n' % (self.base, self.name))
         self.imports.write('// %s\n' % MESSAGE)
         self.imports.write('map: %s\n' % self.base)
@@ -344,7 +394,8 @@ def main(argv):
             with open(posixpath.join(this_map_npc_dir, NPC_MOBS), 'w') as mobs:
                 with open(posixpath.join(this_map_npc_dir, NPC_WARPS), 'w') as warps:
                     with open(posixpath.join(this_map_npc_dir, NPC_IMPORTS), 'w') as imports:
-                        xml.sax.parse(tmx, ContentHandler(wlk, this_map_npc_dir, mobs, warps, imports))
+                        with open(posixpath.join(this_map_npc_dir, NPC_NODES), 'w') as nodes:
+                            xml.sax.parse(tmx, ContentHandler(wlk, this_map_npc_dir, mobs, warps, imports, nodes))
             npc_master.append('import: %s\n' % posixpath.join(SERVER_NPCS, base, NPC_IMPORTS))
 
     with open(posixpath.join(wlk_dir, 'resnametable.txt'), 'w') as resname:
