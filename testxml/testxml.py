@@ -1378,9 +1378,11 @@ def testMap(file, path):
         return
 
     if mapWidth < borderSize * 2 + 1:
-        showMsgFile(file, "map width to small: " + str(mapWidth), False)
+        if silent == False or file.find("maps/test") != 0:
+            showMsgFile(file, "map width to small: " + str(mapWidth), False)
     if mapHeight < borderSize * 2 + 1:
-        showMsgFile(file, "map height to small: " + str(mapHeight), False)
+        if silent == False or file.find("maps/test") != 0:
+            showMsgFile(file, "map height to small: " + str(mapHeight), False)
 
     tilesMap = dict()
 
@@ -1553,14 +1555,17 @@ def testMap(file, path):
     else:
         ids = testCollisionLayer(file, collision, tilesMap)
         if ids[0] != None and len(ids[0]) > 0:
-            showLayerErrors(file, ids[0], "empty tiles in collision border", False)
+            if silent == False or file.find("maps/test") != 0:
+                showLayerErrors(file, ids[0], "empty tiles in collision border", False)
         if ids[1] != None and len(ids[1]) > 0:
-            showLayerErrors(file, ids[1], "incorrect tileset index in collision layer", False)
+            if silent == False or file.find("maps/test") != 0:
+                showLayerErrors(file, ids[1], "incorrect tileset index in collision layer", False)
 
     if len(lowLayers) < 1:
         showMsgFile(file, "missing low layers", False)
     if len(overLayers) < 1:
-        showMsgFile(file, "missing over layers", False)
+        if silent == False or file.find("maps/test") != 0:
+            showMsgFile(file, "missing over layers", False)
 
     if fringe != None:
         lowLayers.append(fringe)
@@ -1580,7 +1585,8 @@ def testMap(file, path):
     if warn1 != None and err1 != None:
         warn1 = warn1 - err1
     if warn1 != None and len(warn1) > 0:
-        showLayerErrors(file, warn1, "empty tile in lower layers", False)
+        if silent != True:
+            showLayerErrors(file, warn1, "empty tile in lower layers", False)
     if err1 != None and len(err1) > 0:
         showLayerErrors(file, err1, "empty tile in all layers", True)
 
@@ -1735,7 +1741,8 @@ def testCollisionLayer(file, layer, tiles):
                 tileset.add((x, y))
 
     if haveTiles == False:
-        showMsgFile(file, "empty collision layer", False)
+        if silent == False or file.find("maps/test") != 0:
+            showMsgFile(file, "empty collision layer", False)
         return (set(), set())
 
     return (tileset, badtiles)
@@ -2222,7 +2229,8 @@ testParticlesDir(particlesDir)
 print "Checking sfx dir"
 testSoundsDir("", sfxDir)
 print "Checking music dir"
-testSoundsDir("", musicDir)
+if silent != True:
+    testSoundsDir("", musicDir)
 showFooter()
-if errors > 0:
+if errors > 0 or warnings > 0:
     exit(1)
