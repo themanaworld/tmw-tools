@@ -1,0 +1,8 @@
+{
+    "dir": "client-data/",
+    "dbs": "world/map/db/",
+    "monsters":{
+        "xml": "monsters.xml",
+        "db": "mob_db_generated.txt"
+    }
+}
