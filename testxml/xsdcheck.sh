@@ -16,6 +16,7 @@ xmllint --format --schema XMLSchema.xsd tmw.xsd 2>&1 >/dev/null | \
     grep -v ".xsd validates" >>../errors.txt
 
 check avatars.xml
+check badges.xml
 check charcreation.xml
 check deadmessages.xml
 check effects.xml
@@ -24,6 +25,7 @@ check equipmentwindow.xml
 check evol.manaplus
 check features.xml
 check homunculuses.xml
+check horses.xml
 check itemcolors.xml
 check items.xml
 check maps.xml

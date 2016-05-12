@@ -1390,6 +1390,76 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="badges" type="root_badges"/>
+  <xs:complexType name="root_badges">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="guild" type="badges_list" />
+        <xs:element name="party" type="badges_list" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="badges_list">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="badge">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="image" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="horses" type="root_horses"/>
+  <xs:complexType name="horse_sprite">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="variant" type="xs:int" default="0"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="root_horses">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="horse" type="horse_node" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="horse_node">
+    <xs:sequence>
+      <xs:element name="up" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite" type="horse_sprite" />
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="down" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="sprite" type="horse_sprite" />
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="offsetX" type="xs:int" default="0"/>
+    <xs:attribute name="offsetY" type="xs:int" default="0"/>
+    <xs:attribute name="upOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="upOffsetY" type="xs:int" default="0"/>
+    <xs:attribute name="downOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="downOffsetY" type="xs:int" default="0"/>
+  </xs:complexType>
+
   <!-- probably not all tags correct here -->
   <xs:element name="homunculuses" type="root_homunculuses"/>
   <xs:complexType name="root_homunculuses">
