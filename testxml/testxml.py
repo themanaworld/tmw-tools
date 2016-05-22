@@ -48,6 +48,7 @@ borderSize = 20
 colorsList = set()
 showAll = False
 silent = False
+herc = False
 
 testBadCollisions = False
 # number of tiles difference. after this amount tiles can be counted as incorrect
@@ -1564,7 +1565,7 @@ def testMap(file, path):
     if len(lowLayers) < 1:
         showMsgFile(file, "missing low layers", False)
     if len(overLayers) < 1:
-        if silent == False or file.find("maps/test") != 0:
+        if (silent == False or file.find("maps/test") != 0) and herc == False:
             showMsgFile(file, "missing over layers", False)
 
     if fringe != None:
@@ -2204,6 +2205,9 @@ if len(sys.argv) == 2:
         showAll = True
     elif sys.argv[1] == "silent":
         silent = True
+    elif sys.argv[1] == "herc":
+        silent = True
+        herc = True
 
 showHeader()
 print "Detecting clientdata dir"
