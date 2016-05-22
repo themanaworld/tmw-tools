@@ -325,7 +325,7 @@ def testSprites(id, node, checkGender, isNormalDye, isMust, checkAction, iserr):
             showMsg(id, "no sprite tag found", "", iserr)
 
     if sprites is not None:
-        if len(sprites) == 0:
+        if len(sprites) == 0 or len(sprites[0].childNodes) == 0:
             if nosprite == False:
                 showMsg(id, "no sprite tags found", "", iserr)
         elif len(sprites) > 3 and checkGender:
