@@ -29,7 +29,6 @@
   <xs:element name="being-effects" type="root_being-effects"/>
   <xs:complexType name="root_being-effects">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="effect">
@@ -61,7 +60,6 @@
   <xs:element name="configuration" type="root_configuration"/>
   <xs:complexType name="root_configuration">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="list">
           <xs:complexType>
@@ -95,7 +93,6 @@
   <xs:element name="effect" type="root_effect"/>
   <xs:complexType name="root_effect">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="particle">
           <xs:complexType>
@@ -349,7 +346,6 @@
   <xs:element name="quests" type="root_quests"/>
   <xs:complexType name="root_quests">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="var">
@@ -404,7 +400,6 @@
   <xs:element name="skills" type="root_skills"/>
   <xs:complexType name="root_skills">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="set">
@@ -493,7 +488,6 @@
   <xs:element name="equipment" type="root_equipment"/>
   <xs:complexType name="root_equipment">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="page" type="equipment_page"/>
       </xs:choice>
@@ -602,7 +596,6 @@
   <xs:element name="units" type="root_units"/>
   <xs:complexType name="root_units">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="unit">
@@ -650,7 +643,6 @@
   <xs:element name="status-effects" type="root_status-effects"/>
   <xs:complexType name="root_status-effects">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="status-effect">
@@ -694,7 +686,6 @@
   <xs:element name="emotes" type="root_emotes"/>
   <xs:complexType name="root_emotes">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="emote">
@@ -730,7 +721,6 @@
   <xs:element name="npcs" type="root_npcs"/>
   <xs:complexType name="root_npcs">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="npc">
@@ -799,7 +789,6 @@
   <xs:element name="items" type="root_items"/>
   <xs:complexType name="root_items">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="item">
@@ -1032,7 +1021,6 @@
   <xs:element name="sounds" type="root_sounds"/>
   <xs:complexType name="root_sounds">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="sound">
@@ -1057,7 +1045,6 @@
   <xs:element name="colors" type="root_colors"/>
   <xs:complexType name="root_colors">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice>
         <!-- hair.xml -->
         <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -1093,7 +1080,6 @@
   <xs:element name="maps" type="root_maps"/>
   <xs:complexType name="root_maps">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="map" type="maps_map"/>
@@ -1130,7 +1116,6 @@
   <xs:element name="remap" type="root_remap"/>
   <xs:complexType name="root_remap">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <!-- TODO <xs:element ref="include"/> -->
         <xs:element name="map">
@@ -1151,7 +1136,6 @@
   <xs:element name="messages" type="root_messages"/>
   <xs:complexType name="root_messages">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="message" type="xs:string"/>
@@ -1167,7 +1151,6 @@
   <xs:element name="avatars" type="root_avatars"/>
   <xs:complexType name="root_avatars">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="avatar">
@@ -1203,7 +1186,6 @@
   <xs:element name="monsters" type="root_monsters"/>
   <xs:complexType name="root_monsters">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="monster">
@@ -1342,7 +1324,6 @@
   <xs:element name="pets" type="root_pets"/>
   <xs:complexType name="root_pets">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="pet">
@@ -1498,7 +1479,6 @@
   <xs:element name="homunculuses" type="root_homunculuses"/>
   <xs:complexType name="root_homunculuses">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="homunculus">
@@ -1550,7 +1530,6 @@
   <xs:element name="mercenaries" type="root_mercenaries"/>
   <xs:complexType name="root_mercenaries">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="mercenary">
@@ -1607,7 +1586,6 @@
   <xs:element name="mods" type="root_mods"/>
   <xs:complexType name="root_mods">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="include"/>
         <xs:element name="mod">
@@ -1628,7 +1606,6 @@
   <xs:element name="chars" type="root_chars"/>
   <xs:complexType name="root_chars">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <!-- TODO <xs:element ref="include"/> -->
         <xs:element name="haircolor">
@@ -1677,7 +1654,6 @@
   <xs:element name="sprite" type="root_sprite"/>
   <xs:complexType name="root_sprite">
     <xs:sequence>
-      <xs:element ref="its:rules" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <!-- SpriteDef::includeSprite -->
         <xs:element name="include">
