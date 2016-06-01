@@ -1460,6 +1460,40 @@
     <xs:attribute name="downOffsetY" type="xs:int" default="0"/>
   </xs:complexType>
 
+  <xs:element name="itemfields" type="root_itemfields"/>
+  <xs:complexType name="root_itemfields">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:sequence>
+          <xs:element name="required" minOccurs="1" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="field" type="itemfield_node" />
+                </xs:choice>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="add" minOccurs="1" maxOccurs="1">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="field" type="itemfield_node" />
+                </xs:choice>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="itemfield_node">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string" use="required"/>
+    <xs:attribute name="signed" type="bool" default="true"/>
+  </xs:complexType>
+
   <!-- probably not all tags correct here -->
   <xs:element name="homunculuses" type="root_homunculuses"/>
   <xs:complexType name="root_homunculuses">

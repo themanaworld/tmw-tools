@@ -27,6 +27,7 @@ check features.xml
 check homunculuses.xml
 check horses.xml
 check itemcolors.xml
+check itemfields.xml
 check items.xml
 check maps.xml
 check mercenaries.xml
