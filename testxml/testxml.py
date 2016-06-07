@@ -1511,7 +1511,7 @@ def testMap(mapName, file, path):
             tile.source = tile.source[3:]
         tilesMap[tile.firstGid] = tile
 
-    if silent == False and mapName not in mapToAtlas:
+    if mapName not in mapToAtlas:
         showMsgFile(file, "map dont have atlas", True)
 
     tileset = tileset0
@@ -1681,8 +1681,6 @@ def testTiles(mapName, file, tilesMap):
                         tile1.source,
                         atlasName),
                         True)
-
-        # here can be test for atlas
         for gid2 in tilesMap:
             if firstGid != gid2:
                 tile2 = tilesMap[gid2]
@@ -1690,8 +1688,6 @@ def testTiles(mapName, file, tilesMap):
                     (tile1.lastGid >= tile2.firstGid and tile1.lastGid <= tile2.lastGid):
                         showMsgFile(file, "overlaping tilesets gids \"" + tile1.name \
                                 + "\" and \"" + tile2.name + "\"", True)
-
-
 
 
 def reportAboutTiles(file, data):
