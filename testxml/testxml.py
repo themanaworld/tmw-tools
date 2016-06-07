@@ -1388,49 +1388,54 @@ def testMap(mapName, file, path):
 
     tilesMap = dict()
 
-    for tileset in dom.getElementsByTagName("tileset"):
+    for tileset0 in dom.getElementsByTagName("tileset"):
+        tileset = tileset0
+        try:
+            firstGid = int(tileset.attributes["firstgid"].value)
+        except:
+            firstGid = 0
+
         try:
             source = tileset.attributes["source"].value
             if source is not None and source != "":
                 file2 = os.path.abspath(parentDir + os.path.sep + mapsDir + source)
                 if not os.path.isfile(file2):
                     showMsgFile(file, "missing source file in tileset " + source, True)
-
-                continue;
         except:
-            None
+            source = ""
+
+        tile = Tileset()
+        tile.firstGid = firstGid
+        tile.lastGid = 0
+
+        if source[-4:] == ".tsx":
+            relativePath = parentDir + "/" + mapsDir + source
+            dom2 = minidom.parse(relativePath)
+            tileset = dom2.documentElement
+            idx = relativePath.rfind("/")
+            relativePath = relativePath[:idx+1]
+            relativePath2 = source
+            idx = relativePath2.rfind("/")
+            relativePath2 = relativePath2[:idx+1]
+        else:
+            relativePath = ""
+            relativePath2 = ""
 
         name = readAttr(tileset, "name", "", "warning: missing tile name: " + file, False)
         tileWidth = readAttrI(tileset, "tilewidth", mapTileWidth, \
                 "error: missing tile width in tileset: " + name + ", " + file, True)
         tileHeight = readAttrI(tileset, "tileheight", mapTileHeight, \
                 "error: missing tile height in tileset: " + name + ", " + file, True)
-        try:
-            firstGid = int(tileset.attributes["firstgid"].value)
-        except:
-            firstGid = 0
-
         if firstGid in tilesMap:
             showMsgFile(file, "tile with firstgid " + str(firstGid) + \
                     " already exist: " + name + ", " + file, True)
             continue
 
-        if tileWidth == 0 or tileHeight == 0:
-            continue
-
-        tile = Tileset()
-        tile.name = name
         tile.width = tileWidth
         tile.tileWidth = tileWidth
         tile.height = tileHeight
         tile.tileHeight = tileHeight
-        tile.firstGid = firstGid
-        tile.lastGid = 0
-
-#        if tileWidth != 32:
-#            showMsgFile(file, "tile width " + str(tileWidth) + " != 32: " + name, False)
-#        if tileHeight != 32:
-#            showMsgFile(file, "tile height " + str(tileHeight) + " != 32: " + name, False)
+        tile.name = name
 
         images = tileset.getElementsByTagName("image")
         if images == None or len(images) == 0:
@@ -1439,64 +1444,68 @@ def testMap(mapName, file, path):
         elif len(images) > 1:
             showMsgFile(file, "to many image tags in tile " + name, True)
             continue
-        else:
-            image = images[0]
-            source = readAttr(image, "source", None, "error: missing source in image tag in tile " \
-                    + name + ": " + file, True)
-            if source != None:
+
+        image = images[0]
+        source = readAttr(image, "source", None, "error: missing source in image tag in tile " \
+                + name + ": " + file, True)
+
+        if source != None:
+            if relativePath == "":
                 imagePath = os.path.abspath(parentDir + "/" + mapsDir + source)
+            else:
+                imagePath = os.path.abspath(relativePath + source)
 
-                img = splitImage(imagePath)
-                imagePath = img[0]
-                imagecolor = img[1]
+            img = splitImage(imagePath)
+            imagePath = img[0]
+            imagecolor = img[1]
 
-                tile.image = imagePath
-                tile.color = imagecolor
+            tile.image = imagePath
+            tile.color = imagecolor
 
-                if not os.path.isfile(imagePath) or os.path.exists(imagePath) == False:
-                    showMsgFile(file, "image file not exist: " + mapsDir + source + ", " + \
-                            name, True)
-                    continue
+            if not os.path.isfile(imagePath) or os.path.exists(imagePath) == False:
+                showMsgFile(file, "image file not exist: " + mapsDir + source + ", " + \
+                        name, True)
+                continue
 
-                if imagecolor != "":
-                    testDye("", imagecolor, source, file, True)
+            if imagecolor != "":
+                testDye("", imagecolor, source, file, True)
 
-                sz = testImageFile(file, imagePath, 0, "", True)
-                width = sz[0]
-                height = sz[1]
+            sz = testImageFile(file, imagePath, 0, "", True)
+            width = sz[0]
+            height = sz[1]
 
-                if width == 0 or height == 0:
-                    continue
+            if width == 0 or height == 0:
+                continue
 
-                if width < tileWidth:
-                    showMsgFile(file, "tile width more than image width in tile: " + \
-                            name, True)
-                    continue
-                if height < tileHeight:
-                    showMsgFile(file, "tile height more than image height in tile: " + \
-                            name, True)
-                    continue
+            if width < tileWidth:
+                showMsgFile(file, "tile width more than image width in tile: " + \
+                        name, True)
+                continue
+            if height < tileHeight:
+                showMsgFile(file, "tile height more than image height in tile: " + \
+                        name, True)
+                continue
 
-                s1 = int(width / int(tileWidth)) * int(tileWidth)
+            s1 = int(width / int(tileWidth)) * int(tileWidth)
 
-                if width != s1:
-                    if s1 == 0:
-                        s1 = int(tileWidth)
-                    showMsgFile(file, "image width " + str(width) + \
-                            " (need " + str(s1) + ") is not multiply to tile size " + \
-                            str(tileWidth) + ". " + source + ", " + name, False)
+            if width != s1:
+                if s1 == 0:
+                    s1 = int(tileWidth)
+                showMsgFile(file, "image width " + str(width) + \
+                        " (need " + str(s1) + ") is not multiply to tile size " + \
+                        str(tileWidth) + ". " + source + ", " + name, False)
 
-                s2 = int(height / int(tileHeight)) * int(tileHeight)
+            s2 = int(height / int(tileHeight)) * int(tileHeight)
 
-                tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight))) - 1
-                if height != s2:
-                    if s2 == 0:
-                        s2 = int(tileHeight)
-                    showMsgFile(file, "image width " + str(height) + \
-                            " (need " + str(s2) + ") is not multiply to tile size " + \
-                            str(tileHeight) + ". " + source + ", " + name, False)
+            tile.lastGid = tile.firstGid + (int(width / int(tileWidth)) * int(height / int(tileHeight))) - 1
+            if height != s2:
+                if s2 == 0:
+                    s2 = int(tileHeight)
+                showMsgFile(file, "image width " + str(height) + \
+                        " (need " + str(s2) + ") is not multiply to tile size " + \
+                        str(tileHeight) + ". " + source + ", " + name, False)
 
-        tile.source = source
+        tile.source = relativePath2 + source
         # hack to change relative back path to normal relative path
         if len(tile.source) > 3 and tile.source[:11] == "../graphics":
             tile.source = tile.source[3:]
@@ -1504,6 +1513,8 @@ def testMap(mapName, file, path):
 
     if silent == False and mapName not in mapToAtlas:
         showMsgFile(file, "map dont have atlas", True)
+
+    tileset = tileset0
 
     testTiles(mapName, file, tilesMap)
     layers = dom.getElementsByTagName("layer")
