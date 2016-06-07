@@ -16,6 +16,7 @@ import ogg.vorbis
 import StringIO
 import sys
 from xml.dom import minidom
+from xml.etree import ElementTree
 from PIL import Image
 import zlib
 
@@ -1366,7 +1367,7 @@ def readAttr(node, attr, dv, msg, iserr):
         return dv
 
 
-def testMap(file, path):
+def testMap(mapName, file, path):
     global warnings, errors
     fullPath = parentDir + "/" + path
     dom = minidom.parse(fullPath)
@@ -1495,9 +1496,16 @@ def testMap(file, path):
                             " (need " + str(s2) + ") is not multiply to tile size " + \
                             str(tileHeight) + ". " + source + ", " + name, False)
 
+        tile.source = source
+        # hack to change relative back path to normal relative path
+        if len(tile.source) > 3 and tile.source[:11] == "../graphics":
+            tile.source = tile.source[3:]
         tilesMap[tile.firstGid] = tile
 
-    testTiles(file, tilesMap)
+    if silent == False and mapName not in mapToAtlas:
+        showMsgFile(file, "map dont have atlas", True)
+
+    testTiles(mapName, file, tilesMap)
     layers = dom.getElementsByTagName("layer")
     if layers == None or len(layers) == 0:
         showMsgFile(file, "map dont have layers", True)
@@ -1646,11 +1654,26 @@ def testOverSizedTiles(layer, tiles, file):
         print errStr
 
 
-def testTiles(file, tilesMap):
+def testTiles(mapName, file, tilesMap):
+    ignoredFiles = []
+    if "ignored" in atlasToFiles:
+        ignoredFiles = atlasToFiles["ignored"]
     for firstGid in tilesMap:
+        tile1 = tilesMap[firstGid]
+        if mapName in mapToAtlas:
+            atlasName = mapToAtlas[mapName]
+            if atlasName in atlasToFiles:
+                files = atlasToFiles[atlasName]
+                if tile1.source not in files and tile1.source not in ignoredFiles:
+                    showMsgFile(file, "tileset '{0} ({1})' not present in atlas '{2}'".format(
+                        tile1.name,
+                        tile1.source,
+                        atlasName),
+                        True)
+
+        # here can be test for atlas
         for gid2 in tilesMap:
             if firstGid != gid2:
-                tile1 = tilesMap[firstGid]
                 tile2 = tilesMap[gid2]
                 if (tile1.firstGid >= tile2.firstGid and tile1.firstGid <= tile2.lastGid) or \
                     (tile1.lastGid >= tile2.firstGid and tile1.lastGid <= tile2.lastGid):
@@ -1991,7 +2014,7 @@ def testMaps(dir):
 
     for file in os.listdir(fullPath):
         if filtmaps.search(file):
-            testMap(mapsDir + file, dir + file)
+            testMap(file, mapsDir + file, dir + file)
 
 def testDirExists(path):
     global errors
@@ -2178,6 +2201,31 @@ def testItemColors(fileName):
                 names.add(colorName)
             testDyeColors(id, colorDye, colorDye, name, True)
 
+def loadMapAtlases(fileName):
+    root = ElementTree.parse(parentDir + "/" + fileName).getroot()
+    mapToAtlas = dict()
+    atlasToFiles = dict()
+    for node in root.findall("map"):
+        mapName = node.attrib["name"]
+        atlasNode = node.find("atlas")
+        if atlasNode == None:
+            continue
+        atlasName = atlasNode.attrib["name"]
+        mapToAtlas[mapName] = atlasName
+    for node in root.findall("atlas"):
+        atlasName = node.attrib["name"]
+        files = []
+        for fileNode in node.findall("file"):
+            fileName = fileNode.attrib["name"]
+            files.append(fileName)
+        atlasToFiles[atlasName] = files
+    for mapName in mapToAtlas:
+        atlasName = mapToAtlas[mapName]
+        if atlasName not in atlasToFiles:
+            showMsg(fileName, "atlas '{0}' assigned to map not present in maps.xml".format(atlasName), True)
+
+    return (mapToAtlas, atlasToFiles)
+
 def haveXml(dir):
     if not os.path.isdir(dir) or not os.path.exists(dir):
         return False
@@ -2215,6 +2263,7 @@ detectClientData([".", "..", "../../client-data", parentDir])
 print "Checking xml file syntax"
 enumDirs(parentDir)
 loadPaths()
+(mapToAtlas, atlasToFiles) = loadMapAtlases("/maps.xml")
 testDefaultFiles()
 testItemColors("/itemcolors.xml")
 testItems("/items.xml", iconsDir)
