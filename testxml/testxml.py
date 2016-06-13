@@ -150,7 +150,8 @@ def enumDirs(parentDir):
         files = os.listdir(parentDir)
     except OSError:
         print "Directory error: " + parentDir
-        warnings = warnings + 1
+        if silent == False:
+            warnings = warnings + 1
         return
     for file1 in files:
         if file1[0] == ".":
@@ -161,6 +162,8 @@ def enumDirs(parentDir):
         else:
             if filt.search(file1):
                 try:
+                    if silent == True:
+                        print "Checking " + file2
                     minidom.parse(file2)
                 except xml.parsers.expat.ExpatError as err:
                     print "error: " + file2 + ", line=" + str(err.lineno) + ", char=" + str(err.offset)
