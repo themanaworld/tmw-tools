@@ -21,6 +21,7 @@ check charcreation.xml
 check deadmessages.xml
 check effects.xml
 check emotes.xml
+check equipmentslots.xml
 check equipmentwindow.xml
 check evol.manaplus
 check features.xml

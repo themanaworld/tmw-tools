@@ -1475,6 +1475,20 @@
     <xs:attribute name="signed" type="bool" default="true"/>
   </xs:complexType>
 
+  <xs:element name="equipmentslots" type="root_equipmentslots"/>
+  <xs:complexType name="root_equipmentslots">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="slot">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="slot" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
   <!-- probably not all tags correct here -->
   <xs:element name="homunculuses" type="root_homunculuses"/>
   <xs:complexType name="root_homunculuses">
