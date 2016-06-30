@@ -42,6 +42,7 @@ check quests.xml
 check skills.xml
 check skillunits.xml
 check sounds.xml
+check stats.xml
 check status-effects.xml
 check units.xml
 check weapons.xml
