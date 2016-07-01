@@ -1432,8 +1432,8 @@ def testMap(mapName, file, path):
                 relativePath2 = source
                 idx = relativePath2.rfind("/")
                 relativePath2 = relativePath2[:idx+1]
-                showMsgFile(file, "tsx not found: " + source, True)
             except:
+                showMsgFile(file, "tsx not found: " + source, True)
                 relativePath = ""
                 relativePath2 = ""
         else:
