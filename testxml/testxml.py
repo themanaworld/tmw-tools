@@ -1413,13 +1413,18 @@ def testMap(mapName, file, path):
 
         if source[-4:] == ".tsx":
             relativePath = parentDir + "/" + mapsDir + source
-            dom2 = minidom.parse(relativePath)
-            tileset = dom2.documentElement
-            idx = relativePath.rfind("/")
-            relativePath = relativePath[:idx+1]
-            relativePath2 = source
-            idx = relativePath2.rfind("/")
-            relativePath2 = relativePath2[:idx+1]
+            try:
+                dom2 = minidom.parse(relativePath)
+                tileset = dom2.documentElement
+                idx = relativePath.rfind("/")
+                relativePath = relativePath[:idx+1]
+                relativePath2 = source
+                idx = relativePath2.rfind("/")
+                relativePath2 = relativePath2[:idx+1]
+                showMsgFile(file, "tsx not found: " + source, True)
+            except:
+                relativePath = ""
+                relativePath2 = ""
         else:
             relativePath = ""
             relativePath2 = ""
@@ -2212,9 +2217,14 @@ def testItemColors(fileName):
             testDyeColors(id, colorDye, colorDye, name, True)
 
 def loadMapAtlases(fileName):
-    root = ElementTree.parse(parentDir + "/" + fileName).getroot()
     mapToAtlas = dict()
     atlasToFiles = dict()
+    try:
+        root = ElementTree.parse(parentDir + "/" + fileName).getroot()
+    except:
+        showMsgFile(fileName, "load xml error. Probably file missing", True)
+        return (mapToAtlas, atlasToFiles)
+
     for node in root.findall("map"):
         mapName = node.attrib["name"]
         atlasNode = node.find("atlas")
@@ -2232,7 +2242,7 @@ def loadMapAtlases(fileName):
     for mapName in mapToAtlas:
         atlasName = mapToAtlas[mapName]
         if atlasName not in atlasToFiles:
-            showMsg(fileName, "atlas '{0}' assigned to map not present in maps.xml".format(atlasName), True)
+            showMsgFile(fileName, "atlas '{0}' assigned to map not present in maps.xml".format(atlasName), True)
 
     return (mapToAtlas, atlasToFiles)
 
