@@ -172,8 +172,10 @@ def enumDirs(parentDir):
                 checkFilePermission(file2)
 
 def checkFilePermission(fullName):
+    global warnings
     if os.access(fullName, os.X_OK):
         print "warn: execute flag on file: " + fullName
+        warnings = warnings + 1
 
 
 def loadPaths():
@@ -188,11 +190,13 @@ def loadPaths():
                 if iconsDir != "graphics/items/":
                     print "warn: itemIcons path has not default value."\
                             " Will be incampatible with old clients."
+                    warnings = warnings + 1
             elif node.attributes["name"].value == "sprites":
                 spritesDir = node.attributes["value"].value
                 if spritesDir != "graphics/sprites/":
                     print "warn: sprites path has not default value."\
                             " Will be incampatible with old clients."
+                    warnings = warnings + 1
             elif node.attributes["name"].value == "sfx":
                 sfxDir = node.attributes["value"].value
 
@@ -201,11 +205,13 @@ def loadPaths():
                 if particlesDir != "graphics/particles/":
                     print "warn: particles path has not default value."\
                             " Will be incampatible with old clients."
+                    warnings = warnings + 1
             elif node.attributes["name"].value == "maps":
                 mapsDir = node.attributes["value"].value
                 if mapsDir != "maps/":
                     print "warn: maps path has not default value."\
                             " Will be incampatible with old clients."
+                    warnings = warnings + 1
             elif node.attributes["name"].value == "spriteErrorFile":
                 spriteErrorFile = node.attributes["value"].value
             elif node.attributes["name"].value == "levelUpEffectFile":
@@ -989,6 +995,7 @@ def testItems(fileName, imgDir):
     except Exception as err:
         print "error: " + fileName + ": corrupted"
         print err
+        errors = errors + 1
         return
     idset = set()
     oldId = None
@@ -1208,6 +1215,7 @@ def testItemReplace(id, rootNode, name):
         except:
             if len(node.attributes) != 0:
                 print "error: reading replace sprite name, id=" + str(id)
+                errors = errors + 1
             continue
         checkSpriteName(id, sprite)
         for itemNode in node.getElementsByTagName("item"):
@@ -1228,6 +1236,7 @@ def checkSpriteName(id, name):
             name != "weapons" and name != "shield" and name != "shields" and \
             name != "amulet" and name != "amulets" and name != "ring" and name != "rings":
                 print "error: unknown sprite name " + name + ", id=" + str(id)
+                errors = errors + 1
 
 
 def testMonsters(fileName):
@@ -1257,6 +1266,7 @@ def testMonsters(fileName):
 
             if id in idset:
                 print "error: " + fileName + ": duplicate id=" + id
+                errors = errors + 1
             else:
                 idset.add(id)
 
@@ -1348,6 +1358,7 @@ def testNpcs(file):
 
         if id in idset:
             print "error: " + file + ": duplicate npc id=" + id
+            errors = errors + 1
         else:
             idset.add(id)
 
