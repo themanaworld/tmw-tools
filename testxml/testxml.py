@@ -598,6 +598,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
     else:
         actset = set()
         frameSet = set()
+        hpSet = set()
         for action in actions:
             try:
                 name = action.attributes["name"].value
@@ -607,7 +608,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
             try:
                 hp = action.attributes["hp"].value
             except:
-                hp = ""
+                hp = "100"
             try:
                 setname = action.attributes["imageset"].value
             except:
@@ -623,6 +624,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
                 showMsgSprite(fileLoc, "duplicate action: " + name, iserr)
                 continue
             actset.add(name + "|" + hp)
+            hpSet.add(hp)
 
         if len(frameSet) > 0:
             errIds = ""
@@ -635,9 +637,10 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
                 if silent != True:
                     showMsgSprite(fileLoc, "unused frames: " + errIds[0:len(errIds)-1], False)
 
-    if checkAction != "" and checkAction not in actset:
-        if silent != True:
-            showMsgSprite(fileLoc, "no attack action '" + checkAction + "' in sprite", iserr)
+    if checkAction != "":
+        for hp in hpSet:
+            if checkAction + "|" + hp not in actset:
+                showMsgSprite(fileLoc, "no attack action '" + checkAction + "' in sprite", iserr)
 
 
 def testSpriteAction(file, name, action, numframes, iserr):
