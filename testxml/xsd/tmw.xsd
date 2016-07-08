@@ -365,9 +365,13 @@
   -->
   <xs:complexType name="quests_var_quest">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="text" type="xs:string"/>
+      <xs:element name="text" type="quests_quest_text"/>
       <xs:element name="name" type="xs:string"/>
       <xs:element name="reward" type="xs:string"/>
+      <xs:element name="giver" type="xs:string"/>
+      <xs:element name="questgiver" type="xs:string"/>
+      <xs:element name="coordinates" type="quests_quest_coordinates"/>
+      <xs:element name="npc" type="xs:string"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="group" type="xs:string" use="required"/>
@@ -379,6 +383,35 @@
     <!-- TODO fix this horrible abuse of XML-->
     <xs:attribute name="complete" type="xs:string" use="optional"/>
     <xs:attribute name="incomplete" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="quests_quest_coordinates">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="x" type="xs:int" use="required"/>
+        <xs:attribute name="y" type="xs:int" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="quests_quest_text">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="text1" type="xs:string" use="optional"/>
+        <xs:attribute name="text2" type="xs:string" use="optional"/>
+        <xs:attribute name="text3" type="xs:string" use="optional"/>
+        <xs:attribute name="text4" type="xs:string" use="optional"/>
+        <xs:attribute name="text5" type="xs:string" use="optional"/>
+        <xs:attribute name="text6" type="xs:string" use="optional"/>
+        <xs:attribute name="text7" type="xs:string" use="optional"/>
+        <xs:attribute name="text8" type="xs:string" use="optional"/>
+        <xs:attribute name="text9" type="xs:string" use="optional"/>
+        <xs:attribute name="text10" type="xs:string" use="optional"/>
+        <xs:attribute name="text11" type="xs:string" use="optional"/>
+        <xs:attribute name="text12" type="xs:string" use="optional"/>
+        <xs:attribute name="text13" type="xs:string" use="optional"/>
+        <xs:attribute name="text14" type="xs:string" use="optional"/>
+        <xs:attribute name="text15" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
   <!--
     QuestsWindow::loadEffect
