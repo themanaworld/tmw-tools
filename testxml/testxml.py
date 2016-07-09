@@ -1403,6 +1403,27 @@ def testMap(mapName, file, path):
         if silent == False or file.find("maps/test") != 0:
             showMsgFile(file, "map height to small: " + str(mapHeight), False)
 
+    if len(dom.getElementsByTagName("properties")) < 1:
+        showMsgFile(file, "missing map properties", True)
+        return
+
+    for props in dom.getElementsByTagName("properties"):
+        for prop in props.getElementsByTagName("property"):
+            try:
+                name = prop.attributes["name"].value
+            except:
+                name = ""
+            if name == "":
+                showMsgFile(file, "wrong property", True)
+                continue
+            try:
+                value = prop.attributes["value"].value
+            except:
+                value = ""
+            if value == "" and name == "name":
+                showMsgFile(file, "empty map name property", True)
+                continue
+
     tilesMap = dict()
 
     for tileset0 in dom.getElementsByTagName("tileset"):
