@@ -2,4 +2,4 @@
 
 export DIR="../../client-data"
 
-find $DIR -type f -name "*.png" -exec ./icccheckfile.sh {} \;
+find -H $DIR -type f -name "*.png" -exec ./icccheckfile.sh {} \;

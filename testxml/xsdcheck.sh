@@ -47,4 +47,4 @@ check status-effects.xml
 check units.xml
 check weapons.xml
 
-find "${DIR}/graphics" -type f -name "*.xml" -exec ./checkfile.sh {} \; >>../errors.txt
+find -H "${DIR}/graphics" -type f -name "*.xml" -exec ./checkfile.sh {} \; >>../errors.txt
