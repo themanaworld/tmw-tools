@@ -455,6 +455,7 @@
                   <xs:attribute name="castingSkyAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingWaterAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingAnimation" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingParticle" type="xs:string" use="optional"/>
                   <xs:attribute name="useTextParameter" type="bool" default="false"/>
                   <xs:attribute name="icon" type="xs:string" use="optional"/>
                   <xs:attribute name="level" type="xs:int" default="0"/>
