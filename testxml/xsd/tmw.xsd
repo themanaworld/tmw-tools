@@ -450,6 +450,7 @@
                   <xs:attribute name="alwaysVisible" type="bool" use="optional" default="false"/>
                   <xs:attribute name="castingSrcEffectId" type="xs:string" use="optional"/>
                   <xs:attribute name="castingDstEffectId" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingGroundEffectId" type="xs:string" use="optional"/>
                   <xs:attribute name="castingAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingRideAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingSkyAction" type="xs:string" use="optional"/>
@@ -471,6 +472,8 @@
                   <xs:attribute name="removeEffectId" type="xs:int" use="optional"/>
                   <xs:attribute name="hitEffectId" type="xs:int" use="optional"/>
                   <xs:attribute name="missEffectId" type="xs:int" use="optional"/>
+                  <xs:attribute name="srcEffectId" type="xs:string" use="optional"/>
+                  <xs:attribute name="dstEffectId" type="xs:string" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:choice>
