@@ -1467,6 +1467,21 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="page">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="stat">
+                  <xs:complexType>
+                    <xs:attribute name="id" type="xs:int" use="required"/>
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
