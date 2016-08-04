@@ -20,6 +20,7 @@ check badges.xml
 check charcreation.xml
 check deadmessages.xml
 check effects.xml
+check elementals.xml
 check emotes.xml
 check equipmentslots.xml
 check equipmentwindow.xml
