@@ -1,6 +1,6 @@
 #!/bin/bash
 
-identify -verbose $1 | grep profile >/dev/null
+identify -verbose $1 | grep -i profile >/dev/null
 
 if [ "$?" == 0 ]; then
     export name="$1"
