@@ -1490,6 +1490,11 @@
   </xs:complexType>
 
   <xs:element name="horses" type="root_horses"/>
+  <xs:complexType name="horse_offset">
+    <xs:attribute name="direction" type="xs:string" use="required"/>
+    <xs:attribute name="horseOffsetX" type="xs:int" default="0"/>
+    <xs:attribute name="horseOffsetY" type="xs:int" default="0"/>
+  </xs:complexType>
   <xs:complexType name="horse_sprite">
     <xs:simpleContent>
       <xs:extension base="xs:string">
@@ -1507,11 +1512,21 @@
   </xs:complexType>
   <xs:complexType name="horse_node">
     <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="offset">
+          <xs:complexType>
+            <xs:attribute name="direction" type="xs:string" use="required"/>
+            <xs:attribute name="riderOffsetX" type="xs:int" default="0"/>
+            <xs:attribute name="riderOffsetY" type="xs:int" default="0"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
       <xs:element name="up" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
               <xs:element name="sprite" type="horse_sprite" />
+              <xs:element name="offset" type="horse_offset" />
             </xs:choice>
           </xs:sequence>
         </xs:complexType>
@@ -1521,18 +1536,13 @@
           <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
               <xs:element name="sprite" type="horse_sprite" />
+              <xs:element name="offset" type="horse_offset" />
             </xs:choice>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
     </xs:sequence>
     <xs:attribute name="id" type="xs:int" use="required"/>
-    <xs:attribute name="offsetX" type="xs:int" default="0"/>
-    <xs:attribute name="offsetY" type="xs:int" default="0"/>
-    <xs:attribute name="upOffsetX" type="xs:int" default="0"/>
-    <xs:attribute name="upOffsetY" type="xs:int" default="0"/>
-    <xs:attribute name="downOffsetX" type="xs:int" default="0"/>
-    <xs:attribute name="downOffsetY" type="xs:int" default="0"/>
   </xs:complexType>
 
   <xs:element name="itemfields" type="root_itemfields"/>
