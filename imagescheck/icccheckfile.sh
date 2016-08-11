@@ -1,9 +1,9 @@
 #!/bin/bash
 
-identify -verbose $1 | grep -i profile >/dev/null
+identify -verbose $1 | egrep -i "profile|iCCP" >/dev/null
 
 if [ "$?" == 0 ]; then
     export name="$1"
     export name=${name##../../client-data/}
-    echo "ICC profile found for image $name"
+    echo "ICC or iCCP profile found for image $name"
 fi
