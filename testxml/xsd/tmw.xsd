@@ -853,9 +853,6 @@
             <xs:attribute name="waterattack-action" type="xs:string" use="optional"/>
             <xs:attribute name="drawBefore" type="xs:string" use="optional"/>
             <xs:attribute name="drawAfter" type="xs:string" use="optional"/>
-<!-- dont use legacy features
-            <xs:attribute name="pet" type="xs:int" default="0"/>
--->
             <xs:attribute name="maxFloorOffset" type="xs:int" default="0"/>
             <xs:attribute name="useButton" type="xs:string" use="optional"/>
             <xs:attribute name="useButton2" type="xs:string" use="optional"/>
@@ -1383,25 +1380,6 @@
             <xs:attribute name="targetSelection" type="bool" default="true"/>
             <xs:attributeGroup ref="being_basic_attributes"/>
             <xs:attribute name="deadSortOffsetY" type="xs:int" default="31"/>
-            <xs:attribute name="startFollowDistance" type="xs:int" default="3"/>
-            <xs:attribute name="followDistance" type="xs:int" default="0"/>
-            <xs:attribute name="warpDistance" type="xs:int" default="11"/>
-            <xs:attribute name="walkSpeed" type="xs:int" default="0"/>
-            <xs:attribute name="offsetX" type="xs:int" default="0"/>
-            <xs:attribute name="offsetY" type="xs:int" default="1"/>
-            <xs:attribute name="sitOffsetX" type="xs:int" default="0"/>
-            <xs:attribute name="sitOffsetY" type="xs:int" default="1"/>
-            <xs:attribute name="moveOffsetX" type="xs:int" default="0"/>
-            <xs:attribute name="moveOffsetY" type="xs:int" default="1"/>
-            <xs:attribute name="deadOffsetX" type="xs:int" default="0"/>
-            <xs:attribute name="deadOffsetY" type="xs:int" default="1"/>
-            <xs:attribute name="attackOffsetX" type="xs:int" use="optional"/>
-            <xs:attribute name="attackOffsetY" type="xs:int" use="optional"/>
-            <xs:attribute name="thinkTime" type="xs:int" default="500"/>
-            <xs:attribute name="directionType" type="xs:int" default="1"/>
-            <xs:attribute name="sitDirectionType" type="xs:int" default="1"/>
-            <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
-            <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
             <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
