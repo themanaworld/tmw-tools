@@ -30,9 +30,17 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates select="contributor"/>
     </xsl:template>
 
+    <xsl:template match="freesound">
+        <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
+        <xsl:text>##3-- &lt;&lt;Freesound Contributors&gt;&gt; --&#xa;</xsl:text>
+        <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
+
+        <xsl:apply-templates select="freesoundcontributor"/>
+    </xsl:template>
+
     <xsl:template match="other">
         <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
-        <xsl:text>##3-- &lt;&lt;Related Community&gt;&gt; --&#xa;</xsl:text>
+        <xsl:text>##3-- &lt;&lt;Related Communities&gt;&gt; --&#xa;</xsl:text>
         <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
 
         <xsl:apply-templates select="community"/>
@@ -55,6 +63,13 @@ Copyright (C) 2016 Evol Online -->
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
+    <xsl:template match="freesoundcontributor">
+        <xml:text>##9<xsl:value-of select="@nick"/> </xml:text>
+        <xsl:text> &lt;</xsl:text>
+        <xsl:value-of select="@page"/>
+        <xsl:text>&#xa;</xsl:text>
+    </xsl:template>
+
     <xsl:template match="community">
         <xsl:text>[@@</xsl:text>
         <xsl:value-of select="@site"/>
@@ -66,4 +81,3 @@ Copyright (C) 2016 Evol Online -->
     </xsl:template>
 
 </xsl:stylesheet>
-    
