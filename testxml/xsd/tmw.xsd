@@ -367,7 +367,7 @@
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="text" type="quests_quest_text"/>
       <xs:element name="name" type="xs:string"/>
-      <xs:element name="reward" type="xs:string"/>
+      <xs:element name="reward" type="quests_quest_text"/>
       <xs:element name="giver" type="xs:string"/>
       <xs:element name="questgiver" type="xs:string"/>
       <xs:element name="coordinates" type="quests_quest_coordinates"/>
