@@ -5,8 +5,6 @@
 # Author: Andrei Karas (4144)
 
 import array
-import base64
-import gzip
 import os
 import re
 import datetime
@@ -181,7 +179,7 @@ def checkFilePermission(fullName):
 def loadPaths():
     global warnings, iconsDir, spritesDir, sfxDir, particlesDir, mapsDir, spriteErrorFile, \
             levelUpEffectFile, portalEffectFile, minimapsDir, wallpapersDir, walpaperFile, \
-            musicDir
+            musicDir, wallpaperFile
     try:
         dom = minidom.parse(parentDir + "/paths.xml")
         for node in dom.getElementsByTagName("option"):
@@ -438,12 +436,12 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
     except:
         variants = 0
 
-    try:
-        variant_offset = dom.documentElement.attributes["variant_offset"].value
-    except:
-        variant_offset = 0
+#    try:
+#        variant_offset = dom.documentElement.attributes["variant_offset"].value
+#    except:
+#        variant_offset = 0
 
-    root = dom.childNodes[0];
+#    root = dom.childNodes[0];
     imagesets = dom.getElementsByTagName("imageset")
     if imagesets is None or len(imagesets) < 1:
         showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
@@ -590,8 +588,6 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
         actions = dom.getElementsByTagName("action")
     except:
         actions = None
-
-    foundAction = False
 
     if (actions == None or len(actions) == 0) and (includes == None or len(includes) == 0):
         showMsgSprite(fileLoc, "no actions in sprite file", iserr)
@@ -778,10 +774,10 @@ def testSpriteAction(file, name, action, numframes, iserr):
                 except:
                     showMsgSprite(file, "no sequence start or end index action: " + \
                             name + ", direction: " + direction, iserr)
-                try:
-                    repeat = int(sequence.attributes["repeat"].value)
-                except:
-                    repeat = 1
+#                try:
+#                    repeat = int(sequence.attributes["repeat"].value)
+#                except:
+#                    repeat = 1
 
                 if i1 >= numframes or i1 < 0:
                     showMsgSprite(file, "incorrect start sequence index " + str(i1) + \
@@ -934,7 +930,7 @@ def testSound(file, sfxDir, msg):
             showMsgFile(file, "sound file not found", True)
         return
     try:
-        snd = ogg.vorbis.VorbisFile(fullPath)
+        ogg.vorbis.VorbisFile(fullPath)
     except ogg.vorbis.VorbisError as e:
         showMsgFile(file, "sound file incorrect error: " + str(e), True)
 
@@ -1091,10 +1087,10 @@ def testItems(fileName, imgDir):
         except:
             drawAfter = ""
 
-        try:
-            drawPriority = int(node.attributes["drawPriority"].value)
-        except:
-            drawPriority = 0
+#        try:
+#            drawPriority = int(node.attributes["drawPriority"].value)
+#        except:
+#            drawPriority = 0
 
         if type == "hairsprite":
             if idI >= 0:
@@ -1177,7 +1173,7 @@ def testItems(fileName, imgDir):
                 fullPath = os.path.abspath(parentDir + "/" + imgDir + floor)
                 if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
                     showFileErrorById (id, imgDir, floor)
-                    error = errors + 1
+                    errors = errors + 1
                 else:
                     testImageFile(imgDir + floor, fullPath, 0, "", True)
 
@@ -1209,7 +1205,6 @@ def testItems(fileName, imgDir):
 
 def testItemReplace(id, rootNode, name):
     global warnings, errors
-    sprites = set()
     for node in rootNode.getElementsByTagName(name):
         if node.parentNode != rootNode:
             continue
@@ -2190,7 +2185,6 @@ def testSoundsDir(dir, sfxDir):
         if not os.path.isfile(file2):
             testSoundsDir(dir + file + "/", sfxDir)
         elif filtogg.search(file):
-            fullName = dir + file
             testSound(dir + file, sfxDir, "")
 
 
