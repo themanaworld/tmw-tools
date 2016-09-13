@@ -1411,6 +1411,34 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="network" type="root_network"/>
+  <xs:complexType name="root_network">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="inpackets" type="network_inpackets" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="network_inpackets">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="fakepacket">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="len" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="removepacket">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="stats" type="root_stats"/>
   <xs:complexType name="root_stats">
     <xs:sequence>
