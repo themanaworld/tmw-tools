@@ -14,16 +14,20 @@ Copyright (C) 2016 Evol Online -->
 
     <xsl:template match="evol">
         <xsl:text>^	Evol Online Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Nickname	^	Real Name / Email	^&#xa;</xsl:text>
-
-        <xsl:apply-templates select="contributor"/>
+        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="tmw-ufb">
         <xsl:text>^	Unknown Flying Bullet Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Nickname	^	Real Name / Email	^&#xa;</xsl:text>
+        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:apply-templates/>
+    </xsl:template>
 
-        <xsl:apply-templates select="contributor"/>
+    <xsl:template match="freesound">
+        <xsl:text>^	Freesound Contributors	^^&#xa;</xsl:text>
+        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="other">
@@ -68,7 +72,16 @@ Copyright (C) 2016 Evol Online -->
                 <xsl:text>	|</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
-
+        <xsl:choose>
+            <xsl:when test="@page">
+                <xsl:text>	</xsl:text>
+                <xsl:value-of select="@page"/>
+                <xsl:text>	|</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>	No Data	|</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 

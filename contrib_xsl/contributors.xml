@@ -96,11 +96,11 @@ http://wiki.themanaworld.org/index.php/Contributors
     </tmw-ufb>
     <!-- Freesound Contributors -->
     <freesound>
-        <freesoundcontributor nick="D W" page="http://freesound.org/people/D%20W/"/>
-        <freesoundcontributor nick="beerbelly38" page="http://freesound.org/people/beerbelly38/"/>
-        <freesoundcontributor nick="spookymodem" page="http://freesound.org/people/spookymodem/"/>
-        <freesoundcontributor nick="Q.K." page="http://freesound.org/people/Q.K./"/>
-        <freesoundcontributor nick="SkeetMasterFunk69" page="http://freesound.org/people/SkeetMasterFunk69/"/>
+        <contributor nick="D W" page="http://freesound.org/people/D%20W/"/>
+        <contributor nick="beerbelly38" page="http://freesound.org/people/beerbelly38/"/>
+        <contributor nick="spookymodem" page="http://freesound.org/people/spookymodem/"/>
+        <contributor nick="Q.K." page="http://freesound.org/people/Q.K./"/>
+        <contributor nick="SkeetMasterFunk69" page="http://freesound.org/people/SkeetMasterFunk69/"/>
     </freesound>
     <!-- Related Communities -->
     <other>

@@ -35,7 +35,7 @@ Copyright (C) 2016 Evol Online -->
         <xsl:text>##3-- &lt;&lt;Freesound Contributors&gt;&gt; --&#xa;</xsl:text>
         <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
 
-        <xsl:apply-templates select="freesoundcontributor"/>
+        <xsl:apply-templates select="contributor"/>
     </xsl:template>
 
     <xsl:template match="other">
@@ -60,13 +60,14 @@ Copyright (C) 2016 Evol Online -->
             <xsl:value-of select="@mailserver"/>
             <xsl:text>&gt;</xsl:text>
         </xsl:if>
-        <xsl:text>&#xa;</xsl:text>
-    </xsl:template>
-
-    <xsl:template match="freesoundcontributor">
-        <xml:text>##9<xsl:value-of select="@nick"/> </xml:text>
-        <xsl:text> &lt;</xsl:text>
-        <xsl:value-of select="@page"/>
+        <xsl:if test="@page">
+            <xsl:text>[@@</xsl:text>
+            <xsl:value-of select="@page"/>
+            <xsl:text>|&lt;&lt;</xsl:text>
+            <xsl:value-of select="@page"/>
+            <xsl:text>&gt;&gt; </xsl:text>
+            <xsl:text>@@]</xsl:text>
+        </xsl:if>
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
