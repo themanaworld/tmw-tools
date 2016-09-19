@@ -65,7 +65,7 @@ Copyright (C) 2016 Evol Online -->
             <xsl:value-of select="@page"/>
             <xsl:text>|&lt;&lt;</xsl:text>
             <xsl:value-of select="@page"/>
-            <xsl:text>&gt;&gt; </xsl:text>
+            <xsl:text>&gt;&gt;</xsl:text>
             <xsl:text>@@]</xsl:text>
         </xsl:if>
         <xsl:text>&#xa;</xsl:text>
@@ -76,7 +76,7 @@ Copyright (C) 2016 Evol Online -->
         <xsl:value-of select="@site"/>
         <xsl:text>|&lt;&lt;</xsl:text>
         <xsl:value-of select="@name"/>
-        <xsl:text>&gt;&gt; </xsl:text>
+        <xsl:text>&gt;&gt;</xsl:text>
         <xsl:value-of select="@site"/>
         <xsl:text>@@]&#xa;</xsl:text>
     </xsl:template>
