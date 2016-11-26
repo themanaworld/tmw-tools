@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export name="$2"
 export name=${name##../../client-data/}

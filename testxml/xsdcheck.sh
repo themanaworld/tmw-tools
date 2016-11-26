@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd xsd
 DIR="$(pwd)/../../../client-data"
