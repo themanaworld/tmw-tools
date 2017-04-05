@@ -1123,6 +1123,20 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="texts" type="root_texts"/>
+  <xs:complexType name="root_texts">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="text">
+          <xs:complexType>
+            <xs:attribute name="show" type="bool" default="false"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
   <!--
     ColorDB::loadHair
       hairColorFile:        hair.xml
