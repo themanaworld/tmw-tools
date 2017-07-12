@@ -95,6 +95,7 @@ http://wiki.themanaworld.org/index.php/Contributors
     <!-- The Mana World contributors, prior to Evol fusion -->
     <tmw-legacy>
         <contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
+        <contributor nick="Enchilado" name="W E Sayers"/>
         <contributor nick="Varuna"/>
         <contributor nick="Wombat" mailid="hpwombat" mailserver="yahoo.com" page="https://github.com/wombatism"/>
     </tmw-legacy>
