@@ -1701,6 +1701,21 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="groups" type="root_groups"/>
+  <xs:complexType name="root_groups">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="group">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" default=""/>
+            <xs:attribute name="longName" type="xs:string" default=""/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
   <!-- probably not all tags correct here -->
   <xs:element name="homunculuses" type="root_homunculuses"/>
   <xs:complexType name="root_homunculuses">

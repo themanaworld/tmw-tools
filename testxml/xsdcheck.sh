@@ -26,6 +26,7 @@ check equipmentslots.xml
 check equipmentwindow.xml
 check evol.manaplus
 check features.xml
+check groups.xml
 check homunculuses.xml
 check horses.xml
 check itemcolors.xml
