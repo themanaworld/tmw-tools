@@ -92,6 +92,10 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="Yosuhara"/>
         <contributor nick="Yuuki"/>
     </evol>
+    <!-- The Mana World contributors, prior to Evol fusion -->
+    <tmw-legacy>
+        <contributor nick="Wombat" mailid="hpwombat" mailserver="yahoo.com" page="https://github.com/wombatism"/>
+    </tmw-legacy>
     <!-- TMW-UFB Contributors -->
     <tmw-ufb>
         <contributor nick="Arikel"/>
