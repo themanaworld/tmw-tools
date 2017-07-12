@@ -18,6 +18,12 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates/>
     </xsl:template>
 
+    <xsl:template match="tmw-legacy">
+        <xsl:text>^ The Mana World Legacy Contributors  ^^&#xa;</xsl:text>
+        <xsl:text>^ Nickname    ^   Real Name / Email   ^   Link    ^&#xa;</xsl:text>
+        <xsl:apply-templates/>
+    </xsl:template>
+
     <xsl:template match="tmw-ufb">
         <xsl:text>^	Unknown Flying Bullet Contributors	^^&#xa;</xsl:text>
         <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
@@ -68,7 +74,7 @@ Copyright (C) 2016 Evol Online -->
                     <xsl:otherwise>
                         <xsl:text>No Data</xsl:text>
                     </xsl:otherwise>
-                </xsl:choose> 
+                </xsl:choose>
                 <xsl:text>	|</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
@@ -96,4 +102,4 @@ Copyright (C) 2016 Evol Online -->
     </xsl:template>
 
 </xsl:stylesheet>
-    
+

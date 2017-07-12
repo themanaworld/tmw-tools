@@ -22,6 +22,14 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates select="contributor"/>
     </xsl:template>
 
+    <xsl:template match="tmw-legacy">
+        <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
+        <xsl:text>##3-- &lt;&lt;The Mana World Legacy Contributors&gt;&gt; --&#xa;</xsl:text>
+        <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
+
+        <xsl:apply-templates select="contributor"/>
+    </xsl:template>
+
     <xsl:template match="tmw-ufb">
         <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
         <xsl:text>##3-- &lt;&lt;Unknown Flying Bullet Contributors&gt;&gt; --&#xa;</xsl:text>
