@@ -463,13 +463,21 @@
                   <xs:attribute name="castingSkyAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingWaterAction" type="xs:string" use="optional"/>
                   <xs:attribute name="castingAnimation" type="xs:string" use="optional"/>
-                  <xs:attribute name="castingParticle" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingMissile-particle" type="xs:string" use="optional"/>
+                  <xs:attribute name="castingMissile-z" type="xs:float" use="optional"/>
+                  <xs:attribute name="castingMissile-lifetime" type="xs:int" use="optional"/>
+                  <xs:attribute name="castingMissile-speed" type="xs:float" use="optional"/>
+                  <xs:attribute name="castingMissile-diedistance" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+                  <xs:attribute name="missile-z" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-lifetime" type="xs:int" use="optional"/>
+                  <xs:attribute name="missile-speed" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-diedistance" type="xs:float" use="optional"/>
                   <xs:attribute name="useTextParameter" type="bool" default="false"/>
                   <xs:attribute name="icon" type="xs:string" use="optional"/>
                   <xs:attribute name="level" type="xs:int" default="0"/>
                   <xs:attribute name="shortName" type="xs:string" use="optional"/>
                   <xs:attribute name="description" type="xs:string" use="optional"/>
-                  <xs:attribute name="particle" type="xs:string" use="optional"/>
                   <xs:attribute name="soundHit" type="xs:string" use="optional"/>
                   <xs:attribute name="soundHitDelay" type="xs:int" use="optional"/>
                   <xs:attribute name="soundMiss" type="xs:string" use="optional"/>
@@ -907,6 +915,10 @@
             <xs:attribute name="drawPriority" type="xs:int" default="0"/>
             <xs:attribute name="attack-range" type="xs:int" default="0"/>
             <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+            <xs:attribute name="missile-z" type="xs:float" use="optional"/>
+            <xs:attribute name="missile-lifetime" type="xs:int" use="optional"/>
+            <xs:attribute name="missile-speed" type="xs:float" use="optional"/>
+            <xs:attribute name="missile-diedistance" type="xs:float" use="optional"/>
             <xs:attribute name="hit-effect-id" type="xs:string" use="optional"/>
             <xs:attribute name="critical-hit-effect-id" type="xs:string" use="optional"/>
             <xs:attribute name="miss-effect-id" type="xs:string" use="optional"/>
@@ -1360,6 +1372,10 @@
                   <xs:attribute name="wateraction" type="xs:string" default="waterattack"/>
                   <xs:attribute name="rideaction" type="xs:string" default="waterattack"/>
                   <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+                  <xs:attribute name="missile-z" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-lifetime" type="xs:int" use="optional"/>
+                  <xs:attribute name="missile-speed" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-diedistance" type="xs:float" use="optional"/>
                 </xs:complexType>
               </xs:element>
               <xs:element name="particlefx" type="xs:string"/>
