@@ -887,6 +887,9 @@
               <xs:element name="replace" type="items_item_replace"/>
               <xs:element name="drawAfter" type="items_item_draworder"/>
               <xs:element name="drawBefore" type="items_item_draworder"/>
+              <xs:element name="inventory" type="items_item_menu"/>
+              <xs:element name="storage" type="items_item_menu"/>
+              <xs:element name="cart" type="items_item_menu"/>
             </xs:choice>
             <xs:attribute name="id" type="xs:int" use="required"/>
             <xs:attribute name="type" type="items_item_type" default="other"/>
@@ -1099,6 +1102,18 @@
       <xs:enumeration value="all"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="items_item_menu">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="menu">
+        <xs:complexType>
+          <xs:attribute name="name1" type="xs:string" use="optional"/>
+          <xs:attribute name="name2" type="xs:string" use="optional"/>
+          <xs:attribute name="command1" type="xs:string" use="optional"/>
+          <xs:attribute name="command2" type="xs:string" use="optional"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
   <!--
     SoundDB::loadXmlFile
       soundsFile:        sounds.xml
