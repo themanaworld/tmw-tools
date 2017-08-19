@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Author: Reid
+Copyright (C) 2004-2017 The Mana World
 Copyright (C) 2010-2016 Evol Online
-Here is a list of all contributors and developers who took part in the Evol Online project.
 
-Some works on Evol Online come from The Mana World project.
-Here is the complete list of developers and contributors of this project:
+This file contains a list of all contributors and developers who took part in the The Mana World project.
+
+Priot to 2016, Evol Online and The Mana World were separate projects.
+These are referred here as "Evol Online" and "The Mana World: Legacy" respectively.
+Here is the complete list of developers and contributors of the current project, referred to as simply "The Mana World":
 http://wiki.themanaworld.org/index.php/Contributors
 
 -->
 
 <contributors>
-    <!-- Evol Online Developers & Contributors -->
+    <!-- "The Mana World" developers & contributors -->
     <evol>
         <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
         <contributor nick="Ablu" name="Erik Schilling" mailid="ablu.erikschilling" mailserver="googlemail.com"/>
@@ -96,7 +99,7 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="Yosuhara"/>
         <contributor nick="Yuuki"/>
     </evol>
-    <!-- The Mana World contributors, prior to Evol fusion -->
+    <!-- "The Mana World: Legacy" contributors -->
     <tmw-legacy>
         <contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
         <contributor nick="Enchilado" name="W E Sayers"/>
@@ -108,12 +111,12 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="Wushin" mailid="pasekei" mailserver="gmail.com"/>
         <contributor nick="Yosuhara"/>
     </tmw-legacy>
-    <!-- TMW-UFB Contributors -->
+    <!-- "TMW-UFB" Contributors -->
     <tmw-ufb>
         <contributor nick="Arikel"/>
         <contributor nick="Varuna"/>
     </tmw-ufb>
-    <!-- Freesound Contributors -->
+    <!-- "Freesound" Contributors -->
     <freesound>
         <contributor nick="adriann" page="http://freesound.org/people/adriann/"/>
         <contributor nick="beerbelly38" page="http://freesound.org/people/beerbelly38/"/>
@@ -131,7 +134,7 @@ http://wiki.themanaworld.org/index.php/Contributors
     <other>
         <community name="OpenGameArt" site="http://opengameart.org"/>
         <community name="TheManaWorld-Br" site="http://tmw-br.scall.org"/>
-        <community name="TheManaWorld" site="http://themanaworld.org"/>
         <community name="TuxFamily" site="http://tuxfamily.org"/>
+        <community name="Crew of Red Corsair" site="http://crc.evolonline.org/"/>
     </other>
 </contributors>
