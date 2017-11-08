@@ -835,6 +835,7 @@
             <xs:attribute name="avatar" type="xs:unsignedShort" default="0"/>
             <xs:attribute name="allowDelete" type="bool" default="true"/>
             <xs:attribute name="currency" type="xs:string" default=""/>
+            <xs:attribute name="allowEquipment" type="bool" default="false"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
