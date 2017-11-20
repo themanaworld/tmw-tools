@@ -36,7 +36,7 @@ unsigned long fadler32(FILE *file)
  */
 void print_usage()
 {
-    printf("Usage: adler32 [file]...\n");
+    printf("Usage: adler32 mode [file]...\n");
     exit(0);
 }
 
@@ -44,12 +44,14 @@ int main(int argc, char *argv[])
 {
     int i;                            /**< Loops through arguments. */
 
-    if (argc == 1)
+    if (argc < 2)
     {
         print_usage();
     }
 
-    for (i = 1; i < argc; ++i)
+    int mode = atoi(argv[1]);
+
+    for (i = 2; i < argc; ++i)
     {
         FILE *file = fopen(argv[i], "r");
 
@@ -60,7 +62,16 @@ int main(int argc, char *argv[])
         }
 
         unsigned long adler = fadler32(file);
-        printf("%s %lx\n", argv[i], adler);
+        switch (mode)
+        {
+            case 0:
+            default:
+                printf("%s %lx\n", argv[i], adler);
+                break;
+            case 1:
+                printf("%lx", adler);
+                break;
+        }
         fclose(file);
     }
 

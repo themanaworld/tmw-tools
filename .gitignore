@@ -1,2 +1,6 @@
 /aligncsv
 *.pyc
+/client/adler32
+/client/commit.txt
+/client/musiccommit.txt
+/client/files
