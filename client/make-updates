@@ -33,8 +33,6 @@ echo ">> Changing file dates..."
 find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
 echo ">> Compressing files..."
 find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy.zip
-chmod a+r $dir/files/Legacy.zip
-
 echo ">> Dumping git revision to file..."
 git rev-parse HEAD >$dir/commit.txt
 
