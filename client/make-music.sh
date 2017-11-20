@@ -45,7 +45,9 @@ cp xml_header.txt resources.xml
 cat xml_footer.txt >>resources.xml
 
 echo ">> Moving stuff around..."
+chmod a+r Legacy-music.zip
 cp Legacy-music.zip $output/
+chmod a+r resources.xml
 cp resources.xml $output/
 popd
 popd

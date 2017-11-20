@@ -22,11 +22,10 @@ mkdir -pv files
 mkdir -pv $output
 mkdir -pv $cdata/music
 
+chmod u+x ./make-music.sh
+
 echo ">> Removing leftovers..."
 rm -rv files/* 2>/dev/null || :
-cp $output/news.txt files/ 2>/dev/null || :
-cp $output/news.html files/ 2>/dev/null || :
-rm -rv $output/* 2>/dev/null || :
 
 echo ">> Entering client-data..."
 pushd $cdata
@@ -34,6 +33,8 @@ echo ">> Changing file dates..."
 find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
 echo ">> Compressing files..."
 find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy.zip
+chmod a+r $dir/files/Legacy.zip
+
 echo ">> Dumping git revision to file..."
 git rev-parse HEAD >$dir/commit.txt
 
@@ -52,10 +53,11 @@ cp xml_header.txt resources.xml
 cat xml_footer.txt >>resources.xml
 
 echo ">> Moving stuff around..."
+chmod a+r Legacy.zip
 cp -v Legacy.zip $output/
+chmod a+r resources2.txt
 cp -v resources2.txt $output/
+chmod a+r resources.xml
 cp -v resources.xml $output/
-cp -v news.txt $output/ 2>/dev/null || :
-cp -v news.html $output/ 2>/dev/null || :
 popd
 popd
