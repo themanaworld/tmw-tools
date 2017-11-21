@@ -26,6 +26,7 @@ chmod u+x ./make-music.sh
 
 echo ">> Removing leftovers..."
 rm -rv files/* 2>/dev/null || :
+rm -v $output/Legacy.zip 2>/dev/null || :
 
 echo ">> Entering client-data..."
 pushd $cdata

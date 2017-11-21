@@ -23,6 +23,7 @@ mkdir -pv $output
 
 echo ">> Removing leftovers..."
 rm -v files/Legacy-music.zip 2>/dev/null || :
+rm -v $output/Legacy-music.zip 2>/dev/null || :
 
 echo ">> Entering client-data..."
 pushd $cdata
