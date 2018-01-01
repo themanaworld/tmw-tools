@@ -22,7 +22,7 @@ mkdir -pv files
 mkdir -pv $output
 mkdir -pv $cdata/music
 
-chmod u+x ./make-music.sh
+chmod a+rx ./make-music.sh
 
 echo ">> Removing leftovers..."
 rm -rv files/* 2>/dev/null || :
