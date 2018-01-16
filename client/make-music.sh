@@ -31,53 +31,51 @@ function check_update() {
 }
 
 
-echo "======= Legacy-music ======="
+echo -e "\e[105m======= Legacy-music =======\e[0m"
 
-echo ">> Building adler32..."
+echo -e "\e[96m>> Building adler32...\e[0m"
 rm -f adler32 2>/dev/null || :
 $CC -lz adler32.c -o adler32
 
-echo ">> Creating directory tree..."
+echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
 mkdir -pv $output
 
-echo ">> Removing leftovers..."
+echo -e "\e[96m>> Removing leftovers...\e[0m"
 rm -v files/Legacy-music.zip 2>/dev/null || :
 rm -v $output/Legacy-music.zip 2>/dev/null || :
 
-echo ">> Entering client-data..."
-pushd $cdata
-echo ">> Changing file dates..."
-find -path ./sfx -prune -o -iregex ".+[.]\(ogg\)" -exec touch --date=2015-01-01 {} \;
-echo ">> Compressing files..."
+echo -e "\e[96m>> Entering client-data...\e[0m"
+pushd $cdata &>/dev/null
+echo -e "\e[96m>> Compressing files...\e[0m"
 find -path ./sfx -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy-music.zip
 touch $dir/files/Legacy-music.zip
-echo ">> Dumping git revision to file..."
+echo -e "\e[96m>> Dumping git revision to file...\e[0m"
 git rev-parse HEAD >$dir/musiccommit.txt
 
-pushd $dir/files
-echo ">> Calculating adler32 checksum..."
+pushd $dir/files &>/dev/null
+echo -e "\e[96m>> Calculating adler32 checksum...\e[0m"
 sum=`../adler32 1 Legacy-music.zip`
 
-echo ">> Generating xml file..."
+echo -e "\e[96m>> Generating xml file...\e[0m"
 echo "    <update type=\"music\" required=\"no\" file=\"Legacy-music.zip\" hash=\"${sum}\" description=\"TMW music\" />" >> xml_header.txt
 
 cp xml_header.txt resources.xml
 cat xml_footer.txt >>resources.xml
 
-echo ">> Moving stuff around..."
+echo -e "\e[96m>> Moving stuff around...\e[0m"
 cp -v Legacy-music.zip $output/
 cp -v resources.xml $output/
 
-echo ">> Giving read permissions..."
-pushd $output
+echo -e "\e[96m>> Giving read permissions...\e[0m"
+pushd $output &>/dev/null
 chmod a+r Legacy-music.zip
 chmod a+r resources.xml
 
-echo ">> Checking updates..."
+echo -e "\e[96m>> Checking updates...\e[0m"
 check_update "$http_root/Legacy-music.zip"
 check_update "$http_root/resources.xml"
 
-popd # $dir/files
-popd # $cdata
-popd # tools/client
+popd &>/dev/null # $dir/files
+popd &>/dev/null # $cdata
+popd &>/dev/null # tools/client
