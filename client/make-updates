@@ -52,11 +52,16 @@ cp xml_header.txt resources.xml
 cat xml_footer.txt >>resources.xml
 
 echo ">> Moving stuff around..."
-chmod a+r Legacy.zip
 cp -v Legacy.zip $output/
-chmod a+r resources2.txt
 cp -v resources2.txt $output/
-chmod a+r resources.xml
 cp -v resources.xml $output/
-popd
-popd
+
+echo ">> Giving read permissions..."
+pushd $output
+chmod a+r Legacy.zip
+chmod a+r resources2.txt
+chmod a+r resources.xml
+
+popd # $dir/files
+popd # $cdata
+popd # tools/client
