@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Copyright (C) 2011-2012  Evol Online
-# Author: Andrei Karas (4144)
+# Author: Andrei Karas (4144), gumi
 
 dir=`pwd`
 output=~/www/updates
@@ -23,15 +23,25 @@ function check_update() {
 
     if [ ${test_command} == "200" ] ;
     then
-       echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
+        echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
     else
-       echo -e "\e[31m!!FAILED!!\e[0m $1 ($test_command)";
-       exit 1;
+        echo -e "\e[31m!!FAILED!!\e[0m $1 ($test_command)";
+        exit 1;
     fi
 }
 
+function finish() {
+    retVal=$?
+    echo
+    if [ ${retVal} == "0" ]; then
+        echo -e "\e[96m>> Done!\e[0m"
+    fi
+}
 
-echo -e "\e[105m======= Legacy-music =======\e[0m"
+trap finish EXIT
+
+
+echo -e "\e[105m======= Legacy =======\e[0m"
 
 echo -e "\e[96m>> Building adler32...\e[0m"
 rm -f adler32 2>/dev/null || :
@@ -40,41 +50,51 @@ $CC -lz adler32.c -o adler32
 echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
 mkdir -pv $output
+mkdir -pv $cdata/music
 
 echo -e "\e[96m>> Removing leftovers...\e[0m"
-rm -v files/Legacy-music.zip 2>/dev/null || :
+rm -rv files/* 2>/dev/null || :
+rm -v $output/Legacy.zip 2>/dev/null || :
 rm -v $output/Legacy-music.zip 2>/dev/null || :
+rm -v $output/resources.xml 2>/dev/null || :
+rm -v $output/resources2.txt 2>/dev/null || : # Legacy: used by mana client
 
 echo -e "\e[96m>> Entering client-data...\e[0m"
 pushd $cdata &>/dev/null
+
 echo -e "\e[96m>> Compressing files...\e[0m"
+find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy.zip
 find -path ./sfx -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy-music.zip
 touch $dir/files/Legacy-music.zip
-echo -e "\e[96m>> Dumping git revision to file...\e[0m"
-git rev-parse HEAD >$dir/musiccommit.txt
 
-pushd $dir/files &>/dev/null
 echo -e "\e[96m>> Calculating adler32 checksum...\e[0m"
-sum=`../adler32 1 Legacy-music.zip`
+pushd $dir/files &>/dev/null
+sum=`../adler32 1 Legacy.zip`
+musicsum=`../adler32 1 Legacy-music.zip`
 
 echo -e "\e[96m>> Generating xml file...\e[0m"
-echo "    <update type=\"music\" required=\"no\" file=\"Legacy-music.zip\" hash=\"${sum}\" description=\"TMW music\" />" >> xml_header.txt
-
-cp xml_header.txt resources.xml
-cat xml_footer.txt >>resources.xml
+echo "<?xml version=\"1.0\"?><updates>" >resources.xml
+echo "<update type=\"data\" file=\"Legacy.zip\" hash=\"${sum}\"/>" >>resources.xml
+echo "<update type=\"music\" required=\"no\" file=\"Legacy-music.zip\" hash=\"${musicsum}\" description=\"TMW music\"/>" >>resources.xml
+echo "</updates>" >>resources.xml
 
 echo -e "\e[96m>> Moving stuff around...\e[0m"
+cp -v Legacy.zip $output/
 cp -v Legacy-music.zip $output/
 cp -v resources.xml $output/
 
 echo -e "\e[96m>> Giving read permissions...\e[0m"
 pushd $output &>/dev/null
+chmod a+r Legacy.zip
 chmod a+r Legacy-music.zip
 chmod a+r resources.xml
 
+echo
 echo -e "\e[96m>> Checking updates...\e[0m"
+check_update "$http_root/Legacy.zip"
 check_update "$http_root/Legacy-music.zip"
 check_update "$http_root/resources.xml"
+check_update "$http_root/news.php"
 
 popd &>/dev/null # $dir/files
 popd &>/dev/null # $cdata
