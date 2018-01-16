@@ -63,18 +63,24 @@ class Layer:
 
 def printErr(err):
     errDict.add(err)
-    print err
+    print err.encode("utf-8")
 
 def showFileErrorById(id, rootDir, fileDir):
+    rootDir = rootDir.encode("utf-8")
+    fileDir = fileDir.encode("utf-8")
     print "error: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")"
 
 def showFileWarningById(id, rootDir, fileDir):
+    rootDir = rootDir.encode("utf-8")
+    fileDir = fileDir.encode("utf-8")
     print "warn: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")"
 
 def showError(id, text):
+    text = text.encode("utf-8")
     print "error: id=" + id + " " + text
 
 def showWarning(id, text):
+    text = text.encode("utf-8")
     print "warn: id=" + id + " " + text
 
 def showMsg(id, text, src, iserr):
