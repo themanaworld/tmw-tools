@@ -6,10 +6,30 @@
 dir=`pwd`
 output=~/www/updates
 cdata=../../client-data
+http_root="http://updates.themanaworld.org/updates"
 
 LDLIBS=-lz
 prefix=/usr/local
 CC=${CC:=gcc}
+
+function check_update() {
+    test_command=`           \
+        curl -sL             \
+        -w "%{http_code}\n"  \
+        "$1"                 \
+        -o /dev/null         \
+        --connect-timeout 3  \
+        --max-time 5`
+
+    if [ ${test_command} == "200" ] ;
+    then
+       echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
+    else
+       echo -e "\e[31m!!FAILED!!\e[0m $1 ($test_command)";
+       exit 1;
+    fi
+}
+
 
 echo "======= Legacy-music ======="
 
@@ -46,9 +66,18 @@ cp xml_header.txt resources.xml
 cat xml_footer.txt >>resources.xml
 
 echo ">> Moving stuff around..."
+cp -v Legacy-music.zip $output/
+cp -v resources.xml $output/
+
+echo ">> Giving read permissions..."
+pushd $output
 chmod a+r Legacy-music.zip
-cp Legacy-music.zip $output/
 chmod a+r resources.xml
-cp resources.xml $output/
-popd
-popd
+
+echo ">> Checking updates..."
+check_update "$http_root/Legacy-music.zip"
+check_update "$http_root/resources.xml"
+
+popd # $dir/files
+popd # $cdata
+popd # tools/client

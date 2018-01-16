@@ -1,15 +1,35 @@
 #!/usr/bin/env bash
 
 # Copyright (C) 2011-2012  Evol Online
-# Author: Andrei Karas (4144)
+# Author: Andrei Karas (4144), gumi
 
 dir=`pwd`
 output=~/www/updates
 cdata=../../client-data
+http_root="http://updates.themanaworld.org/updates"
 
 LDLIBS=-lz
 prefix=/usr/local
 CC=${CC:=gcc}
+
+function check_update() {
+    test_command=`           \
+        curl -sL             \
+        -w "%{http_code}\n"  \
+        "$1"                 \
+        -o /dev/null         \
+        --connect-timeout 3  \
+        --max-time 5`
+
+    if [ ${test_command} == "200" ] ;
+    then
+       echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
+    else
+       echo -e "\e[31m!!FAILED!!\e[0m $1 ($test_command)";
+       exit 1;
+    fi
+}
+
 
 echo "======= Legacy ======="
 
@@ -61,6 +81,12 @@ pushd $output
 chmod a+r Legacy.zip
 chmod a+r resources2.txt
 chmod a+r resources.xml
+
+echo ">> Checking updates..."
+check_update "$http_root/Legacy.zip"
+check_update "$http_root/resources.xml"
+check_update "$http_root/resources2.txt"
+check_update "$http_root/news.php"
 
 popd # $dir/files
 popd # $cdata
