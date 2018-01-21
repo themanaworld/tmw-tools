@@ -4,12 +4,9 @@
 # Author: Andrei Karas (4144), gumi
 
 dir=`pwd`
-output=~/www/updates
+UPDATE_DIR=${UPDATE_DIR:=~/www/updates}
 cdata=../../client-data
-http_root="http://updates.themanaworld.org/updates"
-
-LDLIBS=-lz
-prefix=/usr/local
+UPDATE_HTTP=${UPDATE_HTTP:="http://updates.themanaworld.org/updates"}
 CC=${CC:=gcc}
 
 function check_update() {
@@ -49,15 +46,15 @@ $CC -lz adler32.c -o adler32
 
 echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
-mkdir -pv $output
+mkdir -pv $UPDATE_DIR
 mkdir -pv $cdata/music
 
 echo -e "\e[96m>> Removing leftovers...\e[0m"
 rm -rv files/* 2>/dev/null || :
-rm -v $output/Legacy.zip 2>/dev/null || :
-rm -v $output/Legacy-music.zip 2>/dev/null || :
-rm -v $output/resources.xml 2>/dev/null || :
-rm -v $output/resources2.txt 2>/dev/null || : # Legacy: used by mana client
+rm -v $UPDATE_DIR/Legacy.zip 2>/dev/null || :
+rm -v $UPDATE_DIR/Legacy-music.zip 2>/dev/null || :
+rm -v $UPDATE_DIR/resources.xml 2>/dev/null || :
+rm -v $UPDATE_DIR/resources2.txt 2>/dev/null || : # Legacy: used by mana client
 
 echo -e "\e[96m>> Entering client-data...\e[0m"
 pushd $cdata &>/dev/null
@@ -79,22 +76,24 @@ echo "<update type=\"music\" required=\"no\" file=\"Legacy-music.zip\" hash=\"${
 echo "</updates>" >>resources.xml
 
 echo -e "\e[96m>> Moving stuff around...\e[0m"
-cp -v Legacy.zip $output/
-cp -v Legacy-music.zip $output/
-cp -v resources.xml $output/
+cp -v Legacy.zip $UPDATE_DIR/
+cp -v Legacy-music.zip $UPDATE_DIR/
+cp -v resources.xml $UPDATE_DIR/
 
 echo -e "\e[96m>> Giving read permissions...\e[0m"
-pushd $output &>/dev/null
+pushd $UPDATE_DIR &>/dev/null
 chmod a+r Legacy.zip
 chmod a+r Legacy-music.zip
 chmod a+r resources.xml
 
-echo
-echo -e "\e[96m>> Checking updates...\e[0m"
-check_update "$http_root/Legacy.zip"
-check_update "$http_root/Legacy-music.zip"
-check_update "$http_root/resources.xml"
-check_update "$http_root/news.php"
+if [ "$UPDATE_HTTP" != "none" ] ; then
+    echo
+    echo -e "\e[96m>> Checking updates...\e[0m"
+    check_update "$UPDATE_HTTP/Legacy.zip"
+    check_update "$UPDATE_HTTP/Legacy-music.zip"
+    check_update "$UPDATE_HTTP/resources.xml"
+    check_update "$UPDATE_HTTP/news.php"
+fi
 
 popd &>/dev/null # $dir/files
 popd &>/dev/null # $cdata
