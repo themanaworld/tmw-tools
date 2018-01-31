@@ -59,6 +59,11 @@ rm -v $UPDATE_DIR/resources2.txt 2>/dev/null || : # Legacy: used by mana client
 echo -e "\e[96m>> Entering client-data...\e[0m"
 pushd $cdata &>/dev/null
 
+if [ "$UPDATE_HTTP" == "none" ] ; then
+    echo -e "\e[96m>> Changing last modified dates...\e[0m"
+    find -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
+fi
+
 echo -e "\e[96m>> Compressing files...\e[0m"
 find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy.zip
 find -path ./sfx -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/Legacy-music.zip
