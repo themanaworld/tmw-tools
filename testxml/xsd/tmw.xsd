@@ -873,6 +873,7 @@
       itemsPatchFile:   items_patch.xml
       itemsPatchDir:    items.d/*.xml
   -->
+  <!-- not all item fields added -->
   <xs:element name="items" type="root_items"/>
   <xs:complexType name="root_items">
     <xs:sequence>
@@ -1529,6 +1530,8 @@
         <xs:element ref="include"/>
         <xs:element name="guild" type="badges_list" />
         <xs:element name="party" type="badges_list" />
+        <xs:element name="name" type="badges_list" />
+        <xs:element name="clan" type="badges_list" />
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
@@ -1927,6 +1930,30 @@
             <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
             <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
             <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- not all item fields added -->
+  <xs:element name="clans" type="root_clans"/>
+  <xs:complexType name="root_clans">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="include"/>
+        <xs:element name="clan">
+          <xs:complexType>
+            <xs:attribute name="id" type="xs:int" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="maxhp" type="xs:string" use="optional"/>
+            <xs:attribute name="maxmp" type="xs:string" use="optional"/>
+            <xs:attribute name="str" type="xs:string" use="optional"/>
+            <xs:attribute name="agi" type="xs:string" use="optional"/>
+            <xs:attribute name="vit" type="xs:string" use="optional"/>
+            <xs:attribute name="int" type="xs:string" use="optional"/>
+            <xs:attribute name="dex" type="xs:string" use="optional"/>
+            <xs:attribute name="luck" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
