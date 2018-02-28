@@ -45,3 +45,6 @@ for i in sorted(erp):
 print("-----------------------------------------------------------------------")
 print("Serverdata license check result")
 print("Errors: %d" % (err))
+#if err > 0:
+#    os.exit(1)
+
