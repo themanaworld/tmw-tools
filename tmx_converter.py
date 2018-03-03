@@ -76,6 +76,7 @@ class Object(object):
         #'map',
         'x', 'y',
         'w', 'h',
+        'ignore',
     )
 class Mob(Object):
     __slots__ = (
@@ -264,6 +265,8 @@ class ContentHandler(xml.sax.ContentHandler):
             print('</%s>' % name)
 
         if name == u'object':
+            if hasattr(self.object, 'ignore'):
+                return;
             obj = self.object
             if isinstance(obj, Mob):
                 mob_id = obj.monster_id
