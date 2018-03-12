@@ -13,6 +13,18 @@ http://wiki.themanaworld.org/index.php/Contributors
 -->
 
 <contributors>
+    <!-- "TMW2" developers & contributors -->
+    <tmw2>
+        <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
+        <contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
+        <contributor nick="Saulc" name="Lucas Helaine" mailid="lucashelaine14" mailserver="gmail.com"/>
+        <contributor nick="Crazyfefe" name="Lecanu Colin" mailid="admin" mailserver="tmw2.org"/>
+        <contributor nick="Polaczka" name="Denis" mailid="trella9007" mailserver="gmail.com"/>
+        <contributor nick="Soren" mailid="psyprogreesive" mailserver="gmail.com"/>
+        <contributor nick="Rakinorf"/>
+        <contributor nick="ayruss"/>
+        <contributor nick="GonzoDark"/>
+    </tmw2>
     <!-- "The Mana World" developers & contributors -->
     <evol>
         <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
@@ -132,9 +144,10 @@ http://wiki.themanaworld.org/index.php/Contributors
     </freesound>
     <!-- Related Communities -->
     <other>
-        <community name="OpenGameArt" site="http://opengameart.org"/>
-        <community name="TheManaWorld-Br" site="http://tmw-br.scall.org"/>
-        <community name="TuxFamily" site="http://tuxfamily.org"/>
-        <community name="Crew of Red Corsair" site="http://crc.evolonline.org/"/>
+        <community name="ManaPlus" site="https://manaplus.org"/>
+        <community name="Open Game Art" site="http://opengameart.org"/>
+        <community name="The Mana World Brazil" site="http://tmw-br.scall.org"/>
+        <community name="The Mana World" site="https://themanaworld.org"/>
+        <community name="Evol Online" site="http://evolonline.org"/>
     </other>
 </contributors>

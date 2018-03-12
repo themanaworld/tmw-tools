@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<!-- Author: Reid
-Copyright (C) 2016 Evol Online -->
+<!-- Author: Reid, Jesusalva
+Copyright (C) 2016 Evol Online
+Copyright (C) 2018 TMW2 -->
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     >
@@ -10,8 +11,16 @@ Copyright (C) 2016 Evol Online -->
 
     <xsl:template match="contributors">
         <xsl:text>.&lt;- @@index|&lt;&lt;Back to Index&gt;&gt;@@&#xa;&#xa;</xsl:text>
-        <xsl:text>@@http://evolonline.org/|&lt;&lt;Official site:&gt;&gt; http://evolonline.org@@&#xa;</xsl:text>
+        <xsl:text>@@https://tmw2.org/|&lt;&lt;Official site:&gt;&gt; https://tmw2.org@@&#xa;</xsl:text>
         <xsl:apply-templates/>
+    </xsl:template>
+
+    <xsl:template match="tmw2">
+        <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
+        <xsl:text>##3-- &lt;&lt;TMW2 Contributors&gt;&gt; --&#xa;</xsl:text>
+        <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
+
+        <xsl:apply-templates select="contributor"/>
     </xsl:template>
 
     <xsl:template match="evol">
