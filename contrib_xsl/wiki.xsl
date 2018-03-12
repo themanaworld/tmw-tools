@@ -12,33 +12,51 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates/>
     </xsl:template>
 
+    <xsl:template match="tmw2">
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	TMW2 Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
+        <xsl:apply-templates/>
+    </xsl:template>
+
     <xsl:template match="evol">
-        <xsl:text>^	Evol Online Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	Evol Online Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="tmw-legacy">
-        <xsl:text>^ The Mana World Legacy Contributors  ^^&#xa;</xsl:text>
-        <xsl:text>^ Nickname    ^   Real Name / Email   ^   Link    ^&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text># The Mana World Legacy Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="tmw-ufb">
-        <xsl:text>^	Unknown Flying Bullet Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	Unknown Flying Bullet Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="freesound">
-        <xsl:text>^	Freesound Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Nickname	^	Real Name / Email	^	Link	^&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	Freesound Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="other">
-        <xsl:text>^	Related Community Contributors	^^&#xa;</xsl:text>
-        <xsl:text>^	Name	^	Link	^&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	Related Community Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
 
         <xsl:apply-templates select="community"/>
     </xsl:template>
@@ -50,11 +68,7 @@ Copyright (C) 2016 Evol Online -->
 
         <xsl:choose>
             <xsl:when test="@mailid">
-                <xsl:text>	|[[mailto:</xsl:text>
-                <xsl:value-of select="@mailid"/>
-                <xsl:text>@</xsl:text>
-                <xsl:value-of select="@mailserver"/>
-                <xsl:text>| </xsl:text>
+                <xsl:text>	|(</xsl:text>
                 <xsl:choose>
                     <xsl:when test="@name">
                         <xsl:value-of select="@name"/>
@@ -63,7 +77,12 @@ Copyright (C) 2016 Evol Online -->
                         <xsl:value-of select="@nick"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:text>]]	|</xsl:text>
+                <xsl:text>)[mailto:</xsl:text>
+
+                <xsl:value-of select="@mailid"/>
+                <xsl:text>@</xsl:text>
+                <xsl:value-of select="@mailserver"/>
+                <xsl:text>]	|</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text>	|</xsl:text>
@@ -76,16 +95,6 @@ Copyright (C) 2016 Evol Online -->
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:text>	|</xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:choose>
-            <xsl:when test="@page">
-                <xsl:text>	</xsl:text>
-                <xsl:value-of select="@page"/>
-                <xsl:text>	|</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:text>	No Data	|</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         <xsl:text>&#xa;</xsl:text>

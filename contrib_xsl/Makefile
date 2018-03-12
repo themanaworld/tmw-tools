@@ -1,6 +1,7 @@
 XSLTPROC = xsltproc
-CDDIR    = ../../client-data
-HELPDIR  = help
+CDDIR	= ../../client-data
+WKDIR	= ../../wiki
+HELPDIR = help
 
 all: about-server wiki
 
@@ -10,5 +11,6 @@ about-server:
 	@echo "The file about-server.txt was created successfully."
 
 wiki:
-	@$(XSLTPROC) wiki.xsl contributors.xml | less
-	@echo "You can now place this output in: http://wiki.evolonline.org/contributors"
+	@$(XSLTPROC) wiki.xsl contributors.xml > Contributors.md
+	@cp Contributors.md $(WKDIR)
+	@echo "Wiki generated"
