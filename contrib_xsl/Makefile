@@ -11,6 +11,5 @@ about-server:
 	@echo "The file about-server.txt was created successfully."
 
 wiki:
-	@$(XSLTPROC) wiki.xsl contributors.xml > Contributors.md
-	@cp Contributors.md $(WKDIR)
+	@$(XSLTPROC) wiki.xsl contributors.xml > $(WKDIR)/Contributors.md
 	@echo "Wiki generated"
