@@ -13,7 +13,6 @@ Copyright (C) 2016 Evol Online -->
     </xsl:template>
 
     <xsl:template match="tmw2">
-        <xsl:text>&#xa;</xsl:text>
         <xsl:text>#	TMW2 Contributors&#xa;</xsl:text>
         <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
         <xsl:text>|--------|-----------------|&#xa;</xsl:text>
@@ -54,7 +53,7 @@ Copyright (C) 2016 Evol Online -->
 
     <xsl:template match="other">
         <xsl:text>&#xa;</xsl:text>
-        <xsl:text>#	Related Community Contributors&#xa;</xsl:text>
+        <xsl:text>#	Related Communities&#xa;</xsl:text>
         <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
         <xsl:text>|--------|-----------------|&#xa;</xsl:text>
 
@@ -108,6 +107,10 @@ Copyright (C) 2016 Evol Online -->
         <xsl:text>|</xsl:text>
         <xsl:value-of select="@name"/>
         <xsl:text>]]	|&#xa;</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="sub">
+        <xsl:text></xsl:text>
     </xsl:template>
 
 </xsl:stylesheet>

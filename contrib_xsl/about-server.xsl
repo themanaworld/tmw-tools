@@ -20,7 +20,7 @@ Copyright (C) 2018 TMW2 -->
         <xsl:text>##3-- &lt;&lt;TMW2 Contributors&gt;&gt; --&#xa;</xsl:text>
         <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
 
-        <xsl:apply-templates select="contributor"/>
+        <xsl:apply-templates/>
     </xsl:template>
 
     <xsl:template match="evol">
@@ -96,6 +96,11 @@ Copyright (C) 2018 TMW2 -->
         <xsl:text>&gt;&gt;</xsl:text>
         <xsl:value-of select="@site"/>
         <xsl:text>@@]&#xa;</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="sub">
+        <xml:text>&#xa;##3##B<xsl:value-of select="@title"/> </xml:text>
+        <xsl:text>##b&#xa;</xsl:text>
     </xsl:template>
 
 </xsl:stylesheet>
