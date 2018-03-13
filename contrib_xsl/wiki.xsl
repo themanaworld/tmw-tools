@@ -9,6 +9,8 @@ Copyright (C) 2016 Evol Online -->
     <xsl:strip-space elements="*"/>
 
     <xsl:template match="contributors">
+        <xsl:text>[[_TOC_]]&#xa;</xsl:text>
+        <xsl:text>****&#xa;&#xa;</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
 
@@ -54,8 +56,7 @@ Copyright (C) 2016 Evol Online -->
     <xsl:template match="other">
         <xsl:text>&#xa;</xsl:text>
         <xsl:text>#	Related Communities&#xa;</xsl:text>
-        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
-        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
 
         <xsl:apply-templates select="community"/>
     </xsl:template>
@@ -67,7 +68,7 @@ Copyright (C) 2016 Evol Online -->
 
         <xsl:choose>
             <xsl:when test="@mailid">
-                <xsl:text>	|(</xsl:text>
+                <xsl:text>	|[</xsl:text>
                 <xsl:choose>
                     <xsl:when test="@name">
                         <xsl:value-of select="@name"/>
@@ -76,12 +77,12 @@ Copyright (C) 2016 Evol Online -->
                         <xsl:value-of select="@nick"/>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:text>)[mailto:</xsl:text>
+                <xsl:text>](mailto:</xsl:text>
 
                 <xsl:value-of select="@mailid"/>
                 <xsl:text>@</xsl:text>
                 <xsl:value-of select="@mailserver"/>
-                <xsl:text>]	|</xsl:text>
+                <xsl:text>)	|</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text>	|</xsl:text>
@@ -100,13 +101,12 @@ Copyright (C) 2016 Evol Online -->
     </xsl:template>
 
     <xsl:template match="community">
-        <xsl:text>|</xsl:text>
+        <xsl:text>+ [</xsl:text>
         <xsl:value-of select="@name"/>
-        <xsl:text>	|[[</xsl:text>
+        <xsl:text>](</xsl:text>
         <xsl:value-of select="@site"/>
-        <xsl:text>|</xsl:text>
-        <xsl:value-of select="@name"/>
-        <xsl:text>]]	|&#xa;</xsl:text>
+        <xsl:text>)</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="sub">
