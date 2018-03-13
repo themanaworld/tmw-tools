@@ -94,7 +94,6 @@ Copyright (C) 2018 TMW2 -->
         <xsl:text>|&lt;&lt;</xsl:text>
         <xsl:value-of select="@name"/>
         <xsl:text>&gt;&gt;</xsl:text>
-        <xsl:value-of select="@site"/>
         <xsl:text>@@]&#xa;</xsl:text>
     </xsl:template>
 
