@@ -1752,6 +1752,7 @@
             <xs:attribute name="name" type="xs:string" default=""/>
             <xs:attribute name="longName" type="xs:string" default=""/>
             <xs:attribute name="showBadge" type="bool" default="false"/>
+            <xs:attribute name="highlightName" type="bool" default="false"/>
             <xs:attribute name="badge" type="xs:string" use="optional"/>
             <xs:attribute name="inherit" type="xs:string" use="optional"/>
           </xs:complexType>
