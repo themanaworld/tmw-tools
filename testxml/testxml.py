@@ -1658,9 +1658,12 @@ def testMap(mapName, file, path):
 def testOverSizedTiles(layer, tiles, file):
     global warnings, errors
 
-    if layer.name == "Fringe":
-        return
-    errList = []
+    oversizeErrList = []
+    ignoreErrList = []
+    ignoreTilesetList = set()
+    ignoredFiles = []
+    if "ignored" in atlasToFiles:
+        ignoredFiles = atlasToFiles["ignored"]
     for x in range(0, layer.width):
         for y in range(0, layer.height):
             idx = ((y * layer.width) + x) * 4
@@ -1668,7 +1671,12 @@ def testOverSizedTiles(layer, tiles, file):
             if val == 0:
                 continue
 
-            tile = findTileByGid(tiles, val)
+            tile, tilesetName = findTileByGid(tiles, val)
+            if layer.name.lower() not in ("collision", "heights") and tilesetName in ignoredFiles:
+                ignoreErrList.append((x, y))
+                ignoreTilesetList.add(tilesetName)
+            if layer.name.lower() == "fringe":
+                continue
             if tile is None:
                 # now ignoring, this happend because layer parser
                 # not support includes
@@ -1677,30 +1685,47 @@ def testOverSizedTiles(layer, tiles, file):
                 for x2 in range(x + 1, x + 1 + int(tile.width / 32), 1):
                     idx = ((y * layer.width) + x2) * 4
                     val = getLDV(layer.arr, idx)
-                    tile = findTileByGid(tiles, val)
+                    tile, _ = findTileByGid(tiles, val)
                     if val > 0:
-                        errList.append((x, y))
+                        oversizeErrList.append((x, y))
                         if silent != True:
                             warnings = warnings + 1
             elif tile.tileHeight > 32 and y - 1 > 0:
                 for y2 in range(y - 1, y - 1 - int(tile.height / 32), -1):
                     idx = ((y2 * layer.width) + x) * 4
                     val = getLDV(layer.arr, idx)
-                    tile = findTileByGid(tiles, val)
+                    tile, _ = findTileByGid(tiles, val)
                     if val > 0:
-                        errList.append((x, y))
+                        oversizeErrList.append((x, y))
                         if silent != True:
                             warnings = warnings + 1
 
-    if len(errList) == 0:
-        return
-    if silent != True:
+    if len(oversizeErrList) > 0 and silent != True:
         print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
                 ". Possible incorrect map drawing"
         errors = errors + 1
         errStr = ""
         k = 0
-        for err in errList:
+        for err in oversizeErrList:
+            errStr = errStr + str(err) + ", "
+            k = k + 1
+            if k > 100:
+                errStr = errStr + "..."
+                break
+        print errStr
+
+    if len(ignoreErrList) > 0:
+        errStr = ""
+        for err in ignoreTilesetList:
+            if errStr != "":
+                errStr = errStr + ", "
+            errStr = errStr + err
+        print("error: {0}: Tiles from ignored atlas used in layer {1}. Tilesets: {2}. "
+              "Possible incorrect map drawing".format(file, layer.name, errStr))
+        errors = errors + 1
+        errStr = ""
+        k = 0
+        for err in ignoreErrList:
             errStr = errStr + str(err) + ", "
             k = k + 1
             if k > 100:
@@ -1807,7 +1832,7 @@ def testCollisionLayer(file, layer, tiles):
             val = getLDV(arr, idx)
             if val != 0:
                 haveTiles = True
-                tile = findTileByGid(tiles, val)
+                tile, _ = findTileByGid(tiles, val)
                 if tile is not None:
                     idx = val -  tile.firstGid
                     if idx > 1:
@@ -1828,8 +1853,8 @@ def findTileByGid(tiles, gid):
         if firstGid <= gid:
             tile = tiles[firstGid]
             if tile.lastGid >= gid:
-                return tile
-    return None
+                return (tile, tile.source)
+    return (None, None)
 
 
 def showLayerErrors(file, points, msg, iserr):
