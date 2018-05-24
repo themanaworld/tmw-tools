@@ -24,7 +24,7 @@ check elementals.xml
 check emotes.xml
 check equipmentslots.xml
 check equipmentwindow.xml
-check evol.manaplus
+check tmw2.manaplus
 check features.xml
 check groups.xml
 check homunculuses.xml
