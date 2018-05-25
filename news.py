@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
 ##    news.py - Generates news.
@@ -27,7 +27,24 @@ import sys
 import os
 from abc import ABCMeta, abstractmethod
 
+try:
+    # py3
+    from urllib.parse import quote_plus
+except ImportError:
+    # py2
+    from urllib import quote_plus
+try:
+    # py3
+    from html import escape as html_escape
+except ImportError:
+    # py2
+    from cgi import escape as html_escape
+
 import _news_colors as colors
+
+
+def url_escape(s):
+    return quote_plus(s)
 
 class BasicWriter(object):
     __slots__ = ('stream')
@@ -40,7 +57,7 @@ class BasicWriter(object):
         pass
 
     @abstractmethod
-    def put(self, entry):
+    def put(self, entry, path):
         pass
 
     @abstractmethod
@@ -54,9 +71,9 @@ class HtmlWriter(BasicWriter):
         #self.stream.write('<pre>\n')
         pass
 
-    def put(self, entry):
-        self.stream.write('<div>\n<p/>\n')
-        entry = entry.replace('\n\n', '\n<p/>\n')
+    def put(self, entry, path):
+        self.stream.write('<div>\n<br/><a name="' + path + '"></a>\n')
+        entry = entry.replace('\n\n', '\n<br/>\n')
         entry = entry.format(**colors.make_html_colors_dict())
         self.stream.write(entry)
         self.stream.write('</div>\n')
@@ -65,11 +82,36 @@ class HtmlWriter(BasicWriter):
         #self.stream.write('</pre>\n')
         pass
 
+class NOPFmt:
+    def __format__(self, s):
+        return s
+
+class RSSWriter(BasicWriter):
+    __slots__ = ()
+    def start(self):
+        self.stream.write('<?xml version="1.0" encoding="UTF-8"?>\n<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><atom:link href="https://themanaworld.org/news.rss" rel="self" type="application/rss+xml" /><description>The Mana World News</description><title>TMW News</title><link>https://www.themanaworld.org/news-feed.php</link>\n')
+
+    def put(self, entry, path):
+        self.stream.write('<item><title>')
+        title, entry = entry.lstrip('\n').split('\n', 1)
+        self.stream.write(html_escape(title.format(**{'title':NOPFmt()}))) # FIXME: Assumes title is the first nonblank line
+        self.stream.write('</title>\n<description>\n')
+        entry = entry.replace('\n\n', '\n<br/>\n')
+        entry = entry.format(**colors.make_html_colors_dict())
+        entry = html_escape(entry)
+        self.stream.write(entry)
+        self.stream.write('</description>\n<link>https://www.themanaworld.org/news-feed.php#' + url_escape(path) + '</link>\n<guid isPermaLink="false">')
+        self.stream.write(path)
+        self.stream.write('</guid>\n</item>\n')
+
+    def finish(self):
+        self.stream.write('</channel>\n</rss>\n')
+
 class TxtWriter(BasicWriter):
     __slots__ = ()
     def start(self):
         pass
-    def put(self, entry):
+    def put(self, entry, path):
         entry = entry.replace('\n\n', '\n \n')
         entry = entry.format(**colors.make_txt_colors_dict())
         self.stream.write(entry)
@@ -84,7 +126,7 @@ class ForumWriter(BasicWriter):
     __slots__ = ('done')
     def start(self):
         self.done = False
-    def put(self, entry):
+    def put(self, entry, path):
         if self.done:
             return
         entry = entry.format(**colors.make_forum_colors_dict())
@@ -96,6 +138,7 @@ class ForumWriter(BasicWriter):
 def create_writers(outdir):
     yield TxtWriter(os.path.join(outdir, 'news.txt'))
     yield HtmlWriter(os.path.join(outdir, 'news.html'))
+    yield RSSWriter(os.path.join(outdir, 'news.rss'))
     yield ForumWriter(os.path.join(outdir, 'news.phpbb.txt'))
 
 def main(outdir, indir=None):
@@ -106,11 +149,12 @@ def main(outdir, indir=None):
     for s in out:
         s.start()
     for entry in sorted(os.listdir(indir), reverse=True):
-        if not entry.endswith('.txt'):
+        suffix = '.txt'
+        if not entry.endswith(suffix):
             continue
         e = open(os.path.join(indir, entry)).read()
         for s in out:
-            s.put(e)
+            s.put(e, entry[:-len(suffix)])
     for s in out:
         s.finish()
 
