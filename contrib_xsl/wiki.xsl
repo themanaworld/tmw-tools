@@ -21,6 +21,13 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates/>
     </xsl:template>
 
+    <xsl:template match="lof">
+        <xsl:text>#	LoF Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Notes|&#xa;</xsl:text>
+        <xsl:text>|--------|-----|&#xa;</xsl:text>
+        <xsl:apply-templates/>
+    </xsl:template>
+
     <xsl:template match="evol">
         <xsl:text>&#xa;</xsl:text>
         <xsl:text>#	Evol Online Contributors&#xa;</xsl:text>
