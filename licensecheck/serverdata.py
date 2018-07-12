@@ -27,7 +27,7 @@ for mp in os.listdir(sv):
         a=open(sv+mp+'/'+script, 'r')
         ok=False
         for line in a:
-            if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'This file is generated automatically' in line:
+            if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line:
                 ok=True
                 break
 
