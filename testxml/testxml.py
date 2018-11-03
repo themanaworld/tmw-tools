@@ -43,7 +43,7 @@ errors = 0
 warnings = 0
 errDict = set()
 safeDye = False
-borderSize = 20
+borderSize = 18 # Original 14
 colorsList = set()
 showAll = False
 silent = False
@@ -1616,7 +1616,7 @@ def testMap(mapName, file, path):
         showMsgFile(file, "missing fringe layer", True)
     if collision == None:
         showMsgFile(file, "missing collision layer", True)
-    else:
+    elif mapName != "test.tmx" and mapName != "testbg.tmx":
         ids = testCollisionLayer(file, collision, tilesMap)
         if ids[0] != None and len(ids[0]) > 0:
             if silent == False or file.find("maps/test") != 0:
@@ -1814,8 +1814,8 @@ def testCollisionLayer(file, layer, tiles):
     arr = layer.arr
     x1 = borderSize
     y1 = borderSize
-    x2 = layer.width - 20
-    y2 = layer.width - 20
+    x2 = layer.width - borderSize
+    y2 = layer.height - borderSize
     if x2 < 0:
         x2 = 0
     if y2 < 0:
@@ -1825,18 +1825,18 @@ def testCollisionLayer(file, layer, tiles):
         return (set(), set())
 
     for x in range(0, layer.width):
-        if haveTiles == True:
-            break
         for y in range(0, layer.height):
             idx = ((y * layer.width) + x) * 4
             val = getLDV(arr, idx)
             if val != 0:
                 haveTiles = True
-                tile, _ = findTileByGid(tiles, val)
+                tile, tilesetName = findTileByGid(tiles, val)
                 if tile is not None:
                     idx = val -  tile.firstGid
-                    if idx > 1:
+                    if idx > 6: # 6 - max collision type
                         badtiles.add(((x, y), idx))
+                else:
+                    badtiles.add(((x, y), "+{0}".format(val)))
             if val == 0 and (x < x1 or x > x2 or y < y1 or y > y2):
                 tileset.add((x, y))
 
@@ -1887,7 +1887,7 @@ def getLDV2(arr, x, y, width, height, tilesMap):
         for x2 in range(x0, x + 1):
             ptr = ((y2 * width) + x2) * 4
             val = getLDV(arr, ptr)
-            tile = findTileByGid(tilesMap, val)
+            tile, _ = findTileByGid(tilesMap, val)
             if tile is not None:
                 if (tile.tileHeight > 32 or y2 == y) and (tile.tileWidth > 32 or x2 == x):
                     hg = tile.tileHeight / 32
