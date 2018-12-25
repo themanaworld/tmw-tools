@@ -39,7 +39,7 @@ for mpa in npcs:
     if not '.txt' in mp:
       continue
     # Skip certain folders
-    if  "/dev/" in mp or "/00000SAVE/" in mp:
+    if  "/dev/" in mp or "/00000SAVE/" in mp or "/test/" in mp:
       continue
 
     a=open(mp, 'r')
