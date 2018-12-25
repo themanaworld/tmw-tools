@@ -44,7 +44,7 @@ for mpa in npcs:
       continue
 
     a=open(mp, 'r')
-    print("Verify %s" % mp)
+    #print("Verify %s" % mp)
     ok=False
     for line in a:
         if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line:
