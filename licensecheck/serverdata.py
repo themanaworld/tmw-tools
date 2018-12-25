@@ -7,11 +7,11 @@
 # Bad command:
 # ls --recursive --hyperlink=always --format=single-column ../../server-data/npc/|grep txt
 
-import os
+# Initialize stuff
+import subprocess
 erp=[]
 
 # Clear previous NPC list
-import subprocess
 try:
     subprocess.call("rm npcs.txt", shell=True)
 except:
