@@ -4,38 +4,57 @@
 # Copyright (C) 2018  TMW-2
 # Author: Jesusalva
 
+# Bad command:
+# ls --recursive --hyperlink=always --format=single-column ../../server-data/npc/|grep txt
+
 import os
-
-sv="../../server-data/npc/"
 erp=[]
-err=0
 
-print("Checking license info for second level NPCs")
+# Clear previous NPC list
+import subprocess
+try:
+    subprocess.call("rm npcs.txt", shell=True)
+except:
+    pass
 
-for mp in os.listdir(sv):
+# Generate NPC list
+subprocess.call("find ../../server-data/npc/ txt > npcs.txt", shell=True)
+npcs=open("npcs.txt", "r")
 
-    # we actually should read scripts and imports, but this script is designed to be dumb
-    if "." in mp or mp == "dev":
-        continue
+# Begin
+print("Checking license info for NPCs (this excludes _npcs and mapflags)")
 
-    for script in os.listdir(sv+mp):
-        if (not ".txt" in script) and (not ".conf" in script):
-            continue
-        if ("~" in script) or ("#" in script) or ("mapflags.txt" in script):
-            continue
+for mpa in npcs:
+    mp=mpa.replace('\n','')
+    # Skip files prefixed with _ or called mapflags
+    if "mapflag" in mp:
+      continue
+    if "_import" in mp:
+      continue
+    if "_warps" in mp:
+      continue
+    if "_mobs" in mp:
+      continue
+    # Skip bad files
+    if not '.txt' in mp:
+      continue
+    # Skip certain folders
+    if  "/dev/" in mp or "/00000SAVE/" in mp:
+      continue
 
-        a=open(sv+mp+'/'+script, 'r')
-        ok=False
-        for line in a:
-            if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line:
-                ok=True
-                break
+    a=open(mp, 'r')
+    print("Verify %s" % mp)
+    ok=False
+    for line in a:
+        if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line:
+            ok=True
+            break
 
-        a.close()
-        if not ok:
-            erp.append(mp+'/'+script)
-            err+=1
+    a.close()
+    if not ok:
+        erp.append(mp)
 
+npcs.close()
 if len(erp) > 0:
     print("-----------------------------------------------------------------------")
 
@@ -44,7 +63,7 @@ for i in sorted(erp):
 
 print("-----------------------------------------------------------------------")
 print("Serverdata license check result")
-print("Errors: %d" % (err))
+print("Errors: %d" % (len(erp)))
 #if err > 0:
 #    os.exit(1)
 
