@@ -47,7 +47,7 @@ for mpa in npcs:
     #print("Verify %s" % mp)
     ok=False
     for line in a:
-        if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line or 'author' in line.lower():
+        if 'tmw2 script' in line.lower() or 'tmw-2 script' in line.lower() or 'tmw 2 script' in line.lower() or 'tmw2/lof script' in line.lower() or 'This file is generated automatically' in line or 'author' in line.lower() or 'tmw2 function' in line.lower() or 'tmw-2 function' in line.lower() or 'tmw 2 function' in line.lower():
             ok=True
             break
 
