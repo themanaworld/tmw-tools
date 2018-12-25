@@ -9,6 +9,7 @@
 
 # Initialize stuff
 import subprocess
+import sys
 erp=[]
 
 # Clear previous NPC list
@@ -17,23 +18,23 @@ try:
 except:
     pass
 
+# Determine correct path
+PATH="../../server-data/npc/"
+if len(sys.argv) == 2:
+    PATH=sys.argv[1]
+
 # Generate NPC list
-subprocess.call("find ../../server-data/npc/ txt > npcs.txt", shell=True)
+subprocess.call("find "+PATH+" txt > npcs.txt", shell=True)
 npcs=open("npcs.txt", "r")
 
 # Begin
-print("Checking license info for NPCs (this excludes _npcs and mapflags)")
+print("Checking license info for NPCs")
+print("Source is at: "+PATH)
 
 for mpa in npcs:
     mp=mpa.replace('\n','')
-    # Skip files prefixed with _ or called mapflags
+    # Skip mapflags
     if "mapflag" in mp:
-      continue
-    if "_import" in mp:
-      continue
-    if "_warps" in mp:
-      continue
-    if "_mobs" in mp:
       continue
     # Skip bad files
     if not '.txt' in mp:
