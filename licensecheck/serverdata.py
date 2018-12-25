@@ -10,6 +10,7 @@
 # Initialize stuff
 import subprocess
 import sys
+import os
 erp=[]
 
 # Clear previous NPC list
@@ -65,6 +66,6 @@ for i in sorted(erp):
 print("-----------------------------------------------------------------------")
 print("Serverdata license check result")
 print("Errors: %d" % (len(erp)))
-if err > 0:
+if len(erp):
     os.exit(1)
 
