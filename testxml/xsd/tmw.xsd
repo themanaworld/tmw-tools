@@ -372,6 +372,7 @@
       <xs:element name="questgiver" type="xs:string"/>
       <xs:element name="coordinates" type="quests_quest_coordinates"/>
       <xs:element name="npc" type="xs:string"/>
+      <xs:element name="level" type="xs:string"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="group" type="xs:string" use="required"/>
