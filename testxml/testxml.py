@@ -1672,7 +1672,7 @@ def testOverSizedTiles(layer, tiles, file):
                 continue
 
             tile, tilesetName = findTileByGid(tiles, val)
-            if layer.name.lower() not in ("collision", "heights") and tilesetName in ignoredFiles:
+            if layer.name.lower() not in ("collision", "heights", "height") and tilesetName in ignoredFiles:
                 ignoreErrList.append((x, y))
                 ignoreTilesetList.add(tilesetName)
             if layer.name.lower() == "fringe":
