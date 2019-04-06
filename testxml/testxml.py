@@ -1384,6 +1384,12 @@ def readAttr(node, attr, dv, msg, iserr):
             warnings = warnings + 1
         return dv
 
+def readAttr2(node, attr, dv):
+    try:
+        return node.attributes[attr].value
+    except:
+        return dv
+
 
 def testMap(mapName, file, path):
     global warnings, errors
@@ -1424,6 +1430,13 @@ def testMap(mapName, file, path):
             if value == "" and name == "name":
                 showMsgFile(file, "empty map name property", True)
                 continue
+
+    # Total minimum required width
+    if mapWidth < 60:
+        name1=file.find("maps/test")
+        name2=file.find("maps/000-1")
+        if not name1 and not name2:
+            showMsgFile(file, "total map width to small: " + str(mapWidth), False)
 
     tilesMap = dict()
 
@@ -1562,6 +1575,7 @@ def testMap(mapName, file, path):
 
     testTiles(mapName, file, tilesMap)
     layers = dom.getElementsByTagName("layer")
+    objects = dom.getElementsByTagName("object")
     if layers == None or len(layers) == 0:
         showMsgFile(file, "map dont have layers", True)
         return
@@ -1571,11 +1585,14 @@ def testMap(mapName, file, path):
     lowLayers = []
     overLayers = []
     beforeFringe = True
+    haveHeight = False
 
     for layer in layers:
         name = readAttr(layer, "name", None, "layer dont have name", True)
         if name == None:
             continue
+        if name.lower() == "height" or name.lower() == "heights":
+            haveHeight=True
         obj = Layer()
         obj.name = name
         if name.lower() == "fringe":
@@ -1631,6 +1648,9 @@ def testMap(mapName, file, path):
         if (silent == False or file.find("maps/test") != 0) and herc == False:
             showMsgFile(file, "missing over layers", False)
 
+    if not haveHeight:
+        showMsgFile(file, "missing height layer", False)
+
     if fringe != None:
         lowLayers.append(fringe)
     warn1 = None
@@ -1654,6 +1674,32 @@ def testMap(mapName, file, path):
     if err1 != None and len(err1) > 0:
         showLayerErrors(file, err1, "empty tile in all layers", True)
 
+    for objx in objects:
+        x = readAttr(objx, "x", 0, "object in invalid X position", False)
+        y = readAttr(objx, "y", 0, "object in invalid Y position", False)
+        w = readAttr2(objx, "width", 0)
+        h = readAttr2(objx, "height", 0)
+        try:
+            fs=False
+            if (float(x) != int(x)):
+                showMsgFile(file, "Invalid object X pos - must be integer", False)
+                fs=1
+            if (float(y) != int(y)):
+                showMsgFile(file, "Invalid object Y pos - must be integer", False)
+                fs=1
+            if (float(w) != int(w)):
+                showMsgFile(file, "Invalid object Width - must be integer", False)
+                fs=1
+            if (float(h) != int(h)):
+                showMsgFile(file, "Invalid object Height - must be integer", False)
+                fs=1
+            if fs:
+                id1=readAttr(objx, "id", "?", "invalid object ID", False)
+                name1=readAttr(objx, "name", "?", "invalid object name", False)
+                type1=readAttr(objx, "type", "?", "invalid object type", False)
+                print("Broken object: id %s name %s (%s,%s,%s,%s) type %s", id1, name1, x, y, w, h, type1);
+        except:
+                showMsgFile(file, "Broken object x/y/h/w data detected", True)
 
 def testOverSizedTiles(layer, tiles, file):
     global warnings, errors
