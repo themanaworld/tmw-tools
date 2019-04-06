@@ -1435,7 +1435,9 @@ def testMap(mapName, file, path):
     if mapWidth < 60:
         name1=file.find("maps/test")
         name2=file.find("maps/000-1")
-        if not name1 and not name2:
+        if name1 == 0 or name2 == 0:
+            pass
+        else:
             showMsgFile(file, "total map width to small: " + str(mapWidth), False)
 
     tilesMap = dict()
@@ -1697,9 +1699,10 @@ def testMap(mapName, file, path):
                 id1=readAttr(objx, "id", "?", "invalid object ID", False)
                 name1=readAttr(objx, "name", "?", "invalid object name", False)
                 type1=readAttr(objx, "type", "?", "invalid object type", False)
-                print("Broken object: id %s name %s (%s,%s,%s,%s) type %s", id1, name1, x, y, w, h, type1);
+                showMsgFile(file, "Broken object: id %s name %s (%s,%s,%s,%s) type %s" % (id1, name1, x, y, w, h, type1), True);
         except:
-                showMsgFile(file, "Broken object x/y/h/w data detected", True)
+                id1=readAttr(objx, "id", "?", "invalid object ID", False)
+                showMsgFile(file, "Broken object ID %s - x/y/h/w corrupted data detected" % id1, True)
 
 def testOverSizedTiles(layer, tiles, file):
     global warnings, errors
