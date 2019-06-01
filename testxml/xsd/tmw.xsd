@@ -951,6 +951,7 @@
             <xs:attribute name="dex" type="xs:string" use="optional"/>
             <xs:attribute name="luck" type="xs:string" use="optional"/>
             <xs:attribute name="effect" type="xs:string" use="optional"/>
+            <xs:attribute name="penalty" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
