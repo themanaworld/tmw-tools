@@ -907,6 +907,7 @@
             <xs:attribute name="attack-action" type="xs:string" use="optional"/>
             <xs:attribute name="skyattack-action" type="xs:string" use="optional"/>
             <xs:attribute name="waterattack-action" type="xs:string" use="optional"/>
+            <xs:attribute name="rideattack-action" type="xs:string" use="optional"/>
             <xs:attribute name="drawBefore" type="xs:string" use="optional"/>
             <xs:attribute name="drawAfter" type="xs:string" use="optional"/>
             <xs:attribute name="maxFloorOffset" type="xs:int" default="0"/>
