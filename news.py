@@ -47,10 +47,11 @@ def url_escape(s):
     return quote_plus(s)
 
 class BasicWriter(object):
-    __slots__ = ('stream')
+    __slots__ = ('stream', 'isFirst')
     __metaclass__ = ABCMeta
     def __init__(self, outfile):
         self.stream = open(outfile, 'w')
+        self.isFirst = True
 
     @abstractmethod
     def start(self):
@@ -107,6 +108,37 @@ class RSSWriter(BasicWriter):
     def finish(self):
         self.stream.write('</channel>\n</rss>\n')
 
+class JSONWriter(BasicWriter):
+    __slots__ = ()
+    def start(self):
+        self.stream.write('[')
+
+    def put(self, entry, path):
+        if not self.isFirst:
+            self.stream.write(',\n')
+        self.isFirst = False
+        self.stream.write('{')
+        self.stream.write('"id":"%s",' % path)
+        title, entry = entry.lstrip('\n').split('\n', 1)
+        date, entry = entry.split('\n', 1)
+        entry, author = entry.rstrip('\n').rsplit('\n', 1)
+        self.stream.write('"title":"%s",' % title.format(**{'title':NOPFmt()})) # FIXME: assumes the first line is always the title
+        self.stream.write('"date":"%s",' % date.format(**{'date':NOPFmt()})) # FIXME: assumes the second line is always the date
+        self.stream.write('"author":"%s",' % author.format(**{'author':NOPFmt()})) # FIXME: assumes the second line is always the date
+        self.stream.write('"html":"')
+        entry = entry.lstrip('\n')
+        entry = entry.replace('\n\n', '<br/>')
+        entry = entry.format(**colors.make_html_colors_dict())
+        entry = entry.replace('"', '\\"')
+        entry = entry.replace('\n', ' ')
+        entry = entry.rstrip('\n').rstrip(' ')
+        self.stream.write(entry)
+        self.stream.write('"')
+        self.stream.write('}')
+
+    def finish(self):
+        self.stream.write(']\n')
+
 class TxtWriter(BasicWriter):
     __slots__ = ()
     def start(self):
@@ -139,6 +171,7 @@ def create_writers(outdir):
     yield TxtWriter(os.path.join(outdir, 'news.txt'))
     yield HtmlWriter(os.path.join(outdir, 'news.html'))
     yield RSSWriter(os.path.join(outdir, 'news.rss'))
+    yield JSONWriter(os.path.join(outdir, 'news.json'))
     yield ForumWriter(os.path.join(outdir, 'news.phpbb.txt'))
 
 def main(outdir, indir=None):
