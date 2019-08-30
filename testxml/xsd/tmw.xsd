@@ -950,7 +950,7 @@
             <xs:attribute name="vit" type="xs:string" use="optional"/>
             <xs:attribute name="int" type="xs:string" use="optional"/>
             <xs:attribute name="dex" type="xs:string" use="optional"/>
-            <xs:attribute name="luck" type="xs:string" use="optional"/>
+            <xs:attribute name="luk" type="xs:string" use="optional"/>
             <xs:attribute name="effect" type="xs:string" use="optional"/>
             <xs:attribute name="penalty" type="xs:string" use="optional"/>
           </xs:complexType>
