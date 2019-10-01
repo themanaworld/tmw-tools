@@ -84,6 +84,10 @@ const flags = {
             case "dry-run":
                 flags.dry_run = true;
                 break;
+            case "clean":
+            case "clean-only":
+                args.length = 0;
+                break;
             default:
                 throw new SyntaxError(`unknown flag: ${opt}`);
             }
@@ -96,6 +100,9 @@ const flags = {
 
     // item parsing
     for (let arg of args.join(",").split(",")) {
+        if (arg === null || arg.length < 1)
+            continue;
+
         if (arg.includes("-") || arg.includes("..")) {
             const range = arg.split("-").join("..").split("..");
             let from = itemToNumber(range[0]), to = itemToNumber(range[1]);
