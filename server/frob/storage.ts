@@ -103,11 +103,16 @@ class StorageWriter {
         await Deno.write(this.file.rid, this.encoder.encode(line));
     }
 
-    async finalize() {
+    async finalize(dry_run: boolean = false) {
         this.file.close();
-        console.info("overwriting storage.txt...");
-        await Deno.rename("world/save/storage.txt", "world/save/storage.txt_pre-frob");
-        await Deno.rename("world/save/storage.txt.tmp", "world/save/storage.txt");
+
+        if (dry_run) {
+            Deno.removeSync("world/save/storage.txt.tmp");
+        } else {
+            console.info("overwriting storage.txt...");
+            await Deno.rename("world/save/storage.txt", "world/save/storage.txt_pre-frob");
+            await Deno.rename("world/save/storage.txt.tmp", "world/save/storage.txt");
+        }
     }
 }
 

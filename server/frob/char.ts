@@ -136,13 +136,18 @@ class CharWriter {
         }
     }
 
-    async finalize() {
+    async finalize(dry_run: boolean = false) {
         console.info("appending %newid%...");
         await Deno.write(this.file.rid, this.encoder.encode(`${this.highest + 1}\t%newid%\n`));
         this.file.close();
-        console.info("overwriting athena.txt...");
-        await Deno.rename("world/save/athena.txt", "world/save/athena.txt_pre-frob");
-        await Deno.rename("world/save/athena.txt.tmp", "world/save/athena.txt");
+
+        if (dry_run) {
+            Deno.removeSync("world/save/athena.txt.tmp");
+        } else {
+            console.info("overwriting athena.txt...");
+            await Deno.rename("world/save/athena.txt", "world/save/athena.txt_pre-frob");
+            await Deno.rename("world/save/athena.txt.tmp", "world/save/athena.txt");
+        }
     }
 }
 

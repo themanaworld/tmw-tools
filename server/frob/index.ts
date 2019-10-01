@@ -5,7 +5,6 @@ import { ItemDB } from "./itemdb.ts";
 
 const args: string[] = Deno.args.slice(1);
 const to_remove: Set<number> = new Set();
-const is_alpha: boolean = isNaN(args.join() as unknown as number);
 const char_parser = new CharParser();
 const storage_parser = new StorageParser();
 const char_writer = new CharWriter();
@@ -27,6 +26,10 @@ const stats = {
         synced: 0,
         accounts: 0,
     },
+};
+
+const flags = {
+    dry_run: false,
 };
 
 
@@ -73,6 +76,25 @@ const stats = {
         throw new RangeError("no items given!");
     }
 
+    // flag parsing
+    for (let opt of args) {
+        if (opt.startsWith("--")) {
+            switch (opt.slice(2)) {
+            case "dry":
+            case "dry-run":
+                flags.dry_run = true;
+                break;
+            default:
+                throw new SyntaxError(`unknown flag: ${opt}`);
+            }
+
+            args.shift();
+        }
+
+        break; // no more flags
+    }
+
+    // item parsing
     for (let arg of args.join(",").split(",")) {
         if (arg.includes("-") || arg.includes("..")) {
             const range = arg.split("-").join("..").split("..");
@@ -125,7 +147,7 @@ const stats = {
         await char_writer.write(char);
     }
 
-    await char_writer.finalize();
+    await char_writer.finalize(!!flags.dry_run);
 
     // storage:
     for await (let storage of storage_parser.readDB()) {
@@ -173,11 +195,15 @@ const stats = {
         }
     }
 
-    await storage_writer.finalize();
+    await storage_writer.finalize(!!flags.dry_run);
 
     console.info("\n=== all done ===");
     console.info(`removed ${stats.inventory.removed} existant, ${stats.inventory.pruned} non-existant and ${stats.inventory.stub} stub items from the inventory of ${stats.inventory.chars} characters`);
     console.info(`removed ${stats.storage.removed} existant, ${stats.storage.pruned} non-existant and ${stats.storage.stub} stub items from the storage of ${stats.storage.accounts} accounts`);
     console.info(`removed ${stats.storage.wiped} empty storage entries from the storage db`);
     console.info(`fixed storage sync of ${stats.storage.synced} accounts`);
+
+    if (flags.dry_run) {
+        console.warn("(DRY RUN) no file modified");
+    }
 })()
