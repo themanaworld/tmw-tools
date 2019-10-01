@@ -44,9 +44,9 @@ class StorageParser {
         let accumulator = "";
 
         while (true) {
-            const { nread, eof } = await Deno.read(file.rid, buf);
+            const nread = await Deno.read(file.rid, buf);
 
-            if (eof) {
+            if (nread === Deno.EOF) {
                 break;
             }
 
