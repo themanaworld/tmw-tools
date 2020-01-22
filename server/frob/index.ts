@@ -1,14 +1,27 @@
 // this script removes specified items from inventories and storage
-import { CharParser, CharWriter } from "./char.ts";
-import { StorageParser, StorageWriter } from "./storage.ts";
+import { SQLHandler } from "./sql.ts"
+import { LoginParser, LoginSQL } from "./login.ts";
+import { CharParser, CharWriter, CharSQL } from "./char.ts";
+import { AccregParser, AccregSQL } from "./accreg.ts";
+import { PartyParser, PartySQL } from "./party.ts";
+import { StorageParser, StorageWriter, StorageSQL } from "./storage.ts";
 import { ItemDB } from "./itemdb.ts";
 
 const args: string[] = Deno.args.slice(1);
 const to_remove: Set<number> = new Set();
+const sql = new SQLHandler();
+const login_parser = new LoginParser();
 const char_parser = new CharParser();
+const accreg_parser = new AccregParser();
+const party_parser = new PartyParser();
 const storage_parser = new StorageParser();
 const char_writer = new CharWriter();
+const char_SQL = new CharSQL(sql);
+const login_SQL = new LoginSQL(sql);
+const accreg_SQL = new AccregSQL(sql);
+const party_SQL = new PartySQL(sql);
 const storage_writer = new StorageWriter();
+const storage_SQL = new StorageSQL(sql);
 const item_db = new ItemDB();
 
 const stats = {
@@ -30,6 +43,7 @@ const stats = {
 
 const flags = {
     dry_run: false,
+    sql: false,
 };
 
 
@@ -84,6 +98,9 @@ const flags = {
             case "dry-run":
                 flags.dry_run = true;
                 break;
+            case "dump":
+            case "sql":
+                flags.sql = true;
             case "clean":
             case "clean-only":
                 args.length = 0;
@@ -119,9 +136,31 @@ const flags = {
         }
     }
 
-    console.info("\nThe following items will be removed:");
-    for (let item of to_remove) {
-        console.info(`[${item}]: ${itemToString(item)}`);
+    if (to_remove.size > 0) {
+        console.info("\nThe following items will be removed:");
+        for (let item of to_remove) {
+            console.info(`[${item}]: ${itemToString(item)}`);
+        }
+    }
+
+    if (flags.sql) {
+        console.log("");
+        await sql.init();
+    }
+
+    console.log("");
+
+    // account:
+    if (flags.sql) {
+        for await (const acc of login_parser.readDB()) {
+            if (acc === null
+                || acc.logincount < 1 // don't keeep accounts that never logged in
+                || +acc.state === 5 // don't keep permabanned accounts
+                ) {
+                continue;
+            }
+            await login_SQL.write(acc);
+        }
     }
 
     // inventory:
@@ -131,15 +170,15 @@ const flags = {
 
         for (let item of char.items) {
             if (!items_by_id.has(+item.nameid)) {
-                console.log(`removing ${+item.amount || 1}x non-existant item ID ${item.nameid} from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
+                console.log(`\rremoving ${+item.    amount || 1}x non-existant item ID ${item.nameid} from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
                 stats.inventory.pruned += +item.amount;
                 mod = true;
             } else if (+item.amount < 1) {
-                console.log(`removing stub of item ${itemToString(item.nameid)} [${item.nameid}] from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
+                console.log(`\rremoving stub of item ${itemToString(item.nameid)} [${item.nameid}] from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
                 stats.inventory.stub++;
                 mod = true;
             } else if (to_remove.has(+item.nameid)) {
-                console.log(`removing ${item.amount}x ${itemToString(item.nameid)} [${item.nameid}] from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
+                console.log(`\rremoving ${item.amount}x ${itemToString(item.nameid)} [${item.nameid}] from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
                 stats.inventory.removed += +item.amount;
                 mod = true;
             } else {
@@ -152,9 +191,26 @@ const flags = {
 
         char.items = items_filtered;
         await char_writer.write(char);
+
+        if (flags.sql)
+            await char_SQL.write(char);
     }
 
     await char_writer.finalize(!!flags.dry_run);
+
+    // char-server-bound account variables
+    if (flags.sql) {
+        for await (const acc of accreg_parser.readDB()) {
+            await accreg_SQL.write(acc);
+        }
+    }
+
+    // party and party leaders
+    if (flags.sql) {
+        for await (const party of party_parser.readDB()) {
+            await party_SQL.write(party);
+        }
+    }
 
     // storage:
     for await (let storage of storage_parser.readDB()) {
@@ -163,17 +219,17 @@ const flags = {
 
         for (let item of storage.items) {
             if (!items_by_id.has(+item.nameid)) {
-                console.log(`removing ${+item.amount || 1}x non-existant item ID ${item.nameid} from storage of account ${storage.account_id}`);
+                console.log(`\rremoving ${+item.amount || 1}x non-existant item ID ${item.nameid} from storage of account ${storage.account_id}`);
                 stats.storage.pruned += +item.amount;
                 storage.storage_amount--;
                 mod = true;
             } else if (+item.amount < 1) {
-                console.log(`removing stub of item ${itemToString(item.nameid)} [${item.nameid}] from storage of account ${storage.account_id}`);
+                console.log(`\rremoving stub of item ${itemToString(item.nameid)} [${item.nameid}] from storage of account ${storage.account_id}`);
                 stats.storage.stub++;
                 storage.storage_amount--;
                 mod = true;
             } else if (to_remove.has(+item.nameid)) {
-                console.log(`removing ${item.amount}x ${itemToString(item.nameid)} [${item.nameid}] from storage of account ${storage.account_id}`);
+                console.log(`\rremoving ${item.amount}x ${itemToString(item.nameid)} [${item.nameid}] from storage of account ${storage.account_id}`);
                 stats.storage.removed += +item.amount;
                 storage.storage_amount--;
                 mod = true;
@@ -196,6 +252,7 @@ const flags = {
 
         if (storage.storage_amount >= 1) {
             await storage_writer.write(storage);
+            await storage_SQL.write(storage);
         } else {
             console.log(`storage of account ${storage.account_id} is now empty: removing it from the storage db`);
             stats.storage.wiped++;
@@ -203,8 +260,9 @@ const flags = {
     }
 
     await storage_writer.finalize(!!flags.dry_run);
+    await sql.close();
 
-    console.info("\n=== all done ===");
+    console.info("\r                                                            \n=== all done ===");
     console.info(`removed ${stats.inventory.removed} existant, ${stats.inventory.pruned} non-existant and ${stats.inventory.stub} stub items from the inventory of ${stats.inventory.chars} characters`);
     console.info(`removed ${stats.storage.removed} existant, ${stats.storage.pruned} non-existant and ${stats.storage.stub} stub items from the storage of ${stats.storage.accounts} accounts`);
     console.info(`removed ${stats.storage.wiped} empty storage entries from the storage db`);
@@ -213,4 +271,6 @@ const flags = {
     if (flags.dry_run) {
         console.warn("(DRY RUN) no file modified");
     }
+
+    Deno.exit(0);
 })()

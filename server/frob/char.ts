@@ -22,12 +22,20 @@ class CharParser {
     "(?<variables>((?<var_name>[^,]+),(?<value>[-0-9]+) )*)\t" + // some chars have negative variables (overflows)
     "$";
     private char_items_line = "[0-9]+,(?<nameid>[0-9]+),(?<amount>[0-9]+),(?<equip>[0-9]+),[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+ ";
+    private char_skills_line = "(?<skill_id>[0-9]+),(?<skill_lv>[0-9]+) ";
+    private char_vars_line = "(?<var_name>[^,]+),(?<value>[-0-9]+) ";
     private char_regex: RegExp;
     private char_regex_items: RegExp;
+    private char_regex_skills: RegExp;
+    private char_regex_vars: RegExp;
+    private encoder;
 
     constructor () {
         this.char_regex = new RegExp(this.char_line);
         this.char_regex_items = new RegExp(this.char_items_line, "g");
+        this.char_regex_skills = new RegExp(this.char_skills_line, "g");
+        this.char_regex_vars = new RegExp(this.char_vars_line, "g");
+        this.encoder = new TextEncoder();
     }
 
     private parseLine (line: string) {
@@ -40,6 +48,8 @@ class CharParser {
 
         const groups = (match as any).groups;
         let items = [];
+        let skills = [];
+        let variables = [];
 
         if (groups.items.length > 1) {
             let match_items = this.char_regex_items.exec(groups.items);
@@ -51,12 +61,36 @@ class CharParser {
         }
 
         groups.items = items;
+
+        if (groups.skills.length > 1) {
+            let match_skills = this.char_regex_skills.exec(groups.skills);
+
+            while (match_skills !== null) {
+                skills.push((match_skills as any).groups);
+                match_skills = this.char_regex_skills.exec(groups.skills);
+            }
+        }
+
+        groups.skills2 = skills;
+
+        if (groups.variables.length > 1) {
+            let match_vars = this.char_regex_vars.exec(groups.variables);
+
+            while (match_vars !== null) {
+                variables.push((match_vars as any).groups);
+                match_vars = this.char_regex_vars.exec(groups.variables);
+            }
+        }
+
+        groups.variables2 = variables;
+
+        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r⌛ processing char ${groups.char_id}...`));
         return groups;
     }
 
     public async * readDB () {
         const decoder = new TextDecoder("utf-8");
-        console.info("\nwalking through athena.txt...");
+        console.info("\r                                                          \nwalking through athena.txt...");
         const file = await Deno.open("world/save/athena.txt");
         const buf = new Uint8Array(1024);
         let accumulator = "";
@@ -137,7 +171,7 @@ class CharWriter {
     }
 
     async finalize(dry_run: boolean = false) {
-        console.info("appending %newid%...");
+        console.info("\rappending %newid%...                                                     ");
         await Deno.write(this.file.rid, this.encoder.encode(`${this.highest + 1}\t%newid%\n`));
         this.file.close();
 
@@ -151,7 +185,39 @@ class CharWriter {
     }
 }
 
+class CharSQL {
+    private sql;
+
+    constructor (sql) {
+        this.sql = sql;
+    }
+
+    async write (char: any) {
+        char.name = this.sql.escape(char.name);
+        await this.sql.do("INSERT INTO `char` ?? values?", [
+            ["char_id","account_id","char_num","name","class","base_level","job_level","base_exp","job_exp","zeny","str","agi","vit","int","dex","luk","status_point","skill_point","party_id","hair","hair_color","partner_id","sex"],
+            [char.char_id,char.account_id,char.char_num,char.name,char.species,char.base_level,char.job_level,char.base_exp,char.job_exp,char.zeny,char.str,char.agi,char.vit,char.int,char.dex,char.luk,char.status_point,char.skill_point,char.party_id,char.hair,char.hair_color,char.partner_id,char.sex],
+        ]);
+
+        for (const item of char.items) {
+            await this.sql.do("INSERT INTO `inventory` ?? values?", [
+                ["char_id", "nameid", "amount", "equip"],
+                [char.char_id, item.nameid, item.amount, item.equip]
+            ]);
+        }
+
+        for (const variable of char.variables2) {
+            // those are always char variables since acc vars are in accreg.txt
+            await this.sql.do("INSERT INTO `char_reg` ?? values?", [
+                ["char_id", "name", "value"],
+                [char.char_id, variable.var_name, variable.value]
+            ]);
+        }
+    }
+}
+
 export {
     CharParser,
     CharWriter,
+    CharSQL,
 }

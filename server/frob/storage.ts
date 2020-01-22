@@ -6,10 +6,12 @@ class StorageParser {
     private storage_items_line = "[0-9]+,(?<nameid>[0-9]+),(?<amount>[0-9]+),(?<equip>[0-9]+),[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+ ";
     private storage_regex: RegExp;
     private storage_regex_items: RegExp;
+    private encoder;
 
     constructor () {
         this.storage_regex = new RegExp(this.storage_line);
         this.storage_regex_items = new RegExp(this.storage_items_line, "g");
+        this.encoder = new TextEncoder();
     }
 
     private parseLine (line: string) {
@@ -33,12 +35,14 @@ class StorageParser {
         }
 
         groups.items = items;
+
+        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r⌛ processing storage of account ${groups.account_id}...  `));
         return groups;
     }
 
     public async * readDB () {
         const decoder = new TextDecoder("utf-8");
-        console.info("\nwalking through storage.txt...");
+        console.info("\r                                                          \nwalking through storage.txt...");
         const file = await Deno.open("world/save/storage.txt");
         const buf = new Uint8Array(1024);
         let accumulator = "";
@@ -93,7 +97,7 @@ class StorageWriter {
     async write (storage: any) {
         let line = `${storage.account_id},${storage.storage_amount}\t`;
 
-        for (let item of storage.items) {
+        for (const item of storage.items) {
             line += `0,${item.nameid},${item.amount},${item.equip},0,0,0,0,0,0,0 `;
         }
 
@@ -109,14 +113,33 @@ class StorageWriter {
         if (dry_run) {
             Deno.removeSync("world/save/storage.txt.tmp");
         } else {
-            console.info("overwriting storage.txt...");
+            console.info("\roverwriting storage.txt...                                                    ");
             await Deno.rename("world/save/storage.txt", "world/save/storage.txt_pre-frob");
             await Deno.rename("world/save/storage.txt.tmp", "world/save/storage.txt");
         }
     }
 }
 
+class StorageSQL {
+    private sql;
+
+    constructor (sql) {
+        this.sql = sql;
+    }
+
+    async write (acc: any) {
+        for (const item of acc.items) {
+            await this.sql.do("INSERT INTO `storage` ?? values?", [
+                ["account_id", "nameid", "amount"],
+                [acc.account_id, item.nameid, item.amount]
+            ]);
+        }
+    }
+}
+
+
 export {
     StorageParser,
     StorageWriter,
+    StorageSQL,
 }
