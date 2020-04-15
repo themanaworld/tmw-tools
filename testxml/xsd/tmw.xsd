@@ -941,6 +941,11 @@
             <xs:attribute name="mdefense" type="xs:string" use="optional"/>
             <xs:attribute name="hp" type="xs:string" use="optional"/>
             <xs:attribute name="mp" type="xs:string" use="optional"/>
+            <xs:attribute name="hprecovery" type="xs:string" use="optional"/>
+            <xs:attribute name="sprecovery" type="xs:string" use="optional"/>
+            <xs:attribute name="money" type="xs:string" use="optional"/>
+            <xs:attribute name="exp" type="xs:string" use="optional"/>
+            <xs:attribute name="hit" type="xs:string" use="optional"/>
             <xs:attribute name="level" type="xs:string" use="optional"/>
             <xs:attribute name="speed" type="xs:string" use="optional"/>
             <xs:attribute name="range" type="xs:string" use="optional"/>
