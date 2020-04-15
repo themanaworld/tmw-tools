@@ -941,6 +941,8 @@
             <xs:attribute name="mdefense" type="xs:string" use="optional"/>
             <xs:attribute name="hp" type="xs:string" use="optional"/>
             <xs:attribute name="mp" type="xs:string" use="optional"/>
+            <xs:attribute name="maxhp" type="xs:string" use="optional"/>
+            <xs:attribute name="maxmp" type="xs:string" use="optional"/>
             <xs:attribute name="hprecovery" type="xs:string" use="optional"/>
             <xs:attribute name="sprecovery" type="xs:string" use="optional"/>
             <xs:attribute name="money" type="xs:string" use="optional"/>
