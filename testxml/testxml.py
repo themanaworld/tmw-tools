@@ -44,6 +44,7 @@ warnings = 0
 errDict = set()
 safeDye = False
 borderSize = 14 # Required 18 # Original 14
+widescreenSize = 1920/32
 tiledVersion = 13 # Minimum Tiled version, advised "14" for Tiled 1.4
 colorsList = set()
 showAll = False
@@ -1421,6 +1422,8 @@ def testMap(mapName, file, path):
     if mapHeight < borderSize * 2 + 1:
         if silent == False or file.find("maps/test") != 0:
             showMsgFile(file, "map height to small: " + str(mapHeight), False)
+    if mapWidth < widescreenSize:
+        showMsgFile(file, "error: map width below widescreen minimum: " + str(mapHeight), True)
 
     if len(dom.getElementsByTagName("properties")) < 1:
         showMsgFile(file, "missing map properties", True)
