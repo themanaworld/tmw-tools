@@ -47,6 +47,7 @@ borderSize = 14 # Required 18 # Original 14
 colorsList = set()
 showAll = False
 silent = False
+stfu = False
 herc = False
 
 testBadCollisions = False
@@ -166,7 +167,7 @@ def enumDirs(parentDir):
         else:
             if filt.search(file1):
                 try:
-                    if silent == True:
+                    if silent == True and not stfu:
                         print "Checking " + file2
                     minidom.parse(file2)
                 except xml.parsers.expat.ExpatError as err:
@@ -994,7 +995,8 @@ def testEmitters(id, file, parentNode, src):
 
 def testItems(fileName, imgDir):
     global warnings, errors, safeDye
-    print "Checking " + fileName
+    if not stfu:
+        print "Checking " + fileName
     try:
         dom = minidom.parse(parentDir + "/" + fileName)
     except Exception as err:
@@ -1245,7 +1247,8 @@ def checkSpriteName(id, name):
 
 def testMonsters(fileName):
     global warnings, errors
-    print "Checking " + fileName
+    if not stfu:
+        print "Checking " + fileName
     dom = minidom.parse(parentDir + "/" + fileName)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -1335,7 +1338,8 @@ def testSounds(id, node, type):
 
 def testNpcs(file):
     global warnings, errors
-    print "Checking " + file
+    if not stfu:
+        print "Checking " + file
     dom = minidom.parse(parentDir + "/" + file)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -2382,6 +2386,9 @@ if len(sys.argv) == 2:
         showAll = True
     elif sys.argv[1] == "silent":
         silent = True
+    elif sys.argv[1] == "stfu":
+        silent = True
+        stfu = True
     elif sys.argv[1] == "herc":
         silent = True
         herc = True
