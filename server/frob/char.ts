@@ -1,3 +1,5 @@
+import { SQLHandler } from "./sql.ts";
+
 class CharParser {
     private char_line =
     "^" +
@@ -28,7 +30,7 @@ class CharParser {
     private char_regex_items: RegExp;
     private char_regex_skills: RegExp;
     private char_regex_vars: RegExp;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
         this.char_regex = new RegExp(this.char_line);
@@ -84,7 +86,7 @@ class CharParser {
 
         groups.variables2 = variables;
 
-        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r⌛ processing char ${groups.char_id}...`));
+        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r                                                          \r⌛ processing char ${groups.char_id}...`));
         return groups;
     }
 
@@ -98,7 +100,7 @@ class CharParser {
         while (true) {
             const nread = await Deno.read(file.rid, buf);
 
-            if (nread === Deno.EOF) {
+            if (nread === null) {
                 break;
             }
 
@@ -121,21 +123,28 @@ class CharParser {
 }
 
 class CharWriter {
-    private file;
+    private file?: Deno.File;
     private highest: number = 0;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
-        try {
-            Deno.removeSync("world/save/athena.txt.tmp");
-        } catch {
-            // ignore this
-        }
-        this.file = Deno.openSync("world/save/athena.txt.tmp", "a+");
         this.encoder = new TextEncoder();
     }
 
+    async init () {
+        try {
+            await Deno.remove("world/save/athena.txt.tmp");
+        } catch {
+            // ignore this
+        }
+        this.file = await Deno.open("world/save/athena.txt.tmp", {append: true, create: true});
+    }
+
     async write (char: any) {
+        if (!this.file) {
+            return;
+        }
+
         let line =
         `${char.char_id}\t` +
         `${char.account_id},${char.char_num}\t` +
@@ -170,25 +179,26 @@ class CharWriter {
         }
     }
 
-    async finalize(dry_run: boolean = false) {
+    async finalize () {
         console.info("\rappending %newid%...                                                     ");
+
+        if (!this.file) {
+            return;
+        }
+
         await Deno.write(this.file.rid, this.encoder.encode(`${this.highest + 1}\t%newid%\n`));
         this.file.close();
 
-        if (dry_run) {
-            Deno.removeSync("world/save/athena.txt.tmp");
-        } else {
-            console.info("overwriting athena.txt...");
-            await Deno.rename("world/save/athena.txt", "world/save/athena.txt_pre-frob");
-            await Deno.rename("world/save/athena.txt.tmp", "world/save/athena.txt");
-        }
+        console.info("overwriting athena.txt...");
+        await Deno.rename("world/save/athena.txt", "world/save/athena.txt_pre-frob");
+        await Deno.rename("world/save/athena.txt.tmp", "world/save/athena.txt");
     }
 }
 
 class CharSQL {
-    private sql;
+    private sql: SQLHandler;
 
-    constructor (sql) {
+    constructor (sql: SQLHandler) {
         this.sql = sql;
     }
 

@@ -1,3 +1,5 @@
+import { SQLHandler } from "./sql.ts";
+
 class PartyParser {
     private party_line =
     "^" +
@@ -9,7 +11,7 @@ class PartyParser {
     private member_line = "(?<account_id>[0-9]+),(?<leader>[01])\t(?<char_name>[^\t]+)\t";
     private party_regex: RegExp;
     private party_regex_members: RegExp;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
         this.party_regex = new RegExp(this.party_line);
@@ -65,7 +67,7 @@ class PartyParser {
         while (true) {
             const nread = await Deno.read(file.rid, buf);
 
-            if (nread === Deno.EOF) {
+            if (nread === null) {
                 break;
             }
 
@@ -96,9 +98,9 @@ class PartyParser {
 }
 
 class PartySQL {
-    private sql;
+    private sql: SQLHandler;
 
-    constructor (sql) {
+    constructor (sql: SQLHandler) {
         this.sql = sql;
     }
 

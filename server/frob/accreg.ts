@@ -1,3 +1,5 @@
+import { SQLHandler } from "./sql.ts";
+
 class AccregParser {
     private reg_line =
     "^" +
@@ -7,7 +9,7 @@ class AccregParser {
     private vars_line = "(?<var_name>[^,]+),(?<value>[-0-9]+) ";
     private reg_regex: RegExp;
     private reg_regex_vars: RegExp;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
         this.reg_regex = new RegExp(this.reg_line);
@@ -51,7 +53,7 @@ class AccregParser {
         while (true) {
             const nread = await Deno.read(file.rid, buf);
 
-            if (nread === Deno.EOF) {
+            if (nread === null) {
                 break;
             }
 
@@ -82,9 +84,9 @@ class AccregParser {
 }
 
 class AccregSQL {
-    private sql;
+    private sql: SQLHandler;
 
-    constructor (sql) {
+    constructor (sql: SQLHandler) {
         this.sql = sql;
     }
 

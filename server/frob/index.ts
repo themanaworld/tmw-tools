@@ -91,7 +91,7 @@ const flags = {
     }
 
     // flag parsing
-    for (let opt of args) {
+    for (const opt of args.slice()) {
         if (opt.startsWith("--")) {
             switch (opt.slice(2)) {
             case "dry":
@@ -101,18 +101,18 @@ const flags = {
             case "dump":
             case "sql":
                 flags.sql = true;
+                break;
             case "clean":
             case "clean-only":
-                args.length = 0;
                 break;
             default:
                 throw new SyntaxError(`unknown flag: ${opt}`);
             }
 
             args.shift();
+        } else {
+            break; // no more flags
         }
-
-        break; // no more flags
     }
 
     // item parsing
@@ -163,6 +163,10 @@ const flags = {
         }
     }
 
+    if (!flags.dry_run) {
+        char_writer.init();
+    }
+
     // inventory:
     for await (let char of char_parser.readDB()) {
         let items_filtered = []; // this is not a Set because some items don't stack
@@ -196,7 +200,7 @@ const flags = {
             await char_SQL.write(char);
     }
 
-    await char_writer.finalize(!!flags.dry_run);
+    await char_writer.finalize();
 
     // char-server-bound account variables
     if (flags.sql) {
@@ -210,6 +214,10 @@ const flags = {
         for await (const party of party_parser.readDB()) {
             await party_SQL.write(party);
         }
+    }
+
+    if (!flags.dry_run) {
+        storage_writer.init();
     }
 
     // storage:
@@ -252,14 +260,17 @@ const flags = {
 
         if (storage.storage_amount >= 1) {
             await storage_writer.write(storage);
-            await storage_SQL.write(storage);
+
+            if (flags.sql) {
+                await storage_SQL.write(storage);
+            }
         } else {
             console.log(`storage of account ${storage.account_id} is now empty: removing it from the storage db`);
             stats.storage.wiped++;
         }
     }
 
-    await storage_writer.finalize(!!flags.dry_run);
+    await storage_writer.finalize();
     await sql.close();
 
     console.info("\r                                                            \n=== all done ===");

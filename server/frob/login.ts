@@ -1,3 +1,5 @@
+import { SQLHandler } from "./sql.ts";
+
 class LoginParser {
     private login_line =
     "^" +
@@ -16,7 +18,7 @@ class LoginParser {
     "(?<ban_until_time>[0-9]+)\t" +
     "$";
     private login_regex: RegExp;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
         this.login_regex = new RegExp(this.login_line);
@@ -79,7 +81,7 @@ class LoginParser {
         while (true) {
             const nread = await Deno.read(file.rid, buf);
 
-            if (nread === Deno.EOF) {
+            if (nread === null) {
                 break;
             }
 
@@ -114,9 +116,9 @@ class LoginParser {
 }
 
 class LoginSQL {
-    private sql;
+    private sql: SQLHandler;
 
-    constructor (sql) {
+    constructor (sql: SQLHandler) {
         this.sql = sql;
     }
 

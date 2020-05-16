@@ -1,11 +1,11 @@
-import { Client } from "https://deno.land/x/mysql/mod.ts";
+import { Client, Connection } from "https://deno.land/x/mysql/mod.ts";
 
 class SQLHandler {
-    private client;
-    private hostname;
-    private username;
-    private password;
-    private backslash;
+    private client: Client;
+    private hostname: string;
+    private username: string;
+    private password: string;
+    private backslash: RegExp;
 
     constructor (hostname: string = "127.0.0.1", username: string = "evol", password: string = "evol") {
         this.client = new Client();
@@ -154,21 +154,21 @@ class SQLHandler {
         `); // some old parties have weird names
     }
 
-    escape (str) {
+    escape (str: string) {
         // for some reason the deno sql module doesn't escape backslashes
         return str.replace(this.backslash, "\\\\");
     }
 
-    async transaction (fn) {
-        return await this.client.transaction(fn);
+    async transaction (processor: (c: Connection) => Promise<any>) {
+        return await this.client.transaction(processor);
     }
 
-    async query (...args) {
-        return await this.client.query(...args);
+    async query (sql: string, params?: any[]) {
+        return await this.client.query(sql, params);
     }
 
-    async do (...args) {
-        return await this.client.execute(...args);
+    async do (sql: string, params?: any[]) {
+        return await this.client.execute(sql, params);
     }
 
 

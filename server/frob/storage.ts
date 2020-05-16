@@ -1,3 +1,5 @@
+import { SQLHandler } from "./sql.ts";
+
 class StorageParser {
     private storage_line =
     "^" +
@@ -6,7 +8,7 @@ class StorageParser {
     private storage_items_line = "[0-9]+,(?<nameid>[0-9]+),(?<amount>[0-9]+),(?<equip>[0-9]+),[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+ ";
     private storage_regex: RegExp;
     private storage_regex_items: RegExp;
-    private encoder;
+    private encoder: TextEncoder;
 
     constructor () {
         this.storage_regex = new RegExp(this.storage_line);
@@ -36,7 +38,7 @@ class StorageParser {
 
         groups.items = items;
 
-        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r⌛ processing storage of account ${groups.account_id}...  `));
+        Deno.write(Deno.stdout.rid, this.encoder.encode(`\r                                                          \r⌛ processing storage of account ${groups.account_id}...`));
         return groups;
     }
 
@@ -50,7 +52,7 @@ class StorageParser {
         while (true) {
             const nread = await Deno.read(file.rid, buf);
 
-            if (nread === Deno.EOF) {
+            if (nread === null) {
                 break;
             }
 
@@ -81,20 +83,27 @@ class StorageParser {
 }
 
 class StorageWriter {
-    private file;
-    private encoder;
+    private file?: Deno.File;
+    private encoder: TextEncoder;
 
     constructor () {
-        try {
-            Deno.removeSync("world/save/storage.txt.tmp");
-        } catch {
-            // ignore this
-        }
-        this.file = Deno.openSync("world/save/storage.txt.tmp", "a+");
         this.encoder = new TextEncoder();
     }
 
+    async init () {
+        try {
+            await Deno.remove("world/save/storage.txt.tmp");
+        } catch {
+            // ignore this
+        }
+        this.file = await Deno.open("world/save/storage.txt.tmp", {append: true, create: true});
+    }
+
     async write (storage: any) {
+        if (!this.file) {
+            return;
+        }
+
         let line = `${storage.account_id},${storage.storage_amount}\t`;
 
         for (const item of storage.items) {
@@ -107,12 +116,9 @@ class StorageWriter {
         await Deno.write(this.file.rid, this.encoder.encode(line));
     }
 
-    async finalize(dry_run: boolean = false) {
-        this.file.close();
-
-        if (dry_run) {
-            Deno.removeSync("world/save/storage.txt.tmp");
-        } else {
+    async finalize () {
+        if (this.file) {
+            this.file.close();
             console.info("\roverwriting storage.txt...                                                    ");
             await Deno.rename("world/save/storage.txt", "world/save/storage.txt_pre-frob");
             await Deno.rename("world/save/storage.txt.tmp", "world/save/storage.txt");
@@ -121,9 +127,9 @@ class StorageWriter {
 }
 
 class StorageSQL {
-    private sql;
+    private sql: SQLHandler;
 
-    constructor (sql) {
+    constructor (sql: SQLHandler) {
         this.sql = sql;
     }
 

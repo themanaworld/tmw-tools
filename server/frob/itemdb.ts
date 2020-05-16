@@ -26,7 +26,7 @@ class ItemDB {
         this.item_regex = new RegExp(this.item_line);
     }
 
-    private parseLine (line) {
+    private parseLine (line: string) {
         const match = this.item_regex.exec(line);
 
         if (!(match instanceof Object) || !Reflect.has(match, "groups")) {
