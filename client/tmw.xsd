@@ -785,6 +785,8 @@
             <xs:attribute name="req-dex" type="xs:string" use="optional"/>
             <xs:attribute name="req-luk" type="xs:string" use="optional"/>
             <xs:attribute name="effect" type="xs:string" use="optional"/>
+            <!-- Phony attributes: -->
+            <xs:attribute name="perception" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
