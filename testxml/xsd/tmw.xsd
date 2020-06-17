@@ -935,6 +935,7 @@
             <xs:attribute name="pickupCursor" type="xs:string" default="pickup"/>
             <xs:attribute name="attack" type="xs:string" use="optional"/>
             <xs:attribute name="criticalattack" type="xs:string" use="optional"/>
+            <xs:attribute name="atkspeed" type="xs:string" use="optional"/>
             <xs:attribute name="mattack" type="xs:string" use="optional"/>
             <xs:attribute name="defense" type="xs:string" use="optional"/>
             <xs:attribute name="criticaldefense" type="xs:string" use="optional"/>
