@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) -2016  The Mana World Development Team
      Copyright (C) 2016  Evol Online developers
+     Copyright (C) 2020  TMW2: Moubootaur Legends Team
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:its="http://www.w3.org/2005/11/its" elementFormDefault="qualified">
   <xs:import namespace="http://www.w3.org/2005/11/its" schemaLocation="its.xsd"/>
@@ -935,6 +936,7 @@
             <xs:attribute name="pickupCursor" type="xs:string" default="pickup"/>
             <xs:attribute name="attack" type="xs:string" use="optional"/>
             <xs:attribute name="criticalattack" type="xs:string" use="optional"/>
+            <xs:attribute name="criticalattackrate" type="xs:string" use="optional"/>
             <xs:attribute name="atkspeed" type="xs:string" use="optional"/>
             <xs:attribute name="mattack" type="xs:string" use="optional"/>
             <xs:attribute name="block" type="xs:string" use="optional"/>
