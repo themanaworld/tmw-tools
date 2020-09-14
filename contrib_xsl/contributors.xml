@@ -26,10 +26,10 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="ayruss"/>
         <contributor nick="GonzoDark"/>
         <contributor nick="acsvln"/>
-        <contributor nick="LawnCables"/>
+        <contributor nick="LawnCable"/>
         <contributor nick="Sky Dragon!" name="Athirson Caraciolo"/>
         <contributor nick="malginsa" name="Sergei Malgin"/>
-        <contributor nick="dange Duck" name="Sean Hulka"/>
+        <contributor nick="danger Duck" name="Sean Hulka"/>
         <contributor nick="Xanthem" name="Cristopher Chay"/>
 
         <sub title="Additional Art and Music"/>
@@ -39,11 +39,13 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="Axzell"/>
         <contributor nick="+seeds"/>
         <contributor nick="Micksha" name="Mick"/>
+        <contributor nick="YuckFou"/>
 
         <sub title="Additional Mappers"/>
         <contributor nick="Soren"/>
         <contributor nick="Kolchak" name="Donald G. Horn"/>
         <contributor nick="Micksha" name="Mick"/>
+        <contributor nick="kytty" name="Ashley"/>
 
         <sub title="Notable Mentions"/>
         <contributor nick="41444d494e" name="Andrei Karas"/>
@@ -52,8 +54,8 @@ http://wiki.themanaworld.org/index.php/Contributors
         <sub title="Game Masters"/>
         <contributor nick="Crazyfefe" name="Lecanu Colin" mailid="admin" mailserver="tmw2.org"/>
         <contributor nick="demure"/>
-        <contributor nick="+seeds"/>
-        <contributor nick="jak1"/>
+        <contributor nick="+seeds" name="A. Hulka"/>
+        <contributor nick="jak1" name="Mike"/>
     </tmw2>
 
     <!-- Land Of Fire/TMWA staff, devs, contribs etc. -->
