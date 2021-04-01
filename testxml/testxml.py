@@ -44,6 +44,7 @@ warnings = 0
 errDict = set()
 safeDye = False
 borderSize = 14 # Required 18 # Original 14
+tiledVersion = 13 # Minimum Tiled version, advised "14" for Tiled 1.4
 colorsList = set()
 showAll = False
 silent = False
@@ -1404,8 +1405,19 @@ def testMap(mapName, file, path):
     mapHeight = readAttrI(root, "height", 0, "error: missing map height: " + file, True)
     mapTileWidth = readAttrI(root, "tilewidth", 0, "error: missing tile width: " + file, True)
     mapTileHeight = readAttrI(root, "tileheight", 0, "error: missing tile height: " + file, True)
+    mapVersion = readAttr(root, "version", "1.0", "error: missing map version: " + file, True)
+
     if mapWidth == 0 or mapHeight == 0 or mapTileWidth == 0 or mapTileHeight == 0:
         return
+
+    mapVersion = mapVersion.replace(".", "")
+    try:
+        mapVersion = int(mapVersion)
+    except:
+        showMsgFile(file, "Invalid map version: " + str(mapVersion), False)
+
+    if mapVersion < tiledVersion:
+        showMsgFile(file, "Outdated map version: " + str(mapVersion), False)
 
     if mapWidth < borderSize * 2 + 1:
         if silent == False or file.find("maps/test") != 0:
