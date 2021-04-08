@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Author: Reid, Jesusalva
-Copyright (C) 2018 TMW2: Moubootaur Legends
+<!-- Author: Reid, Jak1, Jesusalva
+Copyright (C) 2018-2021 TMW2: Moubootaur Legends
 Copyright (C) 2016-2017 The Mana World
 Copyright (C) 2010-2016 Evol Online
 
@@ -18,45 +18,50 @@ http://wiki.themanaworld.org/index.php/Contributors
     <!-- "TMW2" developers & contributors, in order of appearance -->
     <tmw2>
         <sub title="Server Administrators"/>
-        <contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
-        <contributor nick="Saulc" name="Lucas Helaine" mailid="lucashelaine14" mailserver="gmail.com"/>
+        <contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="jesusalva" mailserver="tmw2.org"/>
+        <contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
 
         <sub title="Additional Coders and Questarts"/>
-        <contributor nick="Rakinorf"/>
-        <contributor nick="ayruss"/>
-        <contributor nick="GonzoDark"/>
         <contributor nick="acsvln"/>
-        <contributor nick="LawnCable"/>
-        <contributor nick="Sky Dragon!" name="Athirson Caraciolo"/>
-        <contributor nick="malginsa" name="Sergei Malgin"/>
+        <contributor nick="ayruss"/>
         <contributor nick="danger Duck" name="Sean Hulka"/>
+        <contributor nick="GonzoDark"/>
+        <contributor nick="LawnCable"/>
+        <contributor nick="malginsa" name="Sergei Malgin"/>
+        <contributor nick="Povo"/>
+        <contributor nick="Rakinorf"/>
+        <contributor nick="Sky Dragon!" name="Athirson Caraciolo"/>
         <contributor nick="Xanthem" name="Cristopher Chay"/>
 
         <sub title="Additional Art and Music"/>
+        <contributor nick="Saulc" name="Lucas Helaine" mailid="lucashelaine14" mailserver="gmail.com"/>
+        <contributor nick="Axzell"/>
+        <contributor nick="Cadis Etrama Di Raizel"/>
+        <contributor nick="dusty in a bootle"/>
+        <contributor nick="Hocus"/>
+        <contributor nick="Ledmitz" mailid="ledmitz" mailserver="themanaworld.org"/>
+        <contributor nick="Manatauro"/>
+        <contributor nick="Micksha" name="Mick" mailid="ms-shaman" mailserver="gmx.de"/>
         <contributor nick="Mishana" name="Maria"/>
         <contributor nick="Polaczka" name="Denis"/>
-        <contributor nick="dusty in a bootle"/>
-        <contributor nick="Axzell"/>
         <contributor nick="+seeds"/>
-        <contributor nick="Micksha" name="Mick"/>
         <contributor nick="YuckFou"/>
-        <contributor nick="Hocus"/>
 
         <sub title="Additional Mappers"/>
+        <contributor nick="Saulc" name="Lucas Helaine" mailid="saulc" mailserver="moubootaurlegends.org"/>
         <contributor nick="Soren"/>
         <contributor nick="Kolchak" name="Donald G. Horn"/>
-        <contributor nick="Micksha" name="Mick"/>
         <contributor nick="kytty" name="Ashley"/>
+        <contributor nick="Micksha" mailid="ms-shaman" mailserver="gmx.de"/>
 
         <sub title="Notable Mentions"/>
         <contributor nick="41444d494e" name="Andrei Karas"/>
         <contributor nick="gnulinux"/>
 
         <sub title="Game Masters"/>
-        <contributor nick="Crazyfefe" name="Lecanu Colin" mailid="admin" mailserver="tmw2.org"/>
+        <contributor nick="Crazyfefe" name="Lecanu Colin"/>
         <contributor nick="demure"/>
         <contributor nick="+seeds" name="A. Hulka"/>
-        <contributor nick="jak1" name="Mike"/>
     </tmw2>
 
     <!-- Land Of Fire/TMWA staff, devs, contribs etc. -->
