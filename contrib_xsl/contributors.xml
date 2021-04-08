@@ -15,353 +15,353 @@ http://wiki.themanaworld.org/index.php/Contributors
 -->
 
 <contributors>
-    <!-- "TMW2" developers & contributors, in order of appearance -->
-    <tmw2>
-        <sub title="Server Administrators"/>
-        <contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="jesusalva" mailserver="tmw2.org"/>
-        <contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
+	<!-- "TMW2" developers & contributors, in order of appearance -->
+	<tmw2>
+		<sub title="Server Administrators"/>
+		<contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="jesusalva" mailserver="tmw2.org"/>
+		<contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
 
-        <sub title="Additional Coders and Questarts"/>
-        <contributor nick="acsvln"/>
-        <contributor nick="ayruss"/>
-        <contributor nick="danger Duck" name="Sean Hulka"/>
-        <contributor nick="GonzoDark"/>
-        <contributor nick="LawnCable"/>
-        <contributor nick="malginsa" name="Sergei Malgin"/>
-        <contributor nick="Povo"/>
-        <contributor nick="Rakinorf"/>
-        <contributor nick="Sky Dragon!" name="Athirson Caraciolo"/>
-        <contributor nick="Xanthem" name="Cristopher Chay"/>
+		<sub title="Additional Coders and Questarts"/>
+		<contributor nick="acsvln"/>
+		<contributor nick="ayruss"/>
+		<contributor nick="danger Duck" name="Sean Hulka"/>
+		<contributor nick="GonzoDark"/>
+		<contributor nick="LawnCable"/>
+		<contributor nick="malginsa" name="Sergei Malgin"/>
+		<contributor nick="Povo"/>
+		<contributor nick="Rakinorf"/>
+		<contributor nick="Sky Dragon!" name="Athirson Caraciolo"/>
+		<contributor nick="Xanthem" name="Cristopher Chay"/>
 
-        <sub title="Additional Art and Music"/>
-        <contributor nick="Saulc" name="Lucas Helaine" mailid="lucashelaine14" mailserver="gmail.com"/>
-        <contributor nick="Axzell"/>
-        <contributor nick="Cadis Etrama Di Raizel"/>
-        <contributor nick="dusty in a bootle"/>
-        <contributor nick="Hocus"/>
-        <contributor nick="Ledmitz" mailid="ledmitz" mailserver="themanaworld.org"/>
-        <contributor nick="Manatauro"/>
-        <contributor nick="Micksha" name="Mick" mailid="ms-shaman" mailserver="gmx.de"/>
-        <contributor nick="Mishana" name="Maria"/>
-        <contributor nick="Polaczka" name="Denis"/>
-        <contributor nick="+seeds"/>
-        <contributor nick="YuckFou"/>
+		<sub title="Additional Art and Music"/>
+		<contributor nick="Saulc" name="Lucas Helaine" mailid="lucashelaine14" mailserver="gmail.com"/>
+		<contributor nick="Axzell"/>
+		<contributor nick="Cadis Etrama Di Raizel"/>
+		<contributor nick="dusty in a bootle"/>
+		<contributor nick="Hocus"/>
+		<contributor nick="Ledmitz" mailid="ledmitz" mailserver="themanaworld.org"/>
+		<contributor nick="Manatauro"/>
+		<contributor nick="Micksha" name="Mick" mailid="ms-shaman" mailserver="gmx.de"/>
+		<contributor nick="Mishana" name="Maria"/>
+		<contributor nick="Polaczka" name="Denis"/>
+		<contributor nick="+seeds"/>
+		<contributor nick="YuckFou"/>
 
-        <sub title="Additional Mappers"/>
-        <contributor nick="Saulc" name="Lucas Helaine" mailid="saulc" mailserver="moubootaurlegends.org"/>
-        <contributor nick="Soren"/>
-        <contributor nick="Kolchak" name="Donald G. Horn"/>
-        <contributor nick="kytty" name="Ashley"/>
-        <contributor nick="Micksha" mailid="ms-shaman" mailserver="gmx.de"/>
+		<sub title="Additional Mappers"/>
+		<contributor nick="Saulc" name="Lucas Helaine" mailid="saulc" mailserver="moubootaurlegends.org"/>
+		<contributor nick="Soren"/>
+		<contributor nick="Kolchak" name="Donald G. Horn"/>
+		<contributor nick="kytty" name="Ashley"/>
+		<contributor nick="Micksha" mailid="ms-shaman" mailserver="gmx.de"/>
 
-        <sub title="Notable Mentions"/>
-        <contributor nick="41444d494e" name="Andrei Karas"/>
-        <contributor nick="gnulinux"/>
+		<sub title="Notable Mentions"/>
+		<contributor nick="41444d494e" name="Andrei Karas"/>
+		<contributor nick="gnulinux"/>
 
-        <sub title="Game Masters"/>
-        <contributor nick="Crazyfefe" name="Lecanu Colin"/>
-        <contributor nick="demure"/>
-        <contributor nick="+seeds" name="A. Hulka"/>
-    </tmw2>
+		<sub title="Game Masters"/>
+		<contributor nick="Crazyfefe" name="Lecanu Colin"/>
+		<contributor nick="demure"/>
+		<contributor nick="+seeds" name="A. Hulka"/>
+	</tmw2>
 
-    <!-- Land Of Fire/TMWA staff, devs, contribs etc. -->
-    <lof>
-        <sub title="Project Leaders"/>
-        <contributor nick="Pihro" name="(Founder)"/>
-        <contributor nick="Pyndragon" name="(Lead Dev, Coder, Host)"/>
-        <contributor nick="KeeKeeKat" name="(Retired, co-founder, lead gm)"/>
-        <contributor nick="BronzeEagle" name="(Retired, server admin assist.)"/>
+	<!-- Land Of Fire/TMWA staff, devs, contribs etc. -->
+	<lof>
+		<sub title="Project Leaders"/>
+		<contributor nick="Pihro" name="(Founder)"/>
+		<contributor nick="Pyndragon" name="(Lead Dev, Coder, Host)"/>
+		<contributor nick="KeeKeeKat" name="(Retired, co-founder, lead gm)"/>
+		<contributor nick="BronzeEagle" name="(Retired, server admin assist.)"/>
 
-        <sub title="Game Masters"/>
-        <contributor nick="MrsSolo"/>
-        <contributor nick="BunnyBear"/>
-        <contributor nick="Cordo"/>
-        <contributor nick="demure"/>
+		<sub title="Game Masters"/>
+		<contributor nick="MrsSolo"/>
+		<contributor nick="BunnyBear"/>
+		<contributor nick="Cordo"/>
+		<contributor nick="demure"/>
 
-        <sub title="Artist and Mappers"/>
-        <contributor nick="Ozthokk" name="(art)"/>
-        <contributor nick="Billr" name="(art/map)"/>
-        <contributor nick="lavender" name="(art/map)"/>
-        <contributor nick="Solo" name="(map)"/>
-        <contributor nick="Munkar" name="(retired, art)"/>
+		<sub title="Artist and Mappers"/>
+		<contributor nick="Ozthokk" name="(art)"/>
+		<contributor nick="Billr" name="(art/map)"/>
+		<contributor nick="lavender" name="(art/map)"/>
+		<contributor nick="Solo" name="(map)"/>
+		<contributor nick="Munkar" name="(retired, art)"/>
 
-        <sub title="Additional Scripts"/>
-        <contributor nick="DingoDuck" name="(retired)"/>
-        <contributor nick="Pluto" name="(retired)"/>
+		<sub title="Additional Scripts"/>
+		<contributor nick="DingoDuck" name="(retired)"/>
+		<contributor nick="Pluto" name="(retired)"/>
 
-        <sub title="Special Thanks"/>
-        <contributor nick="Pyro" name="(website, forum, branding)"/>
-        <contributor nick="Kirua" name="(ManaServ)"/>
-        <contributor nick="Itchy Demon" name="(email setup, content upgrade assist.)"/>
-    </lof>
+		<sub title="Special Thanks"/>
+		<contributor nick="Pyro" name="(website, forum, branding)"/>
+		<contributor nick="Kirua" name="(ManaServ)"/>
+		<contributor nick="Itchy Demon" name="(email setup, content upgrade assist.)"/>
+	</lof>
 
-    <!-- GermanTMW staff, devs, contribs etc. -->
-    <germantmw>
-        <contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
-    </germantmw>
-
-
-
-    <!-- Related Communities -->
-    <other>
-        <community name="German TMW" site="https://germantmw.de"/>
-        <community name="Land Of Fire" site="https://landoffire.org"/>
-        <community name="The Mana World Brazil" site="https://tmw-br.scall.org"/>
-        <community name="The Mana World" site="https://themanaworld.org"/>
-        <community name="ManaPlus" site="https://manaplus.org"/>
-        <community name="Open Game Art" site="https://opengameart.org"/>
-        <community name="Arcmage" site="https://arcmage.org"/>
-        <community name="Evol Online" site="http://evolonline.org"/>
-    </other>
+	<!-- GermanTMW staff, devs, contribs etc. -->
+	<germantmw>
+		<contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
+	</germantmw>
 
 
 
+	<!-- Related Communities -->
+	<other>
+		<community name="German TMW" site="https://germantmw.de"/>
+		<community name="Land Of Fire" site="https://landoffire.org"/>
+		<community name="The Mana World Brazil" site="https://tmw-br.scall.org"/>
+		<community name="The Mana World" site="https://themanaworld.org"/>
+		<community name="ManaPlus" site="https://manaplus.org"/>
+		<community name="Open Game Art" site="https://opengameart.org"/>
+		<community name="Arcmage" site="https://arcmage.org"/>
+		<community name="Evol Online" site="http://evolonline.org"/>
+	</other>
 
-    <!-- "The Mana World" developers & contributors -->
-    <evol>
-        <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
-        <contributor nick="Ablu" name="Erik Schilling" mailid="ablu.erikschilling" mailserver="googlemail.com"/>
-        <contributor nick="AL13N" name="Maarten Vanraes" mailid="alien" mailserver="rmail.be"/>
-        <contributor nick="Alastrim" name="Antônio" mailid="alasmirt" mailserver="gmail.com"/>
-        <contributor nick="Alige" mailid="alige" mailserver="evolonline.org"/>
-        <contributor nick="AlOnS"/>
-        <contributor nick="Ant0ine" name="Antoine Ruck" mailid="antoinebcn" mailserver="hotmail.com"/>
-        <contributor nick="AxlTrozz" name="Alex Argumedo"/>
-        <contributor nick="BartK" name="Bart Kelsey"/>
-        <contributor nick="CheccoDess" name="Lisa"/>
-        <contributor nick="ChefChelios"/>
-        <contributor nick="Coolkid782" mailid="coolkid782" mailserver="evolonline.org"/>
-        <contributor nick="Cosmostrator" name="David Vecchio" mailid="dave" mailserver="cosmostrator.com"/>
-        <contributor nick="Crevost"/>
-        <contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
-        <contributor nick="Dariunas" name="Aasif Chaudry" mailid="aasif.chaudry" mailserver="infectedmusicdesigns.co.uk"/>
-        <contributor nick="Dark_Mage"/>
-        <contributor nick="DerLoisl" name="Max Isele" mailid="der.loisl" mailserver="theavoraproject.org"/>
-        <contributor nick="Derpella"/>
-        <contributor nick="EJlol"/>
-        <contributor nick="Elvano" name="Elvano Miok" mailid="elvano" mailserver="evolonline.org"/>
-        <contributor nick="Enchilado" name="W E Sayers"/>
-        <contributor nick="Eric" name="Eric Matyas" mailid="ematyas" mailserver="aol.com"/>
-        <contributor nick="Ezili"/>
-        <contributor nick="Fate"/>
-        <contributor nick="Fey" name="Alexandre Le Corre" mailid="fey_29" mailserver="live.fr"/>
-        <contributor nick="FotherJ" name="Jarrett Thomas-Huxley"/>
-        <contributor nick="gumi"/>
-        <contributor nick="Hal9000" name="Francesco Miglietta" mailid="francesco.miglietta" mailserver="evolonline.org"/>
-        <contributor nick="Irukard" name="Krzysztof Daszuta"/>
-        <contributor nick="IvanMorve" name="Martin"/>
-        <contributor nick="Jak1" name="Mike Wollmann" mailid="jak89_1" mailserver="ftb4u.de"/>
-        <contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
-        <contributor nick="KaTSuo" name="Gremly" mailid="tlz.katsuo" mailserver="gmail.com"/>
-        <contributor nick="Kenny690" name="Saidullin Il'shat" mailid="bio_editor" mailserver="mail.ru"/>
-        <contributor nick="Kestrel"/>
-        <contributor nick="Kineticstorm"/>
-        <contributor nick="Kolokolna" name="Olga Zhupina" mailid="uzver777" mailserver="ya.ru"/>
-        <contributor nick="KomradeJack" name="Jack Menhorn" mailid="jack.menhorn" mailserver="gmail.com"/>
-        <contributor nick="Kr0n05931" name="Grant"/>
-        <contributor nick="Ledmitz" mailid="ledmitz" mailserver="gmail.com"/>
-        <contributor nick="Len" name="Leonard Pabin III"/>
-        <contributor nick="Lien" name="Felix Jely" mailid="felixjely" mailserver="hotmail.fr"/>
-        <contributor nick="LokiF"/>
-        <contributor nick="Lunovox" mailid="rui.gravata" mailserver="hotmail.com"/>
-        <contributor nick="Magick" name="Jordan" mailid="admin_magick" mailserver="hotmail.com"/>
-        <contributor nick="Mandi Paugh"/>
-        <contributor nick="mas886" name="Arnau" mailid="arnau.cat.1997" mailserver="gmail.com"/>
-        <contributor nick="Micksha" name="Mick" mailid="ms-shaman" mailserver="gmx.de"/>
-        <contributor nick="Minnymart3"/>
-        <contributor nick="Modanung" name="Frode Lindeijer"/>
-        <contributor nick="monwarez" name="Thibault Payet" mailid="monwarez" mailserver="mailoo.org" page="https://gitlab.com/u/monwarez"/>
-        <contributor nick="Naj" name="Thibault Garcia" mailid="thibault.garcia" mailserver="revaweb.com"/>
-        <contributor nick="Nard" name="Bernard Hugonnet" mailid="bernard.hugonnet" mailserver="bh28.net"/>
-        <contributor nick="Necromonger" name="Mihail Barer"/>
-        <contributor nick="Nelson6e65" name="Nelson Martell" mailid="nelson6e65-manaplus" mailserver="yahoo.es"/>
-        <contributor nick="omatt" mailid="m.vuoso" mailserver="@laposte.net"/>
-        <contributor nick="Othello" name="Vincent Van Beveren" mailid="v.van.beveren" mailserver="nikhef.nl"/>
-        <contributor nick="Pajarico"/>
-        <contributor nick="Pihro" name="Garett Smith" mailid="theonewhoplayswithfire" mailserver="gmail.com"/>
-        <contributor nick="Piman"/>
-        <contributor nick="Pitriss" name="Petr Varkoček"/>
-        <contributor nick="Posydonia" name="Mélanie Dinot"/>
-        <contributor nick="Qwerty Dragon"/>
-        <contributor nick="Reid" mailid="reid" mailserver="evolonline.org"/>
-        <contributor nick="Saci"/>
-        <contributor nick="Saphy"/>
-        <contributor nick="Salius" name="Aleksey S."/>
-        <contributor nick="saturn" name="Nikola Whallon" mailid="6.saturn.6" mailserver="gmail.com"/>
-        <contributor nick="Saweres" mailid="onshine20" mailserver="gmail.com"/>
-        <contributor nick="Sir_lance"/>
-        <contributor nick="Socapex" name="Philippe Groarke" mailid="socapex" mailserver="evolonline.org"/>
-        <contributor nick="Talaroc" name="Ryan Voss" mailid="arashi86" mailserver="gmail.com"/>
-        <contributor nick="Taree"/>
-        <contributor nick="Tayoko"/>
-        <contributor nick="Teru"/>
-        <contributor nick="Tirifto"/>
-        <contributor nick="Vasily Makarov" name="Dan Sagunov" mailid="vasily" mailserver="evolonline.org"/>
-        <contributor nick="VxD" mailid="vxd.michael" mailserver="gmail.com"/>
-        <contributor nick="WildX" name="William Pine" mailid="wildx" mailserver="evolonline.org"/>
-        <contributor nick="Wushin" mailid="pasekei" mailserver="gmail.com"/>
-        <contributor nick="Yosuhara"/>
-        <contributor nick="Yuuki"/>
-    </evol>
-    <!-- "The Mana World: Legacy" contributors -->
-    <tmw-legacy>
-      <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
-      <contributor nick="Ablu" name="Erik Schilling" mailid="ablu.erikschilling" mailserver="gmail.com"/>
-      <contributor nick="AL13N" name="Maarten Vanraes" mailid="alien" mailserver="rmail.be"/>
-      <contributor nick="Alastrim" name="Antônio" mailid="alasmirt" mailserver="gmail.com"/>
-      <contributor nick="Alige" mailid="alige" mailserver="evolonline.org"/>
-      <contributor nick="AlOns"/>
-      <contributor nick="Argul" name="Stefan Beller"/>
-      <contributor nick="Arikel"/>
-      <contributor nick="Avaniel" name="Rogier Polak"/>
-      <contributor nick="Bagzie"/>
-      <contributor nick="Bear"/>
-      <contributor nick="Bernhardt" name="Chay"/>
-      <contributor nick="Bertram" name="Yohann Ferreira"/>
-      <contributor nick="Big Crunch"/>
-      <contributor nick="CapitanAwesome"/>
-      <contributor nick="Cassy" name="Cassandra"/>
-      <contributor nick="Catfish_Man"/>
-      <contributor nick="ChefChelios"/>
-      <contributor nick="Chetic" name="Fredrik Reveny" mailid="chetic" mailserver="gmail.com"/>
-      <contributor nick="Chicka-Maria" mailid="comfycheeks" mailserver="themanaworld.org"/>
-      <contributor nick="Clef"/>
-      <contributor nick="Coolkid782" mailid="coolkid782" mailserver="evolonline.org"/>
-      <contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
-      <contributor nick="Dabe" name="David Del Re"/>
-      <contributor nick="Delasia"/>
-      <contributor nick="Demon"/>
-      <contributor nick="Der Loisl" name="Max Isele" mailid="der.loisl" mailserver="theavoraproject.org"/>
-      <contributor nick="deviexx"/>
-      <contributor nick="dobey" name="Rodney Dawes"/>
-      <contributor nick="doorsman"/>
-      <contributor nick="Ejlol" name="Oscar Klein Heerenbrink"/>
-      <contributor nick="ElvenProgammer" name="Eugenio Favalli" mailid="elvenprogrammer" mailserver="gmail.com"/>
-      <contributor nick="Enchilado" name="W E Sayers"/>
-      <contributor nick="FotherJ" name="Jarrett Thomas-Huxley"/>
-      <contributor nick="Freeyorp"/>
-      <contributor nick="Frost"/>
-      <contributor nick="Gnulia"/>
-      <contributor nick="Golgo"/>
-      <contributor nick="GonzoDark" name="Leif Kildelund"/>
-      <contributor nick="gumi"/>
-      <contributor nick="Hello=)"/>
-      <contributor nick="Hocus Pocus Fidibus" mailid="kurt.kuschinski" mailserver="gmail.com"/>
-      <contributor nick="Irukard"/>
-      <contributor nick="imorgado" name="Igor Morgado"/>
-      <contributor nick="IvanMorve" name="Martin"/>
-      <contributor nick="jak1" name="Mike Wollmann" mailid="jak1" mailserver="germantmw.de"/>
-      <contributor nick="Javila" name="JosÃ© Ãvila"/>
-      <contributor nick="jaxed0127" name="Jared Adams"/>
-      <contributor nick="Jenalya" name="Jessica Tölke"/>
-      <contributor nick="Jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
-      <contributor nick="JoshLangley" name="Joshua Langley"/>
-      <contributor nick="Kage" name="Chuck Miller" mailid="shadowmil" mailserver="gmail.com"/>
-      <contributor nick="Katze"/>
-      <contributor nick="kindjal" name="Huynh Ngoc Chau Tran"/>
-      <contributor nick="Kineticstorm"/>
-      <contributor nick="kth5/Shura" name="Alexander Baldeck"/>
-      <contributor nick="Kyokai" name="Kiyoshi Kyokai"/>
-      <contributor nick="kytty"/>
-      <contributor nick="Ledmitz" mailid="ledmitz" mailserver="gmail.com"/>
-      <contributor nick="Len" name="Leonard Pabin III"/>
-      <contributor nick="Livio" name="Livio Recchia"/>
-      <contributor nick="Lizandra" name="Filipa Serra e Silva"/>
-      <contributor nick="maci" name="Marcel W. Wysocki"/>
-      <contributor nick="MadCamel"/>
-      <contributor nick="Maester Pixel"/>
-      <contributor nick="Magick" name="Jordan" mailid="admin_magick" mailserver="hotmail.com"/>
-      <contributor nick="MasterKenobi"/>
-      <contributor nick="meway" name="Andrew Hall"/>
-      <contributor nick="Micksha" mailid="ms-shaman" mailserver="gmx.de"/>
-      <contributor nick="Mkael"/>
-      <contributor nick="Modanung" name="Frode Lindeijer"/>
-      <contributor nick="moi1392" name="Cedric Borgese" mailid="cedric.borgese" mailserver="gmail.com"/>
-      <contributor nick="monwarez" name="Thibault Payet" mailid="monwarez" mailserver="mailoo.org" page="https://gitlab.com/u/monwarez"/>
-      <contributor nick="Mra" name="Jan-Fabian Humann" mailid="malastare" mailserver="gmx.net"/>
-      <contributor nick="mrgrey"/>
-      <contributor nick="Nard" name="Bernard Hugonnet" mailid="bernard.hugonnet" mailserver="bh28.net"/>
-      <contributor nick="Narus" mailid="narus.tmw" mailserver="gmail.com"/>
-      <contributor nick="Necromonger" name="Mihail Barer"/>
-      <contributor nick="Neko-mon"/>
-      <contributor nick="Neorice"/>
-      <contributor nick="nym"/>
-      <contributor nick="o11c" name="Ben Longbons" maild="b.r.longbons" mailserver="gmail.com"/>
-      <contributor nick="omatt" mailid="m.vuoso" mailserver="laposte.net"/>
-      <contributor nick="Pajarico" name="Pajarico Guaje"/>
-      <contributor nick="Pauan"/>
-      <contributor nick="peavey" name="Dennis Friis" mailid="peavey" mailserver="placid.dk"/>
-      <contributor nick="Pihro" name="Garett Smith" mailid="theonewhoplayswithfire" mailserver="gmail.com"/>
-      <contributor nick="Platyna" name="Zuzanna Karolina Filutowska"/>
-      <contributor nick="Pluto" name="Arian Asimi"/>
-      <contributor nick="Prsm"/>
-      <contributor nick="Purple" name="Thorbjørn Lindeijer" mailid="thorbjorn" mailserver="lindeijer.nl"/>
-      <contributor nick="Pyndragon" name="Daniel Foerster"/>
-      <contributor nick="Qoal" name="Scott Ellis" mailid="quiche_on_a_leash" mailserver="hotmail.co.uk"/>
-      <contributor nick="Qwerty Dragon"/>
-      <contributor nick="razor85" name="Romulo Fernandes"/>
-      <contributor nick="Reid" mailid="reid" mailserver="evolonline.org"/>
-      <contributor nick="Rotonen" name="Joni Orponen"/>
-      <contributor nick="salmondine" name="Mark Dunbar"/>
-      <contributor nick="Silene" name="Guillaume Melquiond"/>
-      <contributor nick="Silent Dawn"/>
-      <contributor nick="simonedw" name="Simon Edwardsson" mailid="simon" mailserver="crossnet.se"/>
-      <contributor nick="Skipy"/>
-      <contributor nick="Sora"/>
-      <contributor nick="SudoPlatipus"/>
-      <contributor nick="Sull" name="Jean-Francois Lampron" mailid="sull.kf" mailserver="gmail.com"/>
-      <contributor nick="Superkoop" name="John Koopman"/>
-      <contributor nick="Swimmy"/>
-      <contributor nick="Talaroc" name="Ryan Voss" mailid="arashi86" mailserver="gmail.com"/>
-      <contributor nick="Tametomo" name="Ira Rice" mailid="irarice" mailserver="gmail.com"/>
-      <contributor nick="Tatjana"/>
-      <contributor nick="Tezer431"/>
-      <contributor nick="Ti Sing Hao"/>
-      <contributor nick="Tiana"/>
-      <contributor nick="Tirifto"/>
-      <contributor nick="Tomminator"/>
-      <contributor nick="Turmfalke"/>
-      <contributor nick="tux9th"/>
-      <contributor nick="Ultramichy"/>
-      <contributor nick="Usiu" name="Mateusz Kaduk"/>
-      <contributor nick="V0id" name="Vincent Petithory"/>
-      <contributor nick="Varuna"/>
-      <contributor nick="Vasily Makarov" name="Danil Sagunov" mailid="vasily" mailserver="evolonline.org"/>
-      <contributor nick="veryapeGM"/>
-      <contributor nick="VictorSan"/>
-      <contributor nick="Vink"/>
-      <contributor nick="Vlady"/>
-      <contributor nick="WildX" name="William Pine" mailid="wildx" mailserver="evolonline.org"/>
-      <contributor nick="Wombat" mailid="hpwombat" mailserver="yahoo.com" page="https://github.com/wombatism"/>
-      <contributor nick="Wushin" mailid="pasekei" mailserver="gmail.com"/>
-      <contributor nick="zenogais" name="Eric Scrivner"/>
-      <contributor nick="Zipon"/>
-      <contributor nick="(unknown)" name="Aaron Marks"/>
-      <contributor nick="(unknown)" name="Andrej Sinicyn"/>
-      <contributor nick="(unknown)" name="Douglas Boffey"/>
-      <contributor nick="(unknown)" name="Duane Bailey"/>
-      <contributor nick="(unknown)" name="Johannelaliberte"/>
-      <contributor nick="(unknown)" name="Kess Vargavind" mailid="vargavind" mailserver="gmail.com"/>
-      <contributor nick="(unknown)" name="Lloyd Bryant" mailid="lloyd_bryant" mailserver="netzero.net"/>
-      <contributor nick="(unknown)" name="Matthias Hartmann" mailid="hartmann.matthias" mailserver="gmail.com"/>
-    </tmw-legacy>
-    <!-- "TMW-UFB" Contributors -->
-    <tmw-ufb>
-        <contributor nick="Arikel"/>
-        <contributor nick="Varuna"/>
-    </tmw-ufb>
-    <!-- "Freesound" Contributors -->
-    <freesound>
-        <contributor nick="adriann" page="http://freesound.org/people/adriann/"/>
-        <contributor nick="beerbelly38" page="http://freesound.org/people/beerbelly38/"/>
-        <contributor nick="CaptainSiberia" page="http://freesound.org/people/CaptainSiberia/"/>
-        <contributor nick="D W" page="http://freesound.org/people/D%20W/"/>
-        <contributor nick="erkanozan" page="http://freesound.org/people/erkanozan/"/>
-        <contributor nick="Q.K." page="http://freesound.org/people/Q.K./"/>
-        <contributor nick="sammy214" page="http://freesound.org/people/sammy214/"/>
-        <contributor nick="SkeetMasterFunk69" page="http://freesound.org/people/SkeetMasterFunk69/"/>
-        <contributor nick="speedygonzo" page="http://freesound.org/people/speedygonzo/"/>
-        <contributor nick="spookymodem" page="http://freesound.org/people/spookymodem/"/>
-        <contributor nick="vibe_crc" page="http://freesound.org/people/vibe_crc/"/>
-    </freesound>
+
+
+
+	<!-- "The Mana World" developers & contributors -->
+	<evol>
+		<contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
+		<contributor nick="Ablu" name="Erik Schilling" mailid="ablu.erikschilling" mailserver="googlemail.com"/>
+		<contributor nick="AL13N" name="Maarten Vanraes" mailid="alien" mailserver="rmail.be"/>
+		<contributor nick="Alastrim" name="Antônio" mailid="alasmirt" mailserver="gmail.com"/>
+		<contributor nick="Alige" mailid="alige" mailserver="evolonline.org"/>
+		<contributor nick="AlOnS"/>
+		<contributor nick="Ant0ine" name="Antoine Ruck" mailid="antoinebcn" mailserver="hotmail.com"/>
+		<contributor nick="AxlTrozz" name="Alex Argumedo"/>
+		<contributor nick="BartK" name="Bart Kelsey"/>
+		<contributor nick="CheccoDess" name="Lisa"/>
+		<contributor nick="ChefChelios"/>
+		<contributor nick="Coolkid782" mailid="coolkid782" mailserver="evolonline.org"/>
+		<contributor nick="Cosmostrator" name="David Vecchio" mailid="dave" mailserver="cosmostrator.com"/>
+		<contributor nick="Crevost"/>
+		<contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
+		<contributor nick="Dariunas" name="Aasif Chaudry" mailid="aasif.chaudry" mailserver="infectedmusicdesigns.co.uk"/>
+		<contributor nick="Dark_Mage"/>
+		<contributor nick="DerLoisl" name="Max Isele" mailid="der.loisl" mailserver="theavoraproject.org"/>
+		<contributor nick="Derpella"/>
+		<contributor nick="EJlol"/>
+		<contributor nick="Elvano" name="Elvano Miok" mailid="elvano" mailserver="evolonline.org"/>
+		<contributor nick="Enchilado" name="W E Sayers"/>
+		<contributor nick="Eric" name="Eric Matyas" mailid="ematyas" mailserver="aol.com"/>
+		<contributor nick="Ezili"/>
+		<contributor nick="Fate"/>
+		<contributor nick="Fey" name="Alexandre Le Corre" mailid="fey_29" mailserver="live.fr"/>
+		<contributor nick="FotherJ" name="Jarrett Thomas-Huxley"/>
+		<contributor nick="gumi"/>
+		<contributor nick="Hal9000" name="Francesco Miglietta" mailid="francesco.miglietta" mailserver="evolonline.org"/>
+		<contributor nick="Irukard" name="Krzysztof Daszuta"/>
+		<contributor nick="IvanMorve" name="Martin"/>
+		<contributor nick="Jak1" name="Mike Wollmann" mailid="jak89_1" mailserver="ftb4u.de"/>
+		<contributor nick="jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
+		<contributor nick="KaTSuo" name="Gremly" mailid="tlz.katsuo" mailserver="gmail.com"/>
+		<contributor nick="Kenny690" name="Saidullin Il'shat" mailid="bio_editor" mailserver="mail.ru"/>
+		<contributor nick="Kestrel"/>
+		<contributor nick="Kineticstorm"/>
+		<contributor nick="Kolokolna" name="Olga Zhupina" mailid="uzver777" mailserver="ya.ru"/>
+		<contributor nick="KomradeJack" name="Jack Menhorn" mailid="jack.menhorn" mailserver="gmail.com"/>
+		<contributor nick="Kr0n05931" name="Grant"/>
+		<contributor nick="Ledmitz" mailid="ledmitz" mailserver="gmail.com"/>
+		<contributor nick="Len" name="Leonard Pabin III"/>
+		<contributor nick="Lien" name="Felix Jely" mailid="felixjely" mailserver="hotmail.fr"/>
+		<contributor nick="LokiF"/>
+		<contributor nick="Lunovox" mailid="rui.gravata" mailserver="hotmail.com"/>
+		<contributor nick="Magick" name="Jordan" mailid="admin_magick" mailserver="hotmail.com"/>
+		<contributor nick="Mandi Paugh"/>
+		<contributor nick="mas886" name="Arnau" mailid="arnau.cat.1997" mailserver="gmail.com"/>
+		<contributor nick="Micksha" name="Mick" mailid="ms-shaman" mailserver="gmx.de"/>
+		<contributor nick="Minnymart3"/>
+		<contributor nick="Modanung" name="Frode Lindeijer"/>
+		<contributor nick="monwarez" name="Thibault Payet" mailid="monwarez" mailserver="mailoo.org" page="https://gitlab.com/u/monwarez"/>
+		<contributor nick="Naj" name="Thibault Garcia" mailid="thibault.garcia" mailserver="revaweb.com"/>
+		<contributor nick="Nard" name="Bernard Hugonnet" mailid="bernard.hugonnet" mailserver="bh28.net"/>
+		<contributor nick="Necromonger" name="Mihail Barer"/>
+		<contributor nick="Nelson6e65" name="Nelson Martell" mailid="nelson6e65-manaplus" mailserver="yahoo.es"/>
+		<contributor nick="omatt" mailid="m.vuoso" mailserver="@laposte.net"/>
+		<contributor nick="Othello" name="Vincent Van Beveren" mailid="v.van.beveren" mailserver="nikhef.nl"/>
+		<contributor nick="Pajarico"/>
+		<contributor nick="Pihro" name="Garett Smith" mailid="theonewhoplayswithfire" mailserver="gmail.com"/>
+		<contributor nick="Piman"/>
+		<contributor nick="Pitriss" name="Petr Varkoček"/>
+		<contributor nick="Posydonia" name="Mélanie Dinot"/>
+		<contributor nick="Qwerty Dragon"/>
+		<contributor nick="Reid" mailid="reid" mailserver="evolonline.org"/>
+		<contributor nick="Saci"/>
+		<contributor nick="Saphy"/>
+		<contributor nick="Salius" name="Aleksey S."/>
+		<contributor nick="saturn" name="Nikola Whallon" mailid="6.saturn.6" mailserver="gmail.com"/>
+		<contributor nick="Saweres" mailid="onshine20" mailserver="gmail.com"/>
+		<contributor nick="Sir_lance"/>
+		<contributor nick="Socapex" name="Philippe Groarke" mailid="socapex" mailserver="evolonline.org"/>
+		<contributor nick="Talaroc" name="Ryan Voss" mailid="arashi86" mailserver="gmail.com"/>
+		<contributor nick="Taree"/>
+		<contributor nick="Tayoko"/>
+		<contributor nick="Teru"/>
+		<contributor nick="Tirifto"/>
+		<contributor nick="Vasily Makarov" name="Dan Sagunov" mailid="vasily" mailserver="evolonline.org"/>
+		<contributor nick="VxD" mailid="vxd.michael" mailserver="gmail.com"/>
+		<contributor nick="WildX" name="William Pine" mailid="wildx" mailserver="evolonline.org"/>
+		<contributor nick="Wushin" mailid="pasekei" mailserver="gmail.com"/>
+		<contributor nick="Yosuhara"/>
+		<contributor nick="Yuuki"/>
+	</evol>
+	<!-- "The Mana World: Legacy" contributors -->
+	<tmw-legacy>
+	  <contributor nick="41444d494e" name="Andrei Karas" mailid="4144" mailserver="evolonline.org"/>
+	  <contributor nick="Ablu" name="Erik Schilling" mailid="ablu.erikschilling" mailserver="gmail.com"/>
+	  <contributor nick="AL13N" name="Maarten Vanraes" mailid="alien" mailserver="rmail.be"/>
+	  <contributor nick="Alastrim" name="Antônio" mailid="alasmirt" mailserver="gmail.com"/>
+	  <contributor nick="Alige" mailid="alige" mailserver="evolonline.org"/>
+	  <contributor nick="AlOns"/>
+	  <contributor nick="Argul" name="Stefan Beller"/>
+	  <contributor nick="Arikel"/>
+	  <contributor nick="Avaniel" name="Rogier Polak"/>
+	  <contributor nick="Bagzie"/>
+	  <contributor nick="Bear"/>
+	  <contributor nick="Bernhardt" name="Chay"/>
+	  <contributor nick="Bertram" name="Yohann Ferreira"/>
+	  <contributor nick="Big Crunch"/>
+	  <contributor nick="CapitanAwesome"/>
+	  <contributor nick="Cassy" name="Cassandra"/>
+	  <contributor nick="Catfish_Man"/>
+	  <contributor nick="ChefChelios"/>
+	  <contributor nick="Chetic" name="Fredrik Reveny" mailid="chetic" mailserver="gmail.com"/>
+	  <contributor nick="Chicka-Maria" mailid="comfycheeks" mailserver="themanaworld.org"/>
+	  <contributor nick="Clef"/>
+	  <contributor nick="Coolkid782" mailid="coolkid782" mailserver="evolonline.org"/>
+	  <contributor nick="Crush" name="Philipp Sehmisch" mailid="tmw" mailserver="crushnet.org"/>
+	  <contributor nick="Dabe" name="David Del Re"/>
+	  <contributor nick="Delasia"/>
+	  <contributor nick="Demon"/>
+	  <contributor nick="Der Loisl" name="Max Isele" mailid="der.loisl" mailserver="theavoraproject.org"/>
+	  <contributor nick="deviexx"/>
+	  <contributor nick="dobey" name="Rodney Dawes"/>
+	  <contributor nick="doorsman"/>
+	  <contributor nick="Ejlol" name="Oscar Klein Heerenbrink"/>
+	  <contributor nick="ElvenProgammer" name="Eugenio Favalli" mailid="elvenprogrammer" mailserver="gmail.com"/>
+	  <contributor nick="Enchilado" name="W E Sayers"/>
+	  <contributor nick="FotherJ" name="Jarrett Thomas-Huxley"/>
+	  <contributor nick="Freeyorp"/>
+	  <contributor nick="Frost"/>
+	  <contributor nick="Gnulia"/>
+	  <contributor nick="Golgo"/>
+	  <contributor nick="GonzoDark" name="Leif Kildelund"/>
+	  <contributor nick="gumi"/>
+	  <contributor nick="Hello=)"/>
+	  <contributor nick="Hocus Pocus Fidibus" mailid="kurt.kuschinski" mailserver="gmail.com"/>
+	  <contributor nick="Irukard"/>
+	  <contributor nick="imorgado" name="Igor Morgado"/>
+	  <contributor nick="IvanMorve" name="Martin"/>
+	  <contributor nick="jak1" name="Mike Wollmann" mailid="jak1" mailserver="germantmw.de"/>
+	  <contributor nick="Javila" name="JosÃ© Ãvila"/>
+	  <contributor nick="jaxed0127" name="Jared Adams"/>
+	  <contributor nick="Jenalya" name="Jessica Tölke"/>
+	  <contributor nick="Jesusalva" name="Jonatas L. Nogueira" mailid="cpntb1" mailserver="ymail.com"/>
+	  <contributor nick="JoshLangley" name="Joshua Langley"/>
+	  <contributor nick="Kage" name="Chuck Miller" mailid="shadowmil" mailserver="gmail.com"/>
+	  <contributor nick="Katze"/>
+	  <contributor nick="kindjal" name="Huynh Ngoc Chau Tran"/>
+	  <contributor nick="Kineticstorm"/>
+	  <contributor nick="kth5/Shura" name="Alexander Baldeck"/>
+	  <contributor nick="Kyokai" name="Kiyoshi Kyokai"/>
+	  <contributor nick="kytty"/>
+	  <contributor nick="Ledmitz" mailid="ledmitz" mailserver="gmail.com"/>
+	  <contributor nick="Len" name="Leonard Pabin III"/>
+	  <contributor nick="Livio" name="Livio Recchia"/>
+	  <contributor nick="Lizandra" name="Filipa Serra e Silva"/>
+	  <contributor nick="maci" name="Marcel W. Wysocki"/>
+	  <contributor nick="MadCamel"/>
+	  <contributor nick="Maester Pixel"/>
+	  <contributor nick="Magick" name="Jordan" mailid="admin_magick" mailserver="hotmail.com"/>
+	  <contributor nick="MasterKenobi"/>
+	  <contributor nick="meway" name="Andrew Hall"/>
+	  <contributor nick="Micksha" mailid="ms-shaman" mailserver="gmx.de"/>
+	  <contributor nick="Mkael"/>
+	  <contributor nick="Modanung" name="Frode Lindeijer"/>
+	  <contributor nick="moi1392" name="Cedric Borgese" mailid="cedric.borgese" mailserver="gmail.com"/>
+	  <contributor nick="monwarez" name="Thibault Payet" mailid="monwarez" mailserver="mailoo.org" page="https://gitlab.com/u/monwarez"/>
+	  <contributor nick="Mra" name="Jan-Fabian Humann" mailid="malastare" mailserver="gmx.net"/>
+	  <contributor nick="mrgrey"/>
+	  <contributor nick="Nard" name="Bernard Hugonnet" mailid="bernard.hugonnet" mailserver="bh28.net"/>
+	  <contributor nick="Narus" mailid="narus.tmw" mailserver="gmail.com"/>
+	  <contributor nick="Necromonger" name="Mihail Barer"/>
+	  <contributor nick="Neko-mon"/>
+	  <contributor nick="Neorice"/>
+	  <contributor nick="nym"/>
+	  <contributor nick="o11c" name="Ben Longbons" maild="b.r.longbons" mailserver="gmail.com"/>
+	  <contributor nick="omatt" mailid="m.vuoso" mailserver="laposte.net"/>
+	  <contributor nick="Pajarico" name="Pajarico Guaje"/>
+	  <contributor nick="Pauan"/>
+	  <contributor nick="peavey" name="Dennis Friis" mailid="peavey" mailserver="placid.dk"/>
+	  <contributor nick="Pihro" name="Garett Smith" mailid="theonewhoplayswithfire" mailserver="gmail.com"/>
+	  <contributor nick="Platyna" name="Zuzanna Karolina Filutowska"/>
+	  <contributor nick="Pluto" name="Arian Asimi"/>
+	  <contributor nick="Prsm"/>
+	  <contributor nick="Purple" name="Thorbjørn Lindeijer" mailid="thorbjorn" mailserver="lindeijer.nl"/>
+	  <contributor nick="Pyndragon" name="Daniel Foerster"/>
+	  <contributor nick="Qoal" name="Scott Ellis" mailid="quiche_on_a_leash" mailserver="hotmail.co.uk"/>
+	  <contributor nick="Qwerty Dragon"/>
+	  <contributor nick="razor85" name="Romulo Fernandes"/>
+	  <contributor nick="Reid" mailid="reid" mailserver="evolonline.org"/>
+	  <contributor nick="Rotonen" name="Joni Orponen"/>
+	  <contributor nick="salmondine" name="Mark Dunbar"/>
+	  <contributor nick="Silene" name="Guillaume Melquiond"/>
+	  <contributor nick="Silent Dawn"/>
+	  <contributor nick="simonedw" name="Simon Edwardsson" mailid="simon" mailserver="crossnet.se"/>
+	  <contributor nick="Skipy"/>
+	  <contributor nick="Sora"/>
+	  <contributor nick="SudoPlatipus"/>
+	  <contributor nick="Sull" name="Jean-Francois Lampron" mailid="sull.kf" mailserver="gmail.com"/>
+	  <contributor nick="Superkoop" name="John Koopman"/>
+	  <contributor nick="Swimmy"/>
+	  <contributor nick="Talaroc" name="Ryan Voss" mailid="arashi86" mailserver="gmail.com"/>
+	  <contributor nick="Tametomo" name="Ira Rice" mailid="irarice" mailserver="gmail.com"/>
+	  <contributor nick="Tatjana"/>
+	  <contributor nick="Tezer431"/>
+	  <contributor nick="Ti Sing Hao"/>
+	  <contributor nick="Tiana"/>
+	  <contributor nick="Tirifto"/>
+	  <contributor nick="Tomminator"/>
+	  <contributor nick="Turmfalke"/>
+	  <contributor nick="tux9th"/>
+	  <contributor nick="Ultramichy"/>
+	  <contributor nick="Usiu" name="Mateusz Kaduk"/>
+	  <contributor nick="V0id" name="Vincent Petithory"/>
+	  <contributor nick="Varuna"/>
+	  <contributor nick="Vasily Makarov" name="Danil Sagunov" mailid="vasily" mailserver="evolonline.org"/>
+	  <contributor nick="veryapeGM"/>
+	  <contributor nick="VictorSan"/>
+	  <contributor nick="Vink"/>
+	  <contributor nick="Vlady"/>
+	  <contributor nick="WildX" name="William Pine" mailid="wildx" mailserver="evolonline.org"/>
+	  <contributor nick="Wombat" mailid="hpwombat" mailserver="yahoo.com" page="https://github.com/wombatism"/>
+	  <contributor nick="Wushin" mailid="pasekei" mailserver="gmail.com"/>
+	  <contributor nick="zenogais" name="Eric Scrivner"/>
+	  <contributor nick="Zipon"/>
+	  <contributor nick="(unknown)" name="Aaron Marks"/>
+	  <contributor nick="(unknown)" name="Andrej Sinicyn"/>
+	  <contributor nick="(unknown)" name="Douglas Boffey"/>
+	  <contributor nick="(unknown)" name="Duane Bailey"/>
+	  <contributor nick="(unknown)" name="Johannelaliberte"/>
+	  <contributor nick="(unknown)" name="Kess Vargavind" mailid="vargavind" mailserver="gmail.com"/>
+	  <contributor nick="(unknown)" name="Lloyd Bryant" mailid="lloyd_bryant" mailserver="netzero.net"/>
+	  <contributor nick="(unknown)" name="Matthias Hartmann" mailid="hartmann.matthias" mailserver="gmail.com"/>
+	</tmw-legacy>
+	<!-- "TMW-UFB" Contributors -->
+	<tmw-ufb>
+		<contributor nick="Arikel"/>
+		<contributor nick="Varuna"/>
+	</tmw-ufb>
+	<!-- "Freesound" Contributors -->
+	<freesound>
+		<contributor nick="adriann" page="http://freesound.org/people/adriann/"/>
+		<contributor nick="beerbelly38" page="http://freesound.org/people/beerbelly38/"/>
+		<contributor nick="CaptainSiberia" page="http://freesound.org/people/CaptainSiberia/"/>
+		<contributor nick="D W" page="http://freesound.org/people/D%20W/"/>
+		<contributor nick="erkanozan" page="http://freesound.org/people/erkanozan/"/>
+		<contributor nick="Q.K." page="http://freesound.org/people/Q.K./"/>
+		<contributor nick="sammy214" page="http://freesound.org/people/sammy214/"/>
+		<contributor nick="SkeetMasterFunk69" page="http://freesound.org/people/SkeetMasterFunk69/"/>
+		<contributor nick="speedygonzo" page="http://freesound.org/people/speedygonzo/"/>
+		<contributor nick="spookymodem" page="http://freesound.org/people/spookymodem/"/>
+		<contributor nick="vibe_crc" page="http://freesound.org/people/vibe_crc/"/>
+	</freesound>
 </contributors>
