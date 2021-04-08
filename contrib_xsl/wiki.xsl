@@ -28,6 +28,14 @@ Copyright (C) 2016 Evol Online -->
         <xsl:apply-templates/>
     </xsl:template>
 
+    <xsl:template match="germantmw">
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>#	GermanTMW Contributors&#xa;</xsl:text>
+        <xsl:text>|Nickname|Real Name / Email|&#xa;</xsl:text>
+        <xsl:text>|--------|-----------------|&#xa;</xsl:text>
+        <xsl:apply-templates/>
+    </xsl:template>
+
     <xsl:template match="evol">
         <xsl:text>&#xa;</xsl:text>
         <xsl:text>#	Evol Online Contributors&#xa;</xsl:text>

@@ -31,6 +31,14 @@ Copyright (C) 2018 TMW2 -->
         <xsl:apply-templates/>
     </xsl:template>
 
+    <xsl:template match="germantmw">
+        <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
+        <xsl:text>##3-- &lt;&lt;German TMW Contributors&gt;&gt; --&#xa;</xsl:text>
+        <xsl:text>##3---------------------------&#xa;&#xa;</xsl:text>
+
+        <xsl:apply-templates select="contributor"/>
+    </xsl:template>
+
     <xsl:template match="evol">
         <xsl:text>&#xa;##3---------------------------&#xa;</xsl:text>
         <xsl:text>##3-- &lt;&lt;Evol Online Contributors&gt;&gt; --&#xa;</xsl:text>

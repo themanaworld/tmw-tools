@@ -95,6 +95,11 @@ http://wiki.themanaworld.org/index.php/Contributors
         <contributor nick="Itchy Demon" name="(email setup, content upgrade assist.)"/>
     </lof>
 
+    <!-- GermanTMW staff, devs, contribs etc. -->
+    <germantmw>
+        <contributor nick="jak1" name="Mike W." mailid="jak1" mailserver="germantmw.de"/>
+    </germantmw>
+
 
 
     <!-- Related Communities -->
