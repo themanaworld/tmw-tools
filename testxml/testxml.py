@@ -139,9 +139,9 @@ def printSeparator():
     print "--------------------------------------------------------------------------------"
 
 def showHeader():
-    print "Evol client data validator."
-    print "Run at: " + datetime.datetime.now().isoformat()
-    print "https://gitlab.com/evol/evol-tools/blob/master/testxml/testxml.py"
+    print("Client Data Validator.")
+    print("Run at: " + datetime.datetime.now().isoformat())
+    print("https://git.themanaworld.org/ml/tools/blob/master/testxml/testxml.py")
     printSeparator()
 
 def showFooter():
