@@ -185,7 +185,7 @@ def main(outdir, indir=None):
         suffix = '.txt'
         if not entry.endswith(suffix):
             continue
-        e = open(os.path.join(indir, entry)).read()
+        e = open(os.path.join(indir, entry), encoding="utf-8").read()
         for s in out:
             s.put(e, entry[:-len(suffix)])
     for s in out:
