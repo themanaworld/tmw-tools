@@ -50,7 +50,7 @@ class BasicWriter(object):
     __slots__ = ('stream', 'isFirst')
     __metaclass__ = ABCMeta
     def __init__(self, outfile):
-        self.stream = open(outfile, 'w')
+        self.stream = open(outfile, 'w', encoding='utf-8')
         self.isFirst = True
 
     @abstractmethod
