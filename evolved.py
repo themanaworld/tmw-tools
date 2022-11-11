@@ -10,8 +10,6 @@
 import datetime
 import sys, traceback
 
-wikia=open("Items.md", "w")
-wikib=open("Monsters.md", "w")
 aegis=open("../world/map/db/const-aegis.txt", "w")
 
 # the TYPEs we use to determine where to pack things
@@ -44,7 +42,6 @@ Mobs5=[]
 Mobs6=[]
 MobsA=[]
 
-SysDrops=[]
 AllItems={}
 
 
@@ -52,11 +49,9 @@ def printSeparator():
     print("--------------------------------------------------------------------------------")
 
 def showHeader():
-    print("TMW2 Wiki Generator")
-    ##print "Evol client data validator."
+    print("Evolved->Legacy DB Generator")
     print("Run at: " + datetime.datetime.now().isoformat())
-    print("Usage: ./wikigen.py [<path_to_serverdata> <path_to_clientdata>]")
-    ##print "https://gitlab.com/evol/evol-tools/blob/master/testxml/testxml.py"
+    #print("Usage: ./evolved.py [<path_to_serverdata> <path_to_clientdata>]")
     printSeparator()
 
 def showFooter():
@@ -289,39 +284,12 @@ def stp(x):
 
 
 
-def mb_rdrw(mb):
-    buff=""
-    buff+="MobPoints: %s\n" % (mb.mobpt)
-    buff+="%s\n" % (mb.xp)
-    buff+="%s\n" % (mb.jp)
-    return buff
 
-def mb_rddrop(mb):
-    buff=""
-    # sorted
-    try:
-        for ax in sorted(mb.drops, key=lambda xcv: float(xcv[1]), reverse=True):
-            # Ignore disabled drops
-            if ax[0].startswith("//"):
-                continue
 
-            # Write drop
-            try:
-                buff+=ax[0]+': ' + str(int(ax[1])/100.0) + ' %\n'
-            except IndexError:
-                print("Fatal: invalid %s mob with %s drops" % (mb.name, str(ax)))
-                exit(1)
-            except:
-                print("[Warning] %s incorrect drop: %s" % (mb.name, str(ax)))
-                buff+=ax[0]+': ' + ax[1] + ' ppm\n'
 
-            # Save to SysDrops
-            SysDrops.append([ax[0], ax[1], mb.name])
-    except:
-        traceback.print_exc()
-        print("Offender: %s" % mb.name)
 
-    return buff
+
+
 
 
 class It:
@@ -330,7 +298,8 @@ class It:
     self.id="0"
     self.aegis="UnknownItem"
     self.name="Unknown Item Name"
-    self.price="0" # Sell price, of course
+    self.buy="0"
+    self.sell="0"
     self.weight="0"
     self.type="IT_ETC" # default type
     self.loc=""
@@ -340,6 +309,7 @@ class It:
     self.matk="0"
     self.range="0"
     self.defs="0"
+    self.wlvl="0" # TODO
 
     # Restrictions (EquipLv)
     self.lvl="0"
@@ -357,19 +327,13 @@ class It:
     self.ac=False # Allow Cards
 
     # Script settings
-    self.minheal="0"
-    self.maxheal="0"
-    self.delheal="0"
-    self.typheal="0"
-    self.rarheal="0"
+    self.script=[]
 
 def ItAlloc(it):
     if (it.sl == "0" and it.ac) or (it.sl in ["1","2","3","4"] and not it.ac):
         print("WARNING, item id "+it.id+" invalid dye/card setting!")
     if (len(it.sl) > 1):
         print("WARNING, item id "+it.id+" bad slots length: %d (%s)" % (len(it.sl), it.sl))
-    #if it.ac:
-    #    wikic.write(it.id + ": " + it.name + "\n")
 
     a=it.type
     if "IT_HEALING" in a:
@@ -429,6 +393,9 @@ def ItAlloc(it):
     aegis.write("%s %s\n" % (it.aegis, it.id))
     AllItems[it.aegis]=str(it.id)
 
+
+
+
 def newItemDB():
     print("\nGenerating Item Wiki...")
     if len(sys.argv) >= 2:
@@ -436,6 +403,7 @@ def newItemDB():
     else:
         src=open("../world/map/db/item_db.conf", "r")
 
+    scripting=False
     x=It()
     for a in src:
         # Evol2-only scripts
@@ -455,8 +423,10 @@ def newItemDB():
             x.aegis=sti(a)
         elif "	Name:" in a:
             x.name=stin(a)
+        elif "	Buy:" in a:
+            x.buy=sti(a)
         elif "	Sell:" in a:
-            x.price=sti(a)
+            x.sell=sti(a)
         elif "	Weight:" in a:
             x.weight=sti(a)
         elif "	Type:" in a:
@@ -488,25 +458,14 @@ def newItemDB():
             x.sell=False
         elif "nostorage: true" in a:
             x.store=False
+        # FIXME: Different kind of scripts D:
         elif "Script" in a:
-            x.script=True
-        # For healing items
-        elif "@min " in a:
-            x.minheal=sti(a)
-        elif "@max " in a:
-            x.maxheal=sti(a)
-        elif "@delay" in a:
-            x.delheal=sti(a)
-        elif "@type" in a:
-            x.typheal=sti(a)
-            try:
-                x.minheal=str(int(x.rarheal) * (int(x.typheal)*1 + 1)) + " %"
-                x.maxheal=str(int(x.rarheal) * (int(x.typheal)*2 + 1)) + " %"
-                if (x.delheal == "0"):
-                    x.delheal=int(x.typheal)*2 + 1
-            except:
-                x.delheal="ERROR"
-                pass
+            scripting=True
+        # FIXME: Nesting D:
+        elif scripting and '}' in a:
+            scripting=False
+        elif scripting:
+            x.script.append(sti(a))
 
     # Write last entry
     ItAlloc(x)
@@ -514,7 +473,7 @@ def newItemDB():
     src.close()
 
 def sti(x):
-    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('EquipLv: ', '').replace('Slots: ','').replace(" ", "").replace('@min=','').replace('@max=','').replace('@delay=','').replace('@type=','').replace('@rarity=','').replace(';','')
+    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('EquipLv: ', '').replace('Slots: ','').replace(" ", "").strip()
 
 def stin(x):
     return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace("    ","").replace("\t","").replace('Name: ','').replace(';','')
@@ -559,7 +518,7 @@ def write_mob(m, f):
     ## Write the line
     f.write("""%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, %s, 0, 0, 0, 0, 0, 0, 0, %s, %s\n""" % (m.id, m.aegis, m.aegis, m.mobpt, m.hp, m.sp,
 m.xp, m.jp, m.range, m.atk.replace('[','').split(",")[0], m.atk.replace(']','').split(",")[1].strip(), m.df, m.mdf, m.str, m.agi, m.vit,
-m.int, m.dex, m.luk, m.view, m.chase, m.size, m.race, m.elem, m.elLv, m.md, m.move,
+m.int, m.dex, m.luk, m.view, m.chase, m.size, m.race, m.elLv, m.elem, m.md, m.move,
 m.adelay, m.amotion, m.dmotion, dl[0],dl[1], dl[2],dl[3], dl[4],dl[5], 
 dl[6],dl[7], dl[8],dl[9], dl[10],dl[11], dl[12],dl[13], dl[14],dl[15], 
 m.mvp, m.mtcnt, m.mtstr))
@@ -636,10 +595,7 @@ testMobs()
 
 save_mobs()
 
-wikia.close()
-wikib.close()
 aegis.close()
-#print(str(SysDrops))
 
 showFooter()
 exit(0)
