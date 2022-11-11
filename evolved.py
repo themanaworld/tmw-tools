@@ -330,6 +330,8 @@ class It:
     self.script=[]
 
 def ItAlloc(it):
+    if (it.aegis == "UnknownItem"):
+        return
     if (it.sl == "0" and it.ac) or (it.sl in ["1","2","3","4"] and not it.ac):
         print("WARNING, item id "+it.id+" invalid dye/card setting!")
     if (len(it.sl) > 1):
@@ -390,7 +392,10 @@ def ItAlloc(it):
         return
 
     ## Save the Aegis ID
-    aegis.write("%s %s\n" % (it.aegis, it.id))
+    if (it.aegis not in ["CaveSnakeLamp"]):
+        aegis.write("%s %s\n" % (it.aegis, it.id))
+    else:
+        print("%s: Aegis reused as quest var (please purge)" % it.aegis)
     AllItems[it.aegis]=str(it.id)
 
 
