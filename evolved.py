@@ -516,9 +516,9 @@ def write_mob(m, f):
         dl.append(str(ch))
         i+=1
     ## Write the line
-    f.write("""%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, %s, 0, 0, 0, 0, 0, 0, 0, %s, %s\n""" % (m.id, m.aegis, m.aegis, m.mobpt, m.hp, m.sp,
+    f.write("""%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, %s, 0, 0, 0, 0, 0, 0, 0, %s, %s\n""" % (m.id, m.aegis, m.aegis, m.mobpt, m.hp, m.sp,
 m.xp, m.jp, m.range, m.atk.replace('[','').split(",")[0], m.atk.replace(']','').split(",")[1].strip(), m.df, m.mdf, m.str, m.agi, m.vit,
-m.int, m.dex, m.luk, m.view, m.chase, m.size, m.race, m.elLv, m.elem, m.md, m.move,
+m.int, m.dex, m.luk, m.view, m.chase, m.size, m.race, int("%s%s" % (m.elLv, m.elem)), m.md, m.move,
 m.adelay, m.amotion, m.dmotion, dl[0],dl[1], dl[2],dl[3], dl[4],dl[5], 
 dl[6],dl[7], dl[8],dl[9], dl[10],dl[11], dl[12],dl[13], dl[14],dl[15], 
 m.mvp, m.mtcnt, m.mtstr))
