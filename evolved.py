@@ -45,6 +45,7 @@ Mobs6=[]
 MobsA=[]
 
 SysDrops=[]
+AllItems={}
 
 
 def printSeparator():
@@ -77,8 +78,10 @@ class Mob:
     self.view="1"
     self.chch=False
     self.boss=False
+    self.size="1"
     self.race="0" # TODO Convert RC_*
     self.elem="0" # TODO Convert Ele_*
+    self.elLv="0" # Element Level
     self.mode="0" # TODO Convert MD_* and fields
 
     # General
@@ -88,8 +91,12 @@ class Mob:
     self.xp="0"
     self.jp="0"
 
+    # MvP
+    self.mvp="0"
+
     # Defensive
     self.st=""
+    self.md=0
     self.df="0"
     self.mdf="0"
 
@@ -106,25 +113,34 @@ class Mob:
     self.range="0"
     self.chase="1"
     self.move="0"
-    self.delay="0"
+    self.adelay="0"
+    self.amotion="0"
+    self.dmotion="0"
+
+    # Misc
+    self.mtcnt="0"
+    self.mtstr="0"
     self.drops=[]
 
 def MobAlloc(ab):
+    if ab.name == "Unknown Monster Name":
+        return
+
     try:
         maab=int(ab.mobpt)
     except:
         maab=9901
 
     aegis.write("%s %s\n" % (ab.aegis, ab.id))
-    if maab <= 20:
+    if maab <= 19:
         Mobs1.append(ab)
-    elif maab <= 40:
+    elif maab <= 39:
         Mobs2.append(ab)
-    elif maab <= 60:
+    elif maab <= 59:
         Mobs3.append(ab)
-    elif maab <= 80:
+    elif maab <= 79:
         Mobs4.append(ab)
-    elif maab <= 100:
+    elif maab <= 99:
         Mobs5.append(ab)
     elif maab <= 150:
         Mobs6.append(ab)
@@ -133,8 +149,18 @@ def MobAlloc(ab):
     else:
         print("WARNING, Disregarding \"%s\" (ID: %s) as invalid mob" % (ab.name, ab.id))
 
+
+
 def testMobs():
-    print("\nGenerating Mob Wiki...")
+    MD_CANMOVE =           1
+    MD_LOOTER =            2
+    MD_AGGRESSIVE =        4
+    MD_ASSIST =            8
+    MD_CASTSENSOR_IDLE =   16
+    MD_BOSS =              32
+    MD_PLANT =             64
+    MD_CANATTACK =         128
+    print("\nGenerating Mob Database...")
     if len(sys.argv) >= 2:
         src=open(sys.argv[1]+"/db/pre-re/mob_db.conf", "r")
     else:
@@ -174,6 +200,8 @@ def testMobs():
             x.xp=stp(a)
         elif "	JExp:" in a:
             x.jp=stp(a)
+        elif "	MvpExp: " in a:
+            x.mvp=stp(a)
         elif "	Def:" in a:
             x.df=stp(a)
         elif "	Mdef:" in a:
@@ -189,23 +217,11 @@ def testMobs():
         elif "	ChaseRange:" in a:
             x.chase=stp(a)
         elif "	AttackDelay:" in a:
-            x.delay=stp(a)
-        elif "	Boss: true" in a:
-            x.boss=True
-        elif "	Looter: true" in a:
-            x.st+="Lot,"
-        elif "	Assist: true" in a:
-            x.st+="Ass,"
-        elif "	Aggressive: true" in a:
-            x.st+="Agr,"
-        elif "	ChangeChase: true" in a:
-            x.chch=True
-        elif 'Drops: ' in a:
-            dropper=True
-        elif dropper and '}' in a:
-            dropper=False
-        elif dropper:
-            x.drops.append(stp(a).split(": "))
+            x.adelay=stp(a)
+        elif "	AttackMotion:" in a:
+            x.amotion=stp(a)
+        elif "	DamageMotion:" in a:
+            x.dmotion=stp(a)
         elif "\tStr: " in a:
             x.str=stp(a)
         elif "\tAgi: " in a:
@@ -218,24 +234,60 @@ def testMobs():
             x.int=stp(a)
         elif "\tLuk: " in a:
             x.luk=stp(a)
+        elif "\tMutationCount: " in a:
+            x.mtcnt=stp(a)
+        elif "\tMutationStrength: " in a:
+            x.mtstr=stp(a)
+        elif "\tSize: " in a:
+            x.size=stp(a)
+        elif "\tRace: " in a:
+            x.race=stp(a) # TODO: Conversion
+        elif "\tElement: " in a:
+            tmp=stp(a).split(",")
+            #Element: (type, level)
+            x.elem=tmp[0].replace("(","").strip()
+            x.elLv=tmp[1].replace(")","").strip()
+            try:
+                if int(x.elem) in [4, 5]:
+                    x.elem = "2"
+                elif int(x.elem) in [8, 9, "10"]:
+                    x.elem="7"
+            except:
+                traceback.print_exc()
+        elif "\tCanMove: true" in a:
+            x.md = x.md | MD_CANMOVE
+        elif "\tLooter: true" in a:
+            x.md = x.md | MD_LOOTER
+        elif "\tAggressive: true" in a:
+            x.md = x.md | MD_AGGRESSIVE
+        elif "\tAssist: true" in a:
+            x.md = x.md | MD_ASSIST
+        elif "\tCastSensorIdle: true" in a:
+            x.md = x.md | MD_CASTSENSOR_IDLE
+        elif "\tBoss: true" in a:
+            x.md = x.md | MD_BOSS
+        elif "\tPlant: true" in a:
+            x.md = x.md | MD_PLANT
+        elif "\tCanAttack: true" in a:
+            x.md = x.md | MD_CANATTACK
+        elif 'Drops: ' in a:
+            dropper=True
+        elif dropper and '}' in a:
+            dropper=False
+        elif dropper:
+            x.drops.append(stp(a).split(": "))
+
+
     # Write last entry
     MobAlloc(x)
 
     src.close()
 
 def stp(x):
-    return x.replace('\n', '').replace('|', '').replace('(int, defaults to ', '').replace(')', '').replace('basic experience', '').replace('"','').replace("    ","").replace("\t","").replace('(string', '').replace('SpriteName: ','').replace('Name: ','').replace('AttackDelay: ', '').replace('MoveSpeed: ', '').replace('AttackRange: ', '').replace('ViewRange: ','').replace('ChaseRange: ','').replace('Attack: ','').replace('ViewRange: ','').replace('Hp: ','').replace('Sp: ','').replace('Id: ','').replace('Lv: ','').replace('view range','').replace('attack range','').replace('move speed','').replace('health','').replace('(int','').replace('attack delay','atk.').replace("Str:", "").replace("Agi:", "").replace("Vit:", "").replace("Int:", "").replace("Dex:", "").replace("Luk:", "").replace("Mdef:","").replace("Def:","")
+    return x.replace('\n', '').replace('|', '').replace('(int, defaults to ', '').replace(')', '').replace('basic experience', '').replace('"','').replace("    ","").replace("\t","").replace('(string', '').replace('SpriteName: ','').replace('Name: ','').replace('AttackDelay: ', '').replace('AttackMotion: ', '').replace('DamageMotion: ', '').replace('MoveSpeed: ', '').replace('AttackRange: ', '').replace('ViewRange: ','').replace('ChaseRange: ','').replace('Attack: ','').replace('Hp: ','').replace('Sp: ','').replace('Id: ','').replace('Lv: ','').replace('view range','').replace('attack range','').replace('move speed','').replace('health','').replace('(int','').replace('attack delay','atk.').replace("Str:", "").replace("Agi:", "").replace("Vit:", "").replace("Int:", "").replace("Dex:", "").replace("Luk:", "").replace("Mdef:","").replace("Def:","").replace("Size:","").replace("Race:", "").replace("Element:","").replace("JExp: ","").replace("MvpExp: ","").replace("Exp: ","").replace("MutationCount: ","").replace("MutationStrength: ","").strip()
 
 
 
-
-def mb_rdmisc(mb):
-    buff=""
-    if "agr" in mb.st.lower():
-        buff+="View Range: %s\n" % (mb.view)
-    buff+="Attack Range: %s\n" % (mb.range)
-    buff+="Move speed: %s ms\n" % (mb.move)
-    return buff
 
 def mb_rdrw(mb):
     buff=""
@@ -375,6 +427,7 @@ def ItAlloc(it):
 
     ## Save the Aegis ID
     aegis.write("%s %s\n" % (it.aegis, it.id))
+    AllItems[it.aegis]=str(it.id)
 
 def newItemDB():
     print("\nGenerating Item Wiki...")
@@ -454,10 +507,6 @@ def newItemDB():
             except:
                 x.delheal="ERROR"
                 pass
-        elif "@rarity" in a:
-            x.rarheal=sti(a)
-            x.minheal=str(int(x.rarheal) * (int(x.typheal)*1 + 1)) + " %"
-            x.maxheal=str(int(x.rarheal) * (int(x.typheal)*2 + 1)) + " %"
 
     # Write last entry
     ItAlloc(x)
@@ -482,27 +531,89 @@ def stin(x):
 
 
 
+def write_mob(m, f):
+    ## Prepare new drop list
+    i=0
+    dl=[]
+    while i < 8:
+        if len(m.drops) > i:
+            try:
+                it = m.drops[i][0] # TODO: Convert to INT
+                ch = m.drops[i][1]
+                it = AllItems[it]
+                ch = int(ch)
+            except ValueError:
+                ch = ch.split(",")[0].replace('(','')
+            # except (40, "ODG_BASICSTAT") => split more
+            except:
+                print("ERROR mob %s drop %s" % (m.name, repr(m.drops)))
+                traceback.print_exc()
+                it = 0
+                ch = 0
+        else:
+            it = 0
+            ch = 0
+        dl.append(str(it))
+        dl.append(str(ch))
+        i+=1
+    ## Write the line
+    f.write("""%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 0, %s, 0, 0, 0, 0, 0, 0, 0, %s, %s\n""" % (m.id, m.aegis, m.aegis, m.mobpt, m.hp, m.sp,
+m.xp, m.jp, m.range, m.atk.replace('[','').split(",")[0], m.atk.replace(']','').split(",")[1].strip(), m.df, m.mdf, m.str, m.agi, m.vit,
+m.int, m.dex, m.luk, m.view, m.chase, m.size, m.race, m.elem, m.elLv, m.md, m.move,
+m.adelay, m.amotion, m.dmotion, dl[0],dl[1], dl[2],dl[3], dl[4],dl[5], 
+dl[6],dl[7], dl[8],dl[9], dl[10],dl[11], dl[12],dl[13], dl[14],dl[15], 
+m.mvp, m.mtcnt, m.mtstr))
+    return
+
+def write_mob_header(f):
+    f.write("//THIS FILE IS GENERATED AUTOMATICALLY\n//DO NOT EDIT IT DIRECTLY\n//Edit mob_db.conf instead!\n")
+    f.write("//ID,   Name,                   Jname,                  LV,     HP,     SP,     EXP,    JEXP,   Range1, ATK1,   ATK2,   DEF,    MDEF,   STR,    AGI,    VIT,    INT,    DEX,    LUK,    Range2, Range3, Scale,  Race,   Element,Mode,   Speed,  Adelay, Amotion,Dmotion,Drop1id,Drop1per,Drop2id,Drop2%, Drop3id,Drop3%, Drop4id,Drop4%, Drop5id,Drop5%, Drop6id,Drop6%, Drop7id,Drop7%, Drop8id,Drop8%, Item1,  Item2,  MEXP,   ExpPer, MVP1id, MVP1per,MVP2id, MVP2per,MVP3id, MVP3per,mutationcount,mutationstrength\n")
+    return
 
 
 def save_mobs():
     global Mobs1, Mobs2, Mobs3, Mobs4, Mobs5, Mobs6, MobsA
-    return
     ## Mobs
     with open ("../world/map/db/mob_db_0_19.txt", "w") as f:
-        f.write("//THIS FILE IS GENERATED AUTOMATICALLY\n//DO NOT EDIT IT DIRECTLY\n//Edit mob_db.conf instead!\n")
-        f.write("//ID,   Name,                   Jname,                  LV,     HP,     SP,     EXP,    JEXP,   Range1, ATK1,   ATK2,   DEF,    MDEF,   STR,    AGI,    VIT,    INT,    DEX,    LUK,    Range2, Range3, Scale,  Race,   Element,Mode,   Speed,  Adelay, Amotion,Dmotion,Drop1id,Drop1per,Drop2id,Drop2%, Drop3id,Drop3%, Drop4id,Drop4%, Drop5id,Drop5%, Drop6id,Drop6%, Drop7id,Drop7%, Drop8id,Drop8%, Item1,  Item2,  MEXP,   ExpPer, MVP1id, MVP1per,MVP2id, MVP2per,MVP3id, MVP3per,mutationcount,mutationstrength\n")
-        for m in Mobs1:
-            #Adelay, Amotion,Dmotion,Drop1id,Drop1per,Drop2id,Drop2%, Drop3id,Drop3%, 
-            #Drop4id,Drop4%, Drop5id,Drop5%, Drop6id,Drop6%, Drop7id,Drop7%, Drop8id,Drop8%, 
-            #Item1,  Item2,  MEXP,   ExpPer, MVP1id, MVP1per,MVP2id, MVP2per,MVP3id, 
-            #MVP3per,mutationcount,mutationstrength
-            f.write("""%s, %s, %s, %s, %s, %s,
-%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-%s, %s, %s, %s, %s, 1, %s, %s, %s, %s,  
-\n""" % (m.id, m.aegis, m.aegis, m.mobpt, m.hp, m.sp,
-m.xp, m.jp, m.range, m.atk.replace('[','').split(",")[0], m.atk.replace(']','').split(",")[1], m.df, m.mdf, m.str, m.agi, m.vit,
-m.int, m.dex, m.luk, m.view, m.chase, "Race", "Element", "Mode", self.move,
-        ))
+        write_mob_header(f)
+        for m in sorted(Mobs1, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_20_39.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(Mobs2, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_40_59.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(Mobs3, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_60_79.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(Mobs4, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_80_99.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(Mobs5, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_over_100.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(Mobs6, key=lambda xcv: xcv.id):
+            write_mob(m, f)
+            continue
+
+    with open ("../world/map/db/mob_db_over_150.txt", "w") as f:
+        write_mob_header(f)
+        for m in sorted(MobsA, key=lambda xcv: xcv.id):
+            write_mob(m, f)
             continue
 
     return
@@ -520,8 +631,8 @@ m.int, m.dex, m.luk, m.view, m.chase, "Race", "Element", "Mode", self.move,
 
 showHeader()
 
-testMobs()
 newItemDB()
+testMobs()
 
 save_mobs()
 
