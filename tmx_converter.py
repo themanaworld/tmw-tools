@@ -97,11 +97,18 @@ class Node(Object):
     def __init__(self):
         self.subtype = 0
 
+class Switch(Object):
+    __slots__ = (
+        'subtype'
+    )
+    def __init__(self):
+        self.subtype = 0
+
 class Warp(Object):
     __slots__ = (
         'dest_map',
-        'dest_tile_x',
-        'dest_tile_y',
+        'dest_x',
+        'dest_y',
     ) + other_warp_fields
 
 class ContentHandler(xml.sax.ContentHandler):
@@ -232,6 +239,8 @@ class ContentHandler(xml.sax.ContentHandler):
                     if w == x and h == y:
                         w = 0
                         h = 0
+                elif obj_type == 'switch':
+                    self.object = Switch()
                 else:
                     if obj_type not in other_object_types:
                         print('Unknown object type:', obj_type, file=sys.stderr)
@@ -295,7 +304,14 @@ class ContentHandler(xml.sax.ContentHandler):
                     SEPARATOR.join([
                         '%s,%d,%d' % (self.base, obj.x, obj.y),
                         'warp',
-                        '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_tile_x, obj.dest_tile_y),
+                        '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_x, obj.dest_y),
+                    ])
+                )
+            elif isinstance(obj, Switch):
+                obj_name = "#%s_%s_%s" % (self.base, obj.x, obj.y)
+                self.warps.write(
+                    SEPARATOR.join([
+                        '%s,%d,%d,0|script|%s|422\n{\n\t// REPLACE ME\n}\n' % (self.base, obj.x, obj.y, obj_name),
                     ])
                 )
             elif isinstance(obj, Node):
