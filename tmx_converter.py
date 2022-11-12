@@ -82,13 +82,13 @@ class Mob(Object):
     __slots__ = (
         'monster_id',
         'max_beings',
-        'ea_spawn',
-        'ea_death',
+        'spawn',
+        'death',
     ) + other_spawn_fields
     def __init__(self):
         self.max_beings = 1
-        self.ea_spawn = 0
-        self.ea_death = 0
+        self.spawn = 0
+        self.death = 0
 
 class Node(Object):
     __slots__ = (
@@ -296,7 +296,7 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%s,%d,%d,%d,%d' % (self.base, obj.x, obj.y, obj.w, obj.h),
                         'monster',
                         obj.name,
-                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, obj.ea_spawn, obj.ea_death),
+                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, obj.spawn, obj.death),
                     ])
                 )
             elif isinstance(obj, Warp):
