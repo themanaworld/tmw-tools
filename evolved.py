@@ -392,7 +392,7 @@ def ItAlloc(it):
         return
 
     ## Save the Aegis ID
-    if (it.aegis not in ["CaveSnakeLamp"]):
+    if (it.aegis not in []):
         aegis.write("%s %s\n" % (it.aegis, it.id))
     else:
         print("%s: Aegis reused as quest var (please purge)" % it.aegis)
