@@ -13,6 +13,7 @@ import sys, traceback, re
 aegis=open("../world/map/db/const-aegis.txt", "w")
 
 description_m="//ID,   Name,                   Jname,                  LV,     HP,     SP,     EXP,    JEXP,   Range1, ATK1,   ATK2,   DEF,    MDEF,   CRITDEF,STR,    AGI,    VIT,    INT,    DEX,    LUK,    Range2, Range3, Scale,  Race,   Element,Mode,   Speed,  Adelay, Amotion,Dmotion,Drop0id,Drop0%, Drop1id,Drop1%, Drop2id,Drop2%, Drop3id,Drop3%, Drop4id,Drop4%, Drop5id,Drop5%, Drop6id,Drop6%, Drop7id,Drop7%, Drop8id,Drop8%, Drop9id,Drop9%, Item1,  Item2,  MEXP,   ExpPer, MVP1id, MVP1per,MVP2id, MVP2per,MVP3id, MVP3per,mutationcount,mutationstrength"
+description_i="//ID,   Name,                   Type,   Price,      Sell,       Weight,     ATK,    DEF,    Range,  Mbonus, Slot,   Gender, Loc,        wLV,    eLV,    View,   {UseScript},                                                            {EquipScript}"
 
 # the TYPEs we use to determine where to pack things
 IT_HEALING=[]
@@ -22,7 +23,7 @@ IT_AMMO=[]
 IT_CARD=[]
 IT_PETEGG=[]
 IT_WEAPON={ 'HAND_2': [],           # TWO HAND (LR)
-            'HAND_1':[]}            # WEAPONS (R)
+            'HAND_1': []}           # WEAPONS (R)
 IT_ARMOR={  'MISC': [],             # FOR FAILURE
             'EQP_ACC_L': [],        # ACCESSORY LEFT
             'EQP_ACC_R': [],        # ACCESSORT RIGHT
@@ -46,294 +47,127 @@ MobsA=[]
 
 AllItems={}
 
-
+#############################################################################################
 def printSeparator():
     print("--------------------------------------------------------------------------------")
 
+#############################################################################################
 def showHeader():
-    print("Evolved->Legacy DB Generator")
+    print("Evol2->TMWA DB Generator")
     print("Run at: " + datetime.datetime.now().isoformat())
     #print("Usage: ./evolved.py [<path_to_serverdata> <path_to_clientdata>]")
     printSeparator()
 
+#############################################################################################
 def showFooter():
     #pass
     #printSeparator()
     print("Done.")
 
+#############################################################################################
+def write_to_file(array, outfile, mode, description_count): # mode: 0 = item, 1 = mob
 
-
-
-
-
-class Mob:
-  def __init__(self):
-    # Basic
-    self.id="0"
-    self.aegis="UnknownMonster" # SpriteName is not used anywhere, we are using its ID
-    self.name="Unknown Monster Name"
-    self.view="1"
-    self.chch=False
-    self.boss=False
-    self.size="1"
-    self.race="0" # TODO Convert RC_*
-    self.elem="0" # TODO Convert Ele_*
-    self.elLv="0" # Element Level
-    self.mode="0" # TODO Convert MD_* and fields
-
-    # General
-    self.mobpt="0" # Mob Points “Level”
-    self.hp="0"
-    self.sp="0"
-    self.xp="0"
-    self.jp="0"
-
-    # MvP
-    self.mvp="0"
-
-    # Defensive
-    self.st=""
-    self.md=0
-    self.df="0"
-    self.mdf="0"
-    self.cdf="0"
-
-    # Stats
-    self.str="0"
-    self.agi="0"
-    self.int="0"
-    self.vit="0"
-    self.dex="0"
-    self.luk="0"
-
-    # Offensive
-    self.atk="[0, 0]"
-    self.range="0"
-    self.chase="1"
-    self.move="0"
-    self.adelay="0"
-    self.amotion="0"
-    self.dmotion="0"
-
-    # Misc
-    self.mtcnt="0"
-    self.mtstr="0"
-    self.drops=[]
-
-def MobAlloc(ab):
-    if ab.name == "Unknown Monster Name":
-        return
-
-    try:
-        maab=int(ab.mobpt)
-    except:
-        maab=9901
-
-    aegis.write("%s %s\n" % (ab.aegis, ab.id))
-    if maab <= 19:
-        Mobs1.append(ab)
-    elif maab <= 39:
-        Mobs2.append(ab)
-    elif maab <= 59:
-        Mobs3.append(ab)
-    elif maab <= 79:
-        Mobs4.append(ab)
-    elif maab <= 99:
-        Mobs5.append(ab)
-    elif maab <= 150:
-        Mobs6.append(ab)
-    elif maab != 9901:
-        MobsA.append(ab)
-    else:
-        print("WARNING, Disregarding \"%s\" (ID: %s) as invalid mob" % (ab.name, ab.id))
-
-
-
-def testMobs():
-    MD_CANMOVE =           1
-    MD_LOOTER =            2
-    MD_AGGRESSIVE =        4
-    MD_ASSIST =            8
-    MD_CASTSENSOR_IDLE =   16
-    MD_BOSS =              32
-    MD_PLANT =             64
-    MD_CANATTACK =         128
-    print("\nGenerating Mob Database...")
-    if len(sys.argv) >= 2:
-        src=open(sys.argv[1]+"/db/pre-re/mob_db.conf", "r")
-    else:
-        src=open("../world/map/db/mob_db.conf", "r")
-
-    start=False
-    dropper=False
-    x=Mob() # Only for pyflakes2
-
-    for a in src:
-        # Evol2-only scripts
-        if "@EVOL2" in a:
-            continue
-        if "@TMWA" in a:
-            a=a.replace("//", "").replace("@TMWA", "")
-        # Initiate the script
-        if a == "{\n":
-            if start:
-                MobAlloc(x)
+    count=0
+    with open (outfile, "w") as f:
+        if mode:
+            write_mob_header(f)
+        else:
+            write_item_header(f)
+        for i in sorted(array, key=lambda xcv: int(xcv.id)):
+            if mode:
+                write_mob(i, f)
             else:
-                start=True
-            x=Mob()
+                write_item(i, f)
 
-        if "	Id:" in a:
-            x.id=stp(a)
-        elif "	SpriteName:" in a:
-            x.aegis=stp(a)
-        elif "	Name:" in a:
-            x.name=stp(a)
-        elif "	Hp:" in a:
-            x.hp=stp(a)
-        elif "	Sp:" in a:
-            x.sp=stp(a)
-        elif "	Lv:" in a:
-            x.mobpt=stp(a)
-        elif "	Exp:" in a:
-            x.xp=stp(a)
-        elif "	JExp:" in a:
-            x.jp=stp(a)
-        elif "	MvpExp: " in a:
-            x.mvp=stp(a)
-        elif "	Def:" in a:
-            x.df=stp(a)
-        elif "	Mdef:" in a:
-            x.mdf=stp(a)
-        elif "	CriticalDef:" in a:
-            x.cdf=stp(a)
-        elif "	Attack:" in a:
-            x.atk=stp(a)
-        elif "	AttackRange:" in a:
-            x.range=stp(a)
-        elif "	MoveSpeed:" in a:
-            x.move=stp(a)
-        elif "	ViewRange:" in a:
-            x.view=stp(a)
-        elif "	ChaseRange:" in a:
-            x.chase=stp(a)
-        elif "	AttackDelay:" in a:
-            x.adelay=stp(a)
-        elif "	AttackMotion:" in a:
-            x.amotion=stp(a)
-        elif "	DamageMotion:" in a:
-            x.dmotion=stp(a)
-        elif "\tStr: " in a:
-            x.str=stp(a)
-        elif "\tAgi: " in a:
-            x.agi=stp(a)
-        elif "\tVit: " in a:
-            x.vit=stp(a)
-        elif "\tDex: " in a:
-            x.dex=stp(a)
-        elif "\tInt: " in a:
-            x.int=stp(a)
-        elif "\tLuk: " in a:
-            x.luk=stp(a)
-        elif "\tMutationCount: " in a:
-            x.mtcnt=stp(a)
-        elif "\tMutationStrength: " in a:
-            x.mtstr=stp(a)
-        elif "\tSize: " in a:
-            x.size=stp(a)
-        elif "\tRace: " in a:
-            x.race=stp(a) # TODO: Conversion
-        elif "\tElement: " in a:
-            tmp=stp(a).split(",")
-            #Element: (type, level)
-            x.elem=tmp[0].replace("(","").strip()
-            x.elLv=tmp[1].replace(")","").strip()
-            try:
-                if int(x.elem) in [4, 5]:
-                    x.elem = "2"
-                elif int(x.elem) in [8, 9, "10"]:
-                    x.elem="7"
-            except:
-                traceback.print_exc()
-        elif "\tCanMove: true" in a:
-            x.md = x.md | MD_CANMOVE
-        elif "\tLooter: true" in a:
-            x.md = x.md | MD_LOOTER
-        elif "\tAggressive: true" in a:
-            x.md = x.md | MD_AGGRESSIVE
-        elif "\tAssist: true" in a:
-            x.md = x.md | MD_ASSIST
-        elif "\tCastSensorIdle: true" in a:
-            x.md = x.md | MD_CASTSENSOR_IDLE
-        elif "\tBoss: true" in a:
-            x.md = x.md | MD_BOSS
-        elif "\tPlant: true" in a:
-            x.md = x.md | MD_PLANT
-        elif "\tCanAttack: true" in a:
-            x.md = x.md | MD_CANATTACK
-        elif 'Drops: ' in a:
-            dropper=True
-        elif dropper and '}' in a:
-            dropper=False
-        elif dropper:
-            x.drops.append(stp(a).split(": "))
+            count+=1
+            if count >= description_count:
+                count=0
+                if mode:
+                    f.write(description_m + "\n")
+                else:
+                    f.write(description_i + "\n")
 
-
-    # Write last entry
-    MobAlloc(x)
-
-    src.close()
-
-def stp(x):
-    return x.replace('\n', '').replace('|', '').replace('(int, defaults to ', '').replace(')', '').replace('basic experience', '').replace('"','').replace("    ","").replace("\t","").replace('(string', '').replace('SpriteName: ','').replace('Name: ','').replace('AttackDelay: ', '').replace('AttackMotion: ', '').replace('DamageMotion: ', '').replace('MoveSpeed: ', '').replace('AttackRange: ', '').replace('ViewRange: ','').replace('ChaseRange: ','').replace('Attack: ','').replace('Hp: ','').replace('Sp: ','').replace('Id: ','').replace('Lv: ','').replace('view range','').replace('attack range','').replace('move speed','').replace('health','').replace('(int','').replace('attack delay','atk.').replace("Str:", "").replace("Agi:", "").replace("Vit:", "").replace("Int:", "").replace("Dex:", "").replace("Luk:", "").replace("Mdef:","").replace("CriticalDef:","").replace("Def:","").replace("Size:","").replace("Race:", "").replace("Element:","").replace("JExp: ","").replace("MvpExp: ","").replace("Exp: ","").replace("MutationCount: ","").replace("MutationStrength: ","").strip()
+    return
 
 
 
 
+#    ___________
+#   /           \
+#  /    Items    \
+# /_______________\
+# \_______________/
 
-
-
-
-
-
-
-
+"""
+struct Item
+{
+    Spanned<ItemNameId> id;
+    Spanned<ItemName> name;
+    Spanned<ItemType> type;
+    Spanned<int> buy_price;
+    Spanned<int> sell_price;
+    Spanned<int> weight;
+    Spanned<int> atk;
+    Spanned<int> def;
+    Spanned<int> range;
+    Spanned<int> magic_bonus;
+    Spanned<RString> slot_unused;
+    Spanned<SEX> gender;
+    Spanned<EPOS> loc;
+    Spanned<int> wlv;
+    Spanned<int> elv;
+    Spanned<ItemLook> view;
+    ast::script::ScriptBody use_script;
+    ast::script::ScriptBody equip_script;
+};
+enum class SEX : uint8_t
+{
+    FEMALE = 0,
+    MALE = 1,
+    // For items. This is also used as error, sometime.
+    // TODO switch to Option<SEX> where appropriate.
+    UNSPECIFIED = 2,
+    NEUTRAL = 3,
+    __OTHER = 4, // used in ManaPlus only
+};
+"""
 class It:
   def __init__(self):
     # Basic
     self.id="0"
     self.aegis="UnknownItem"
     self.name="Unknown Item Name"
+    self.type="IT_ETC" # default type
     self.buy="0"
     self.sell="0"
     self.weight="0"
-    self.type="IT_ETC" # default type
-    self.loc=""
-
-    # Offensive/Defensive
     self.atk="0"
     self.matk="0"
+    self.df="0"
     self.range="0"
-    self.defs="0"
-    self.wlvl="0" # TODO
-
-    # Restrictions (EquipLv)
-    self.lvl="0"
-    self.drop=True
-    self.trade=True
-    self.sell=True
-    self.store=True
+    self.sl="0" # Slots (unused always 0)
+    self.gender="2" # default = UNSPECIFIED = 2
+    self.loc=""
+    self.wlv="0" # 1 for weapons, 0 for all others including ammo
+    self.elv="0" # equip lvl
+    self.md=0 # mode not yet implemented in tmwa
+    self.subtype=""
+    self.disabled=False
+    # Script settings
+    self.usescript=[]
+    self.eqscript=[]
+    #self.usescript=""
+    #self.eqscript=""
 
     # Special settings
     self.rare=False         # DropAnnounce
-    self.script=False
 
     # Visual
-    self.sl="0" # Slots
     self.ac=False # Allow Cards
 
-    # Script settings
-    self.script=[]
+    self.gmlvlonly=False
 
+#############################################################################################
 def ItAlloc(it):
     if (it.aegis == "UnknownItem"):
         return
@@ -403,17 +237,25 @@ def ItAlloc(it):
         print("%s: Aegis reused as quest var (please purge)" % it.aegis)
     AllItems[it.aegis]=str(it.id)
 
-
-
-
+#############################################################################################
 def newItemDB():
+    IT_NODROP =           1
+    IT_NOTRADE =          2
+    IT_NOSELLTONPC =      4
+    IT_NOSTORAGE =        8
+    IT_DROPANNOUNCE =    16
+
     print("\nGenerating Item Wiki...")
     if len(sys.argv) >= 2:
         src=open(sys.argv[1]+"/db/pre-re/item_db.conf", "r")
     else:
         src=open("../world/map/db/item_db.conf", "r")
 
-    scripting=False
+    usescripting=False
+    eqscripting=False
+    useableitem=False
+    nouse=False
+
     x=It()
     for a in src:
         # Evol2-only scripts
@@ -426,77 +268,539 @@ def newItemDB():
             ItAlloc(x)
             x=It()
         # sti() block
-        if "	Id:" in a:
+        if "\tId:" in a:
             x.id=sti(a)
-        elif "	AegisName:" in a:
+        elif "\tAegisName:" in a:
             x.aegis=sti(a)
-        elif "	Name:" in a:
+        elif "\tName:" in a:
             x.name=stin(a)
-        elif "	Buy:" in a:
+        elif "\tBuy:" in a:
             x.buy=sti(a)
-        elif "	Sell:" in a:
+        elif "\tSell:" in a:
             x.sell=sti(a)
-        elif "	Weight:" in a:
+        elif "\tWeight:" in a:
             x.weight=sti(a)
-        elif "	Type:" in a:
+        elif "\tType:" in a:
             x.type=sti(a)
-        elif "	Loc:" in a:
+            if x.type == "IT_USABLE":
+                useableitem=True
+        elif "\tLoc:" in a:
             x.loc=sti(a)
-        elif "	Atk:" in a:
+        elif "\tAtk:" in a:
             x.atk=sti(a)
-        elif "	Matk:" in a:
+        elif "\tMatk:" in a: # description says ignored in pre-re
             x.matk=sti(a)
-        elif "	Range:" in a:
+        elif "\tRange:" in a:
             x.range=sti(a)
-        elif "	Def:" in a:
-            x.defs=sti(a)
-        elif "	EquipLv:" in a:
-            x.lvl=sti(a)
-        elif "	Slots:" in a:
-            x.sl=sti(a)
-        elif "	AllowCards:" in a:
+        elif "\tDef:" in a:
+            x.df=sti(a)
+        elif "\tEquipLv:" in a:
+            x.elv=sti(a)
+        #elif "\tSlots:" in a: # allways 0 in tmwa atm
+            #x.sl=sti(a)
+        elif "\tGender:" in a: # allways 2 in tmwa atm
+            x.gender=sti(a)
+        elif "\tSubtype:" in a:
+            x.subtype=sti(a)
+        elif "\tDisabled: true" in a:
+            x.disabled=True
+        elif "\tAllowCards:" in a:
             x.ac=True
         # Write booleans
-        elif "DropAnnounce: true" in a:
+        elif "\tDropAnnounce: true" in a:
             x.rare=True
-        elif "nodrop: true" in a:
-            x.drop=False
-        elif "notrade: true" in a:
-            x.trade=False
-        elif "noselltonpc: true" in a:
-            x.sell=False
-        elif "nostorage: true" in a:
-            x.store=False
+            #x.md = x.md | IT_DROPANNOUNCE
+        elif "\tnodrop: true" in a:
+            #x.drop=False
+            x.md = x.md | IT_NODROP
+        elif "\tnotrade: true" in a:
+            #x.trade=False
+            x.md = x.md | IT_NOTRADE
+        elif "\tnoselltonpc: true" in a:
+            #x.sell=False
+            x.md = x.md | IT_NOSELLTONPC
+        elif "\tnostorage: true" in a:
+            #x.store=False
+            x.md = x.md | IT_NOSTORAGE
+        elif "\tNouse:" in a:
+            nouse=True
+        elif "\toverride:" in a:
+            if nouse:
+                if sti(a) != "0":
+                    x.gmlvlonly=True
+        elif "\t}" in a:
+            if nouse:
+                nouse=False
         # FIXME: Different kind of scripts D:
-        elif "Script" in a:
-            scripting=True
+        elif "\tOnEquipScript:" in a:
+            eqscripting=True
+        elif "\tScript:" in a:
+            if useableitem:
+                usescripting=True
+            else:
+                eqscripting=True
         # FIXME: Nesting D:
-        elif scripting and '}' in a:
-            scripting=False
-        elif scripting:
-            x.script.append(sti(a))
+        elif (eqscripting or usescripting) and '\t\">' in a:
+            eqscripting=False
+            usescripting=False
+            useableitem=False
+        elif eqscripting:
+            if re.search(r"^\t+//",a):
+                pass
+            #elif "bonus bMatkRate" in a: # its not that simple since it can be a bonus in tmwa as well so i must use the Matk: field
+                #x.matk=sti(a)
+            else:
+                x.eqscript.append(stis(a))
+            #print("%s" % a)
+        elif usescripting:
+            if re.search(r"^\t+//",a):
+                pass
+            else:
+                x.usescript.append(stis(a))
 
     # Write last entry
     ItAlloc(x)
 
     src.close()
 
+#############################################################################################
 def sti(x):
-    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('EquipLv: ', '').replace('Slots: ','').replace(" ", "").strip()
+    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace(';','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('EquipLv: ', '').replace('Subtype: ', '').replace('Slots: ', '').replace('Gender: ', '').replace('nodrop: ', '').replace('notrade: ', '').replace('noselltonpc: ', '').replace('nostorage: ', '').replace('override: ', '').replace(" ", "").strip()
 
+#############################################################################################
+def stis(x):
+    x=re.sub(r'; *//.*$',';',x)
+    # handle those with @EVOL2 and @TMWA tags rather?
+    x=re.sub(r', EQI_.*;',';',x)
+    x=re.sub(r'readparam\(b(.*)\)',r'\1',x)
+    x=re.sub(r'callfunc "itheal", (-?[0-9]+), (-?[0-9]+).*',r'heal \1, \2, 1;',x)
+    x=re.sub(r'callfunc "RequireStat", b(.*), ([0-9]+).*',r'set @bStat, \1; set @minbStatVal, \2; callfunc "RequireStat";',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PLUSATTACKPOWER, (-?[0-9]+).*',r'sc_start sc_raiseattackstrength, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_ATTHASTE_POTION1, (-?[0-9]+).*',r'sc_start sc_raiseattackspeed0, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_SLOWPOISON, (-?[0-9]+).*',r'sc_start sc_slowpoison, \1, \2;',x) # uses 180k in tmwa files but gets multiplied by 1000 in source if low evolved value is taken
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_BLOODING, (-?[0-9]+).*',r'sc_start sc_poison, \1, \2;',x)
+    x=re.sub(r' +',' ',x)
+    return x.replace('\n', '').replace("\t","").strip()
+
+#############################################################################################
 def stin(x):
     return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace("    ","").replace("\t","").replace('Name: ','').replace(';','')
 
+#############################################################################################
+"""
+# Type
+enum class ItemType : uint8_t
+{
+    USE     = 0,    // in eA, healing only
+    _1      = 1,    // unused
+    _2      = 2,    // in eA, other usable items
+    JUNK    = 3,    // "useless" items (e.g. quests)
+    WEAPON  = 4,    // all weapons
+    ARMOR   = 5,    // all other equipment
+    _6      = 6,    // in eA, card
+    _7      = 7,    // in eA, pet egg
+    _8      = 8,    // in eA, pet equipment
+    _9      = 9,    // unused
+    ARROW   = 10,   // ammo
+    _11     = 11,   // in eA, delayed use (special script)
+};
+# used in tmwa
+IT_USABLE
+IT_ETC
+IT_WEAPON
+IT_ARMOR
+IT_AMMO
+
+# View
+enum class ItemLook : uint16_t
+{
+    NONE = 0,
+    BLADE = 1, // or some other common weapons
+    SETZER_AND_SCYTHE = 3,
+    STAFF = 10,
+    BOW = 11,
+    COUNT = 17,
+};
+
+# Loc
+enum class EPOS : uint16_t
+{
+    ZERO    = 0x0000, # 0
+
+    LEGS    = 0x0001, # 1     EQP_HEAD_LOW
+    WEAPON  = 0x0002, # 2     EQP_HAND_R = 1 Hand, [EQP_HAND_L,EQP_HAND_R] = 2 Hand
+    GLOVES  = 0x0004, # 4     EQP_GARMENT
+    CAPE    = 0x0008, # 8     EQP_ACC_L (Isis and such)
+    MISC1   = 0x0010, # 16    EQP_ARMOR (Amuletts, Mana pearl and such)
+    SHIELD  = 0x0020, # 32    EQP_HAND_L
+    SHOES   = 0x0040, # 64    EQP_SHOES
+    MISC2   = 0x0080, # 128   EQP_ACC_R (Rings)
+    HAT     = 0x0100, # 256   EQP_HEAD_TOP
+    TORSO   = 0x0200, # 512   EQP_HEAD_MID
+
+    ARROW   = 0x8000, # 32768 EQP_AMMO
+};
+
+# used in current item_db.conf
+    Loc: "EQP_ACC_L"
+    Loc: "EQP_ACC_R"
+    Loc: "EQP_AMMO"
+    Loc: "EQP_ARMOR"
+    Loc: "EQP_GARMENT"
+    Loc: "EQP_HAND_L"
+    Loc: ["EQP_HAND_L", "EQP_HAND_R"]
+    Loc: "EQP_HAND_R"
+    Loc: "EQP_HEAD_LOW"
+    Loc: "EQP_HEAD_MID"
+    Loc: "EQP_HEAD_TOP"
+    Loc: "EQP_SHOES"
+"""
+def write_item(i, f):
+
+    md=str(i.md)
+
+    ## Type
+    if i.type == "IT_USABLE":
+        type="0"
+    elif i.type == "IT_ETC":
+        type="3"
+    elif i.type == "IT_WEAPON":
+        type="4"
+    elif i.type == "IT_ARMOR":
+        type="5"
+    elif i.type == "IT_AMMO":
+        type="10"
+
+    ## View
+    if i.aegis == "Setzer" or i.aegis == "Scythe":
+        view="3"
+    elif i.aegis == "SandCutter" or i.aegis == "Jackal" or i.aegis == "WoodenStaff" or i.aegis == "SweetTooth":
+    # why do SandCutter and Jackal use a value thats used for staffs? this value is never used though even for real staffs.
+        view="10"
+    elif i.subtype == "W_BOW":
+        view="11"
+    elif i.type == "IT_WEAPON":
+        view="1"
+    else:
+        view="0"
+
+    ## Loc
+    if i.loc == "EQP_HEAD_LOW":
+        loc="1"
+    elif i.loc == "[EQP_HAND_L,EQP_HAND_R]" or i.loc == "EQP_HAND_R":
+        loc="2"
+    elif i.loc == "EQP_GARMENT":
+        loc="4"
+    elif i.loc == "EQP_ACC_L":
+        loc="8"
+    elif i.loc == "EQP_ARMOR":
+        loc="16"
+    elif i.loc == "EQP_HAND_L":
+        loc="32"
+    elif i.loc == "EQP_SHOES":
+        loc="64"
+    elif i.loc == "EQP_ACC_R":
+        loc="128"
+    elif i.loc == "EQP_HEAD_TOP":
+        loc="256"
+    elif i.loc == "EQP_HEAD_MID":
+        loc="512"
+    elif i.loc == "EQP_AMMO":
+        loc="32768"
+    else:
+        loc="0"
+
+    if i.disabled:
+        i.id="//"+i.id
+    if i.gmlvlonly:
+        i.eqscript.insert(0, "callfunc \"RestrictedItem\";")
+
+    ## Add spaces
+    i.id=i.id+','+' '*(len(re.findall('//ID, *', description_i)[0])-len(i.id)-1)
+    i.aegis=i.aegis+','+' '*(len(re.findall('Name, *', description_i)[0])-len(i.aegis)-1)
+    type=type+','+' '*(len(re.findall('Type, *', description_i)[0])-len(type)-1)
+    i.buy=i.buy+','+' '*(len(re.findall('Price, *', description_i)[0])-len(i.buy)-1)
+    i.sell=i.sell+','+' '*(len(re.findall('Sell, *', description_i)[0])-len(i.sell)-1)
+    i.weight=i.weight+','+' '*(len(re.findall('Weight, *', description_i)[0])-len(i.weight)-1)
+    i.atk=i.atk+','+' '*(len(re.findall('ATK, *', description_i)[0])-len(i.atk)-1)
+    i.df=i.df+','+' '*(len(re.findall('DEF, *', description_i)[0])-len(i.df)-1)
+    i.range=i.range+','+' '*(len(re.findall('Range, *', description_i)[0])-len(i.range)-1)
+    i.matk=i.matk+','+' '*(len(re.findall('Mbonus, *', description_i)[0])-len(i.matk)-1)
+    i.sl=i.sl+','+' '*(len(re.findall('Slot, *', description_i)[0])-len(i.sl)-1)
+    i.gender=i.gender+','+' '*(len(re.findall('Gender, *', description_i)[0])-len(i.gender)-1)
+    loc=loc+','+' '*(len(re.findall('Loc, *', description_i)[0])-len(loc)-1)
+    i.wlv=i.wlv+','+' '*(len(re.findall('wLV, *', description_i)[0])-len(i.wlv)-1)
+    i.elv=i.elv+','+' '*(len(re.findall('eLV, *', description_i)[0])-len(i.elv)-1)
+    view=view+','+' '*(len(re.findall('View, *', description_i)[0])-len(view)-1)
+    # i.md here then
+    usescriptstr='{'+' '.join(str(x) for x in i.usescript)+'}'
+    usescriptstr=usescriptstr+','+' '*(len(re.findall('{UseScript}, *', description_i)[0])-len(usescriptstr)-1)
+    eqscriptstr='{'+' '.join(str(x) for x in i.eqscript)+'}'
+    #eqscriptstr=eqscriptstr+','+' '*(len(re.findall('{EquipScript}, *', description_i)[0])-len(eqscriptstr)-1)
+
+    ## Write the line
+    f.write("""%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n""" % (i.id, i.aegis, type, i.buy, i.sell, i.weight, i.atk, i.df, i.range, i.matk, i.sl, i.gender, loc, i.wlv, i.elv, view, usescriptstr, eqscriptstr))
+    return
+
+#############################################################################################
+def write_item_header(f):
+    f.write("//THIS FILE IS GENERATED AUTOMATICALLY\n//DO NOT EDIT IT DIRECTLY\n//Edit item_db.conf instead!\n")
+    f.write(description_i + "\n")
+    return
+
+#############################################################################################
+def save_items():
+    global IT_ETC, IT_USABLE, IT_AMMO, IT_WEAPON, IT_ARMOR
+
+    ## Items
+
+    DESCRIPTION_AFTER=20
+
+    WEAPON=IT_WEAPON['HAND_2']+IT_WEAPON['HAND_1']+IT_AMMO
+    write_to_file(WEAPON, "../world/map/db/item_db_weapon.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_HEAD_MID'], "../world/map/db/item_db_chest.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_SHOES'], "../world/map/db/item_db_foot.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_GARMENT'], "../world/map/db/item_db_hand.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_HEAD_TOP'], "../world/map/db/item_db_head.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_HEAD_LOW'], "../world/map/db/item_db_leg.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ARMOR['EQP_HAND_L'], "../world/map/db/item_db_offhand.txt", 0, DESCRIPTION_AFTER)
+    TRINKLET=IT_ARMOR['EQP_ACC_L']+IT_ARMOR['EQP_ACC_R']
+    write_to_file(TRINKLET, "../world/map/db/item_db_trinket.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_USABLE, "../world/map/db/item_db_use.txt", 0, DESCRIPTION_AFTER)
+    write_to_file(IT_ETC, "../world/map/db/item_db_generic.txt", 0, DESCRIPTION_AFTER)
+
+    return
 
 
 
+#    __________
+#   /          \
+#  /    Mobs    \
+# /______________\
+# \______________/
+ 
+class Mob:
+  def __init__(self):
+    # Basic
+    self.id="0"
+    self.aegis="UnknownMonster" # SpriteName is not used anywhere, we are using its ID
+    self.name="Unknown Monster Name"
+    self.view="1"
+    self.chch=False
+    self.boss=False
+    self.size="1"
+    self.race="0" # TODO Convert RC_*
+    self.elem="0" # TODO Convert Ele_*
+    self.elLv="0" # Element Level
+    self.mode="0" # TODO Convert MD_* and fields
 
+    # General
+    self.mobpt="0" # Mob Points “Level”
+    self.hp="0"
+    self.sp="0"
+    self.xp="0"
+    self.jp="0"
 
+    # MvP
+    self.mvp="0"
 
+    # Defensive
+    self.st=""
+    self.md=0
+    self.df="0"
+    self.mdf="0"
+    self.cdf="0"
 
+    # Stats
+    self.str="0"
+    self.agi="0"
+    self.int="0"
+    self.vit="0"
+    self.dex="0"
+    self.luk="0"
 
+    # Offensive
+    self.atk="[0, 0]"
+    self.range="0"
+    self.chase="1"
+    self.move="0"
+    self.adelay="0"
+    self.amotion="0"
+    self.dmotion="0"
 
+    # Misc
+    self.mtcnt="0"
+    self.mtstr="0"
+    self.drops=[]
 
+#############################################################################################
+def MobAlloc(ab):
+    if ab.name == "Unknown Monster Name":
+        return
+
+    try:
+        maab=int(ab.mobpt)
+    except:
+        maab=9901
+
+    aegis.write("%s %s\n" % (ab.aegis, ab.id))
+    if maab <= 19:
+        Mobs1.append(ab)
+    elif maab <= 39:
+        Mobs2.append(ab)
+    elif maab <= 59:
+        Mobs3.append(ab)
+    elif maab <= 79:
+        Mobs4.append(ab)
+    elif maab <= 99:
+        Mobs5.append(ab)
+    elif maab <= 150:
+        Mobs6.append(ab)
+    elif maab != 9901:
+        MobsA.append(ab)
+    else:
+        print("WARNING, Disregarding \"%s\" (ID: %s) as invalid mob" % (ab.name, ab.id))
+
+#############################################################################################
+def testMobs():
+    MD_CANMOVE =           1
+    MD_LOOTER =            2
+    MD_AGGRESSIVE =        4
+    MD_ASSIST =            8
+    MD_CASTSENSOR_IDLE =   16
+    MD_BOSS =              32
+    MD_PLANT =             64
+    MD_CANATTACK =         128
+
+    print("\nGenerating Mob Database...")
+    if len(sys.argv) >= 2:
+        src=open(sys.argv[1]+"/db/pre-re/mob_db.conf", "r")
+    else:
+        src=open("../world/map/db/mob_db.conf", "r")
+
+    start=False
+    dropper=False
+    x=Mob() # Only for pyflakes2
+
+    for a in src:
+        # Evol2-only scripts
+        if "@EVOL2" in a:
+            continue
+        if "@TMWA" in a:
+            a=a.replace("//", "").replace("@TMWA", "")
+        # Initiate the script
+        if a == "{\n":
+            if start:
+                MobAlloc(x)
+            else:
+                start=True
+            x=Mob()
+
+        if "\tId:" in a:
+            x.id=stp(a)
+        elif "\tSpriteName:" in a:
+            x.aegis=stp(a)
+        elif "\tName:" in a:
+            x.name=stp(a)
+        elif "\tHp:" in a:
+            x.hp=stp(a)
+        elif "\tSp:" in a:
+            x.sp=stp(a)
+        elif "\tLv:" in a:
+            x.mobpt=stp(a)
+        elif "\tExp:" in a:
+            x.xp=stp(a)
+        elif "\tJExp:" in a:
+            x.jp=stp(a)
+        elif "\tMvpExp: " in a:
+            x.mvp=stp(a)
+        elif "\tDef:" in a:
+            x.df=stp(a)
+        elif "\tMdef:" in a:
+            x.mdf=stp(a)
+        elif "\tCriticalDef:" in a:
+            x.cdf=stp(a)
+        elif "\tAttack:" in a:
+            x.atk=stp(a)
+        elif "\tAttackRange:" in a:
+            x.range=stp(a)
+        elif "\tMoveSpeed:" in a:
+            x.move=stp(a)
+        elif "\tViewRange:" in a:
+            x.view=stp(a)
+        elif "\tChaseRange:" in a:
+            x.chase=stp(a)
+        elif "\tAttackDelay:" in a:
+            x.adelay=stp(a)
+        elif "\tAttackMotion:" in a:
+            x.amotion=stp(a)
+        elif "\tDamageMotion:" in a:
+            x.dmotion=stp(a)
+        elif "\tStr: " in a:
+            x.str=stp(a)
+        elif "\tAgi: " in a:
+            x.agi=stp(a)
+        elif "\tVit: " in a:
+            x.vit=stp(a)
+        elif "\tDex: " in a:
+            x.dex=stp(a)
+        elif "\tInt: " in a:
+            x.int=stp(a)
+        elif "\tLuk: " in a:
+            x.luk=stp(a)
+        elif "\tMutationCount: " in a:
+            x.mtcnt=stp(a)
+        elif "\tMutationStrength: " in a:
+            x.mtstr=stp(a)
+        elif "\tSize: " in a:
+            x.size=stp(a)
+        elif "\tRace: " in a:
+            x.race=stp(a) # TODO: Conversion
+        elif "\tElement: " in a:
+            tmp=stp(a).split(",")
+            #Element: (type, level)
+            x.elem=tmp[0].replace("(","").strip()
+            x.elLv=tmp[1].replace(")","").strip()
+            try:
+                if int(x.elem) in [4, 5]:
+                    x.elem = "2"
+                elif int(x.elem) in [8, 9, "10"]:
+                    x.elem="7"
+            except:
+                traceback.print_exc()
+        elif "\tCanMove: true" in a:
+            x.md = x.md | MD_CANMOVE
+        elif "\tLooter: true" in a:
+            x.md = x.md | MD_LOOTER
+        elif "\tAggressive: true" in a:
+            x.md = x.md | MD_AGGRESSIVE
+        elif "\tAssist: true" in a:
+            x.md = x.md | MD_ASSIST
+        elif "\tCastSensorIdle: true" in a:
+            x.md = x.md | MD_CASTSENSOR_IDLE
+        elif "\tBoss: true" in a:
+            x.md = x.md | MD_BOSS
+        elif "\tPlant: true" in a:
+            x.md = x.md | MD_PLANT
+        elif "\tCanAttack: true" in a:
+            x.md = x.md | MD_CANATTACK
+        elif '\tDrops: ' in a:
+            dropper=True
+        elif dropper and '\t}' in a:
+            dropper=False
+        elif dropper:
+            x.drops.append(stp(a).split(": "))
+
+    # Write last entry
+    MobAlloc(x)
+
+    src.close()
+
+#############################################################################################
+def stp(x):
+    return x.replace('\n', '').replace('|', '').replace('(int, defaults to ', '').replace(')', '').replace('basic experience', '').replace('"','').replace("    ","").replace("\t","").replace('(string', '').replace('SpriteName: ','').replace('Name: ','').replace('AttackDelay: ', '').replace('AttackMotion: ', '').replace('DamageMotion: ', '').replace('MoveSpeed: ', '').replace('AttackRange: ', '').replace('ViewRange: ','').replace('ChaseRange: ','').replace('Attack: ','').replace('Hp: ','').replace('Sp: ','').replace('Id: ','').replace('Lv: ','').replace('view range','').replace('attack range','').replace('move speed','').replace('health','').replace('(int','').replace('attack delay','atk.').replace("Str:", "").replace("Agi:", "").replace("Vit:", "").replace("Int:", "").replace("Dex:", "").replace("Luk:", "").replace("Mdef:","").replace("CriticalDef:","").replace("Def:","").replace("Size:","").replace("Race:", "").replace("Element:","").replace("JExp: ","").replace("MvpExp: ","").replace("Exp: ","").replace("MutationCount: ","").replace("MutationStrength: ","").strip()
+
+#############################################################################################
 def write_mob(m, f):
     ## Prepare new drop list
     i=0
@@ -610,74 +914,40 @@ dl[6],dl[7], dl[8],dl[9], dl[10],dl[11], dl[12],dl[13], dl[14],dl[15],
 dl[16],dl[17], dl[18],dl[19], item1, item2, m.mvp, expper, mvp1id, mvp1p, mvp2id, mvp2p, mvp3id, mvp3p, m.mtcnt, m.mtstr))
     return
 
+#############################################################################################
 def write_mob_header(f):
     f.write("//THIS FILE IS GENERATED AUTOMATICALLY\n//DO NOT EDIT IT DIRECTLY\n//Edit mob_db.conf instead!\n")
     f.write(description_m + "\n")
     return
 
+#############################################################################################
 def save_mobs():
     global Mobs1, Mobs2, Mobs3, Mobs4, Mobs5, Mobs6, MobsA
+
+    DESCRIPTION_AFTER=20
+
     ## Mobs
-    with open ("../world/map/db/mob_db_0_19.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs1, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_20_39.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs2, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_40_59.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs3, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_60_79.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs4, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_80_99.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs5, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_over_100.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(Mobs6, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
-
-    with open ("../world/map/db/mob_db_over_150.txt", "w") as f:
-        write_mob_header(f)
-        for m in sorted(MobsA, key=lambda xcv: xcv.id):
-            write_mob(m, f)
-            continue
+    
+    write_to_file(Mobs1, "../world/map/db/mob_db_0_19.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(Mobs2, "../world/map/db/mob_db_20_39.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(Mobs3, "../world/map/db/mob_db_40_59.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(Mobs4, "../world/map/db/mob_db_60_79.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(Mobs5, "../world/map/db/mob_db_80_99.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(Mobs6, "../world/map/db/mob_db_over_100.txt", 1, DESCRIPTION_AFTER)
+    write_to_file(MobsA, "../world/map/db/mob_db_over_150.txt", 1, DESCRIPTION_AFTER)
 
     return
 
 
 
 
-
-
-
-
-
-
-
-
+#############################################################################################
 showHeader()
 
 newItemDB()
 testMobs()
 
+save_items()
 save_mobs()
 
 aegis.close()
