@@ -588,7 +588,7 @@ def save_items():
 #  /    Mobs    \
 # /______________\
 # \______________/
- 
+
 class Mob:
   def __init__(self):
     # Basic
@@ -937,7 +937,7 @@ def save_mobs():
     DESCRIPTION_AFTER=20
 
     ## Mobs
-    
+
     write_to_file(Mobs1, "../world/map/db/mob_db_0_19.txt", 1, DESCRIPTION_AFTER)
     write_to_file(Mobs2, "../world/map/db/mob_db_20_39.txt", 1, DESCRIPTION_AFTER)
     write_to_file(Mobs3, "../world/map/db/mob_db_40_59.txt", 1, DESCRIPTION_AFTER)
