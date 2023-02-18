@@ -760,6 +760,8 @@
     <xs:attribute name="opt1" type="xs:int" use="optional"/>
     <xs:attribute name="opt2" type="xs:int" use="optional"/>
     <xs:attribute name="opt3" type="xs:int" use="optional"/>
+    <!-- deprecated, might or might not work, blame 4144 for this -->
+    <xs:attribute name="particle" type="xs:string" use="optional"/>
   </xs:attributeGroup>
   <!--
     maps and tilesets omitted, they have a DTD from tiled
