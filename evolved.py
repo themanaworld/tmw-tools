@@ -13,7 +13,7 @@ import sys, traceback, re
 aegis=open("../world/map/db/const-aegis.txt", "w")
 
 description_m="//ID,   Name,                   Jname,                  LV,     HP,     SP,     EXP,    JEXP,   Range1, ATK1,   ATK2,   DEF,    MDEF,   CRITDEF,STR,    AGI,    VIT,    INT,    DEX,    LUK,    Range2, Range3, Scale,  Race,   Element,Mode,   Speed,  Adelay, Amotion,Dmotion,Drop0id,Drop0%, Drop1id,Drop1%, Drop2id,Drop2%, Drop3id,Drop3%, Drop4id,Drop4%, Drop5id,Drop5%, Drop6id,Drop6%, Drop7id,Drop7%, Drop8id,Drop8%, Drop9id,Drop9%, Item1,  Item2,  MEXP,   ExpPer, MVP1id, MVP1per,MVP2id, MVP2per,MVP3id, MVP3per,mutationcount,mutationstrength"
-description_i="//ID,   Name,                   Type,   Price,      Sell,       Weight,     ATK,    DEF,    Range,  Mbonus, Slot,   Gender, Loc,        wLV,    eLV,    View,   {UseScript},                                                            {EquipScript}"
+description_i="//ID,   Name,                   Type,   Price,      Sell,       Weight,     ATK,    DEF,    Range,  Mbonus, Slot,   Gender, Loc,        wLV,    eLV,    View,   Mode,   {UseScript},                                                            {EquipScript}"
 
 # the TYPEs we use to determine where to pack things
 IT_HEALING=[]
@@ -150,7 +150,7 @@ class It:
     self.loc=""
     self.wlv="0" # 1 for weapons, 0 for all others including ammo
     self.elv="0" # equip lvl
-    self.md=0 # mode not yet implemented in tmwa
+    self.md=0
     self.subtype=""
     self.disabled=False
     # Script settings
@@ -238,11 +238,21 @@ def ItAlloc(it):
     AllItems[it.aegis]=str(it.id)
 
 #############################################################################################
+"""
+enum class ItemMode : uint8_t
+{
+    NONE           = 0,
+    NO_DROP        = 1,
+    NO_TRADE       = 2,
+    NO_SELL_TO_NPC = 4,
+    NO_STORAGE     = 8,
+};
+"""
 def newItemDB():
-    IT_NODROP =           1
-    IT_NOTRADE =          2
-    IT_NOSELLTONPC =      4
-    IT_NOSTORAGE =        8
+    IT_NO_DROP =         1
+    IT_NO_TRADE =        2
+    IT_NO_SELL_TO_NPC =  4
+    IT_NO_STORAGE =      8
     IT_DROPANNOUNCE =    16
 
     print("\nGenerating Item Wiki...")
@@ -312,16 +322,16 @@ def newItemDB():
             #x.md = x.md | IT_DROPANNOUNCE
         elif "\tnodrop: true" in a:
             #x.drop=False
-            x.md = x.md | IT_NODROP
+            x.md = x.md | IT_NO_DROP
         elif "\tnotrade: true" in a:
             #x.trade=False
-            x.md = x.md | IT_NOTRADE
+            x.md = x.md | IT_NO_TRADE
         elif "\tnoselltonpc: true" in a:
             #x.sell=False
-            x.md = x.md | IT_NOSELLTONPC
+            x.md = x.md | IT_NO_SELL_TO_NPC
         elif "\tnostorage: true" in a:
             #x.store=False
-            x.md = x.md | IT_NOSTORAGE
+            x.md = x.md | IT_NO_STORAGE
         elif "\tNouse:" in a:
             nouse=True
         elif "\toverride:" in a:
@@ -457,8 +467,6 @@ enum class EPOS : uint16_t
 """
 def write_item(i, f):
 
-    md=str(i.md)
-
     ## Type
     if i.type == "IT_USABLE":
         type="0"
@@ -516,6 +524,8 @@ def write_item(i, f):
         i.eqscript.insert(0, "callfunc \"RestrictedItem\";")
 
     ## Add spaces
+    md=str(i.md)
+
     i.id=i.id+','+' '*(len(re.findall('//ID, *', description_i)[0])-len(i.id)-1)
     i.aegis=i.aegis+','+' '*(len(re.findall('Name, *', description_i)[0])-len(i.aegis)-1)
     type=type+','+' '*(len(re.findall('Type, *', description_i)[0])-len(type)-1)
@@ -532,14 +542,14 @@ def write_item(i, f):
     i.wlv=i.wlv+','+' '*(len(re.findall('wLV, *', description_i)[0])-len(i.wlv)-1)
     i.elv=i.elv+','+' '*(len(re.findall('eLV, *', description_i)[0])-len(i.elv)-1)
     view=view+','+' '*(len(re.findall('View, *', description_i)[0])-len(view)-1)
-    # i.md here then
+    md=md+','+' '*(len(re.findall('wLV, *', description_i)[0])-len(md)-1)
     usescriptstr='{'+' '.join(str(x) for x in i.usescript)+'}'
     usescriptstr=usescriptstr+','+' '*(len(re.findall('{UseScript}, *', description_i)[0])-len(usescriptstr)-1)
     eqscriptstr='{'+' '.join(str(x) for x in i.eqscript)+'}'
     #eqscriptstr=eqscriptstr+','+' '*(len(re.findall('{EquipScript}, *', description_i)[0])-len(eqscriptstr)-1)
 
     ## Write the line
-    f.write("""%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n""" % (i.id, i.aegis, type, i.buy, i.sell, i.weight, i.atk, i.df, i.range, i.matk, i.sl, i.gender, loc, i.wlv, i.elv, view, usescriptstr, eqscriptstr))
+    f.write("""%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n""" % (i.id, i.aegis, type, i.buy, i.sell, i.weight, i.atk, i.df, i.range, i.matk, i.sl, i.gender, loc, i.wlv, i.elv, view, md, usescriptstr, eqscriptstr))
     return
 
 #############################################################################################
@@ -578,7 +588,7 @@ def save_items():
 #  /    Mobs    \
 # /______________\
 # \______________/
- 
+
 class Mob:
   def __init__(self):
     # Basic
@@ -927,7 +937,7 @@ def save_mobs():
     DESCRIPTION_AFTER=20
 
     ## Mobs
-    
+
     write_to_file(Mobs1, "../world/map/db/mob_db_0_19.txt", 1, DESCRIPTION_AFTER)
     write_to_file(Mobs2, "../world/map/db/mob_db_20_39.txt", 1, DESCRIPTION_AFTER)
     write_to_file(Mobs3, "../world/map/db/mob_db_40_59.txt", 1, DESCRIPTION_AFTER)
