@@ -414,6 +414,7 @@ enum class ItemType : uint8_t
     ARROW   = 10,   // ammo
     _11     = 11,   // in eA, delayed use (special script)
 };
+
 # used in tmwa
 IT_USABLE
 IT_ETC
@@ -431,6 +432,30 @@ enum class ItemLook : uint16_t
     BOW = 11,
     COUNT = 17,
 };
+
+// coefficients for each weapon type
+// (not all used)
+static //const
+earray<interval_t, ItemLook, ItemLook::COUNT> aspd_base_0 //=
+{{
+650_ms,  // 0 NONE
+700_ms,  // 1 BLADE or some other common weapons
+750_ms,  // 2
+610_ms,  // 3 SETZER_AND_SCYTHE
+2000_ms, // 4
+2000_ms, // 5
+800_ms,  // 6 Falchion
+2000_ms, // 7
+700_ms,  // 8
+700_ms,  // 9
+650_ms,  //10 STAFF / Sandcutter
+900_ms,  //11 BOW
+2000_ms, //12
+2000_ms, //13
+2000_ms, //14
+2000_ms, //15
+2000_ms, //16
+}};
 
 # Loc
 enum class EPOS : uint16_t
@@ -482,8 +507,9 @@ def write_item(i, f):
     ## View
     if i.aegis == "Setzer" or i.aegis == "Scythe":
         view="3"
+    elif i.aegis == "Beheader":
+        view="4"
     elif i.aegis == "SandCutter" or i.aegis == "Jackal" or i.aegis == "WoodenStaff" or i.aegis == "SweetTooth":
-    # why do SandCutter and Jackal use a value thats used for staffs? this value is never used though even for real staffs.
         view="10"
     elif i.subtype == "W_BOW":
         view="11"
@@ -542,7 +568,7 @@ def write_item(i, f):
     i.wlv=i.wlv+','+' '*(len(re.findall('wLV, *', description_i)[0])-len(i.wlv)-1)
     i.elv=i.elv+','+' '*(len(re.findall('eLV, *', description_i)[0])-len(i.elv)-1)
     view=view+','+' '*(len(re.findall('View, *', description_i)[0])-len(view)-1)
-    md=md+','+' '*(len(re.findall('wLV, *', description_i)[0])-len(md)-1)
+    md=md+','+' '*(len(re.findall('Mode, *', description_i)[0])-len(md)-1)
     usescriptstr='{'+' '.join(str(x) for x in i.usescript)+'}'
     usescriptstr=usescriptstr+','+' '*(len(re.findall('{UseScript}, *', description_i)[0])-len(usescriptstr)-1)
     eqscriptstr='{'+' '.join(str(x) for x in i.eqscript)+'}'
