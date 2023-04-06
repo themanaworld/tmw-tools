@@ -460,18 +460,18 @@ earray<interval_t, ItemLook, ItemLook::COUNT> aspd_base_0 //=
 # Loc
 enum class EPOS : uint16_t
 {
-    ZERO    = 0x0000, # 0
-
-    LEGS    = 0x0001, # 1     EQP_HEAD_LOW
-    WEAPON  = 0x0002, # 2     EQP_HAND_R = 1 Hand, [EQP_HAND_L,EQP_HAND_R] = 2 Hand
-    GLOVES  = 0x0004, # 4     EQP_GARMENT
-    CAPE    = 0x0008, # 8     EQP_ACC_L (Isis and such)
-    MISC1   = 0x0010, # 16    EQP_ARMOR (Amuletts, Mana pearl and such)
-    SHIELD  = 0x0020, # 32    EQP_HAND_L
-    SHOES   = 0x0040, # 64    EQP_SHOES
-    MISC2   = 0x0080, # 128   EQP_ACC_R (Rings)
-    HAT     = 0x0100, # 256   EQP_HEAD_TOP
-    TORSO   = 0x0200, # 512   EQP_HEAD_MID
+    ZERO     = 0x0000, # 0
+    LEGS     = 0x0001, # 1     EQP_HEAD_LOW
+    WEAPON1H = 0x0002, # 2     EQP_HAND_R = 1 Hand
+    GLOVES   = 0x0004, # 4     EQP_GARMENT
+    CAPE     = 0x0008, # 8     EQP_ACC_L (Isis and such)
+    MISC1    = 0x0010, # 16    EQP_ARMOR (Amuletts, Mana pearl and such)
+    SHIELD   = 0x0020, # 32    EQP_HAND_L
+    WEAPON2H = 0x0022, # 34    [EQP_HAND_L,EQP_HAND_R] = 2 Hand (2(EQP_HAND_R)+32(EQP_HAND_L))
+    SHOES    = 0x0040, # 64    EQP_SHOES
+    MISC2    = 0x0080, # 128   EQP_ACC_R (Rings)
+    HAT      = 0x0100, # 256   EQP_HEAD_TOP
+    TORSO    = 0x0200, # 512   EQP_HEAD_MID
 
     ARROW   = 0x8000, # 32768 EQP_AMMO
 };
@@ -521,8 +521,10 @@ def write_item(i, f):
     ## Loc
     if i.loc == "EQP_HEAD_LOW":
         loc="1"
-    elif i.loc == "[EQP_HAND_L,EQP_HAND_R]" or i.loc == "EQP_HAND_R":
+    elif i.loc == "EQP_HAND_R":
         loc="2"
+    elif i.loc == "[EQP_HAND_L,EQP_HAND_R]":
+        loc="34"
     elif i.loc == "EQP_GARMENT":
         loc="4"
     elif i.loc == "EQP_ACC_L":
