@@ -120,6 +120,12 @@ struct Item
     ast::script::ScriptBody use_script;
     ast::script::ScriptBody equip_script;
 };
+
+# Gender
+    SEX_FEMALE: 0
+    SEX_MALE:   1
+    SEX_ANY:    2
+
 enum class SEX : uint8_t
 {
     FEMALE = 0,
@@ -310,6 +316,14 @@ def newItemDB():
             #x.sl=sti(a)
         elif "\tGender:" in a: # allways 2 in tmwa atm
             x.gender=sti(a)
+            if x.gender == "SEX_FEMALE" or x.gender == "0":
+                x.gender="0"
+            elif x.gender == "SEX_MALE" or x.gender == "1":
+                x.gender="1"
+            elif x.gender == "SEX_ANY" or x.gender == "2":
+                x.gender="2"
+            else:
+                x.gender="2"
         elif "\tSubtype:" in a:
             x.subtype=sti(a)
         elif "\tDisabled: true" in a:
