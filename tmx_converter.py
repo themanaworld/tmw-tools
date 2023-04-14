@@ -78,17 +78,22 @@ class Object(object):
         'w', 'h',
         'ignore',
     )
+
 class Mob(Object):
     __slots__ = (
         'monster_id',
         'max_beings',
         'spawn',
         'death',
+        'ea_spawn',
+        'ea_death',
     ) + other_spawn_fields
     def __init__(self):
         self.max_beings = 1
         self.spawn = 0
         self.death = 0
+        self.ea_spawn = 0
+        self.ea_death = 0
 
 class Node(Object):
     __slots__ = (
@@ -109,6 +114,8 @@ class Warp(Object):
         'dest_map',
         'dest_x',
         'dest_y',
+        'dest_tile_x',
+        'dest_tile_y',
     ) + other_warp_fields
 
 class ContentHandler(xml.sax.ContentHandler):
@@ -210,7 +217,10 @@ class ContentHandler(xml.sax.ContentHandler):
             self.out.write(chr(int(attr.get(u'gid',0)) not in self.tilesets))
         elif self.state is State.FINAL:
             if name == u'object':
-                obj_type = attr[u'type'].lower()
+                try:
+                    obj_type = attr[u'type'].lower()
+                except KeyError:
+                    obj_type = attr[u'class'].lower()
                 x = int(attr[u'x']) / TILESIZE;
                 y = int(attr[u'y']) / TILESIZE;
                 w = int(attr.get(u'width', 0)) / TILESIZE;
@@ -290,21 +300,37 @@ class ContentHandler(xml.sax.ContentHandler):
                         if name != obj.name:
                             print('Warning: wrong mob name: %s (!= %s)' % (obj.name, name))
                             obj.name = name
+                if hasattr(obj, 'spawn'):
+                    spawn = obj.spawn
+                else:
+                    spawn = obj.ea_spawn
+                if hasattr(obj, 'death'):
+                    death = obj.death
+                else:
+                    death = obj.ea_death
                 self.mob_ids.add(mob_id)
                 self.mobs.write(
                     SEPARATOR.join([
                         '%s,%d,%d,%d,%d' % (self.base, obj.x, obj.y, obj.w, obj.h),
                         'monster',
                         obj.name,
-                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, obj.spawn, obj.death),
+                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, spawn, death),
                     ])
                 )
             elif isinstance(obj, Warp):
+                if hasattr(obj, 'dest_x'):
+                    dest_x = obj.dest_x
+                else:
+                    dest_x = obj.dest_tile_x
+                if hasattr(obj, 'dest_y'):
+                    dest_y = obj.dest_y
+                else:
+                    dest_y = obj.dest_tile_y
                 self.warps.write(
                     SEPARATOR.join([
                         '%s,%d,%d' % (self.base, obj.x, obj.y),
                         'warp',
-                        '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, obj.dest_x, obj.dest_y),
+                        '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, dest_x, dest_y),
                     ])
                 )
             elif isinstance(obj, Switch):
