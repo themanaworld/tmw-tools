@@ -519,7 +519,7 @@ def write_item(i, f):
         type="10"
 
     ## View
-    if i.aegis == "Setzer" or i.aegis == "Scythe":
+    if i.aegis == "Setzer" or i.aegis == "Scythe" or i.aegis == "DragonSword":
         view="3"
     elif i.aegis == "Beheader":
         view="4"
