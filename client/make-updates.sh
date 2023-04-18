@@ -48,11 +48,13 @@ echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
 mkdir -pv $UPDATE_DIR
 mkdir -pv $cdata/music
+mkdir -pv $cdata/mods
 
 echo -e "\e[96m>> Removing leftovers...\e[0m"
 rm -rv files/* 2>/dev/null || :
 rm -v $UPDATE_DIR/TMW.zip 2>/dev/null || :
 rm -v $UPDATE_DIR/TMW-music.zip 2>/dev/null || :
+rm -v $UPDATE_DIR/TMW-mods.zip 2>/dev/null || :
 rm -v $UPDATE_DIR/resources.xml 2>/dev/null || :
 rm -v $UPDATE_DIR/resources2.txt 2>/dev/null || : # Legacy: used by mana client
 
@@ -65,30 +67,37 @@ if [ "$UPDATE_HTTP" == "none" ] ; then
 fi
 
 echo -e "\e[96m>> Compressing files...\e[0m"
-find -path ./music -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/TMW.zip
-find -path ./sfx -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/TMW-music.zip
+find -path ./music -prune -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/TMW.zip
+find -path ./sfx -prune -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/TMW-music.zip
+#find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
+find ./mods -type f | xargs zip -9 -r $dir/files/TMW-mods.zip
 touch $dir/files/TMW-music.zip
+touch $dir/files/TMW-mods.zip
 
 echo -e "\e[96m>> Calculating adler32 checksum...\e[0m"
 pushd $dir/files &>/dev/null
 sum=`../adler32 1 TMW.zip`
 musicsum=`../adler32 1 TMW-music.zip`
+modsum=`../adler32 1 TMW-mods.zip`
 
 echo -e "\e[96m>> Generating xml file...\e[0m"
 echo "<?xml version=\"1.0\"?><updates>" >resources.xml
 echo "<update type=\"data\" file=\"TMW.zip\" hash=\"${sum}\"/>" >>resources.xml
 echo "<update type=\"music\" required=\"no\" file=\"TMW-music.zip\" hash=\"${musicsum}\" description=\"TMW music\"/>" >>resources.xml
+echo "<update type=\"data\" required=\"no\" file=\"TMW-mods.zip\" hash=\"${modsum}\" description=\"TMW mods\"/>" >>resources.xml
 echo "</updates>" >>resources.xml
 
 echo -e "\e[96m>> Moving stuff around...\e[0m"
 cp -v TMW.zip $UPDATE_DIR/
 cp -v TMW-music.zip $UPDATE_DIR/
+cp -v TMW-mods.zip $UPDATE_DIR/
 cp -v resources.xml $UPDATE_DIR/
 
 echo -e "\e[96m>> Giving read permissions...\e[0m"
 pushd $UPDATE_DIR &>/dev/null
 chmod a+r TMW.zip
 chmod a+r TMW-music.zip
+chmod a+r TMW-mods.zip
 chmod a+r resources.xml
 
 if [ "$UPDATE_HTTP" != "none" ] ; then
@@ -96,6 +105,7 @@ if [ "$UPDATE_HTTP" != "none" ] ; then
     echo -e "\e[96m>> Checking updates...\e[0m"
     check_update "$UPDATE_HTTP/TMW.zip"
     check_update "$UPDATE_HTTP/TMW-music.zip"
+    check_update "$UPDATE_HTTP/TMW-mods.zip"
     check_update "$UPDATE_HTTP/resources.xml"
     check_update "$UPDATE_HTTP/news.php"
 fi
