@@ -59,9 +59,12 @@ SERVER_NPCS = 'npc'
 TMWA_MAP_CONF = 'conf/tmwa-map.conf'
 NPC_MOBS = '_mobs.txt'
 NPC_NODES = '_nodes.txt'
+NPC_SWITCHES = '.switches.txt'
 NPC_WARPS = '_warps.txt'
 NPC_IMPORTS = '_import.txt'
 NPC_MASTER_IMPORTS = NPC_IMPORTS
+
+this_map_npc_dir = ''
 
 class State(object):
     pass
@@ -87,6 +90,7 @@ class Mob(Object):
         'death',
         'ea_spawn',
         'ea_death',
+        'npc',
     ) + other_spawn_fields
     def __init__(self):
         self.max_beings = 1
@@ -119,6 +123,7 @@ class Warp(Object):
     ) + other_warp_fields
 
 class ContentHandler(xml.sax.ContentHandler):
+    global this_map_npc_dir
     __slots__ = (
         'locator',  # keeps track of location in document
         'out',      # open file handle to .wlk
@@ -140,6 +145,7 @@ class ContentHandler(xml.sax.ContentHandler):
         'mob_ids',  # set of all mob types that spawn here
         'node_types', # set of all node types that appear here
         'node_objs', # set of all node objects that appear here
+        'switch_objs', # set of all switch objects that appear here
     )
     def __init__(self, out, npc_dir, mobs, warps, imports, nodes):
         xml.sax.ContentHandler.__init__(self)
@@ -162,6 +168,7 @@ class ContentHandler(xml.sax.ContentHandler):
         self.mob_ids = set()
         self.node_types = set()
         self.node_objs = set()
+        self.switch_objs = set()
 
     def setDocumentLocator(self, loc):
         self.locator = loc
@@ -287,6 +294,7 @@ class ContentHandler(xml.sax.ContentHandler):
             if hasattr(self.object, 'ignore'):
                 return;
             obj = self.object
+
             if isinstance(obj, Mob):
                 mob_id = obj.monster_id
                 if mob_id < 1000:
@@ -314,9 +322,14 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%s,%d,%d,%d,%d' % (self.base, obj.x, obj.y, obj.w, obj.h),
                         'monster',
                         obj.name,
-                        '%d,%d,%dms,%dms\n' % (mob_id, obj.max_beings, spawn, death),
+                        '%d,%d,%dms,%dms' % (mob_id, obj.max_beings, spawn, death),
                     ])
                 )
+                if hasattr(obj, 'npc'):
+                    self.mobs.write(',%s\n' % obj.npc)
+                else:
+                    self.mobs.write('\n')
+
             elif isinstance(obj, Warp):
                 if hasattr(obj, 'dest_x'):
                     dest_x = obj.dest_x
@@ -333,13 +346,10 @@ class ContentHandler(xml.sax.ContentHandler):
                         '%d,%d,%s,%d,%d\n' % (obj.w, obj.h, obj.dest_map, dest_x, dest_y),
                     ])
                 )
+
             elif isinstance(obj, Switch):
-                obj_name = "#%s_%s_%s" % (self.base, obj.x, obj.y)
-                self.warps.write(
-                    SEPARATOR.join([
-                        '%s,%d,%d,0|script|%s|422\n{\n\t// REPLACE ME\n}\n' % (self.base, obj.x, obj.y, obj_name),
-                    ])
-                )
+                self.switch_objs.add(obj)
+
             elif isinstance(obj, Node):
                 self.node_types.add(obj.name)
                 self.node_objs.add(obj)
@@ -388,6 +398,20 @@ class ContentHandler(xml.sax.ContentHandler):
             self.nodes.write('    destroy;\n}\n')
         else:
             self.nodes.write('// (no nodes)\n')
+
+        # had to move it here else it writes zero size files not sure if its better to check if a written file has zero size and delete it after
+        if len(self.switch_objs) > 0:
+            with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w') as switches:
+                switches.write('// %s\n' % MESSAGE)
+                switches.write('// %s switches\n\n' % self.name)
+                for sobjs in sorted(self.switch_objs):
+                    obj_name = "#%s_%s_%s" % (self.base, sobjs.x, sobjs.y)
+                    switches.write(
+                        SEPARATOR.join([
+                            '%s,%d,%d,0|script|%s|422\n{\n// REPLACE ME\n}\n' % (self.base, sobjs.x, sobjs.y, obj_name),
+                        ])
+                    )
+
         self.imports.write('// Map %s: %s\n' % (self.base, self.name))
         self.imports.write('// %s\n' % MESSAGE)
         self.imports.write('map: %s\n' % self.base)
@@ -404,6 +428,7 @@ class ContentHandler(xml.sax.ContentHandler):
         pass
 
 def main(argv):
+    global this_map_npc_dir
     _, client_data, server_data = argv
     tmx_dir = posixpath.join(client_data, CLIENT_MAPS)
     wlk_dir = posixpath.join(server_data, SERVER_WLK)
