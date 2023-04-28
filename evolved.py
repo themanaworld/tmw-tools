@@ -403,6 +403,8 @@ def stis(x):
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_ATTHASTE_POTION1, (-?[0-9]+).*',r'sc_start sc_raiseattackspeed0, \1, \2;',x)
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_SLOWPOISON, (-?[0-9]+).*',r'sc_start sc_slowpoison, \1, \2;',x) # uses 180k in tmwa files but gets multiplied by 1000 in source if low evolved value is taken
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_BLOODING, (-?[0-9]+).*',r'sc_start sc_poison, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_POISON, (-?[0-9]+).*',r'sc_start sc_poison, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PHYS_SHIELD, (-?[0-9]+).*',r'sc_start SC_PHYS_SHIELD, \1, \2;',x)
     x=re.sub(r' +',' ',x)
     return x.replace('\n', '').replace("\t","").strip()
 
