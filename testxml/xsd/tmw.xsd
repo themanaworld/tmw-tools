@@ -937,6 +937,7 @@
             <xs:attribute name="sellProtected" type="bool" default="false"/>
             <xs:attribute name="pickupCursor" type="xs:string" default="pickup"/>
             <xs:attribute name="attack" type="xs:string" use="optional"/>
+            <xs:attribute name="bAtkRate" type="xs:int" use="optional"/>
             <xs:attribute name="criticalattack" type="xs:string" use="optional"/>
             <xs:attribute name="criticalattackrate" type="xs:string" use="optional"/>
             <xs:attribute name="atkspeed" type="xs:string" use="optional"/>
