@@ -441,37 +441,32 @@ IT_AMMO
 # View
 enum class ItemLook : uint16_t
 {
-    NONE = 0,
-    BLADE = 1, // or some other common weapons
-    SETZER_AND_SCYTHE = 3,
-    STAFF = 10,
-    BOW = 11,
-    COUNT = 17,
+    W_FIST,     //  0 Fist
+    W_DAGGER,   //  1 Dagger
+    W_1HSWORD,  //  2 Sword
+    W_2HSWORD,  //  3 TwoHandSword
+    W_1HSPEAR,  //  4 Spear
+    W_2HSPEAR,  //  5 TwoHandSpear
+    W_1HAXE,    //  6 Axe
+    W_2HAXE,    //  7 TwoHandAxe
+    W_MACE,     //  8 Mace
+    W_2HMACE,   //  9 TwoHandMace
+    W_STAFF,    // 10 Rod
+    W_BOW,      // 11 Bow
+    W_KNUCKLE,  // 12 Knuckle
+    W_MUSICAL,  // 13 Instrument
+    W_WHIP,     // 14 Whip
+    W_BOOK,     // 15 Book
+    W_KATAR,    // 16 Katar
+    W_REVOLVER, // 17 Revolver
+    W_RIFLE,    // 18 Rifle
+    W_GATLING,  // 19 GatlingGun
+    W_SHOTGUN,  // 20 Shotgun
+    W_GRENADE,  // 21 GrenadeLauncher
+    W_HUUMA,    // 22 FuumaShuriken
+    W_2HSTAFF,  // 23 TwoHandRod
+    COUNT,
 };
-
-// coefficients for each weapon type
-// (not all used)
-static //const
-earray<interval_t, ItemLook, ItemLook::COUNT> aspd_base_0 //=
-{{
-650_ms,  // 0 NONE
-700_ms,  // 1 BLADE or some other common weapons
-750_ms,  // 2
-610_ms,  // 3 SETZER_AND_SCYTHE
-2000_ms, // 4
-2000_ms, // 5
-800_ms,  // 6 Falchion
-2000_ms, // 7
-700_ms,  // 8
-700_ms,  // 9
-650_ms,  //10 STAFF / Sandcutter
-900_ms,  //11 BOW
-2000_ms, //12
-2000_ms, //13
-2000_ms, //14
-2000_ms, //15
-2000_ms, //16
-}};
 
 # Loc
 enum class EPOS : uint16_t
@@ -521,15 +516,61 @@ def write_item(i, f):
         type="10"
 
     ## View
-    if i.aegis == "Setzer" or i.aegis == "Scythe" or i.aegis == "DragonSword":
+    if i.subtype == "W_FIST":
+        view="0"
+    elif i.subtype == "W_DAGGER":
+        view="1"
+    elif i.subtype == "W_1HSWORD":
+        view="2"
+    elif i.subtype == "W_2HSWORD":
         view="3"
-    elif i.aegis == "Beheader":
+    elif i.subtype == "W_1HSPEAR":
         view="4"
-    elif i.aegis == "SandCutter" or i.aegis == "Jackal" or i.aegis == "WoodenStaff" or i.aegis == "SweetTooth":
+    elif i.subtype == "W_2HSPEAR":
+        view="5"
+    elif i.subtype == "W_1HAXE":
+        view="6"
+    elif i.subtype == "W_2HAXE":
+        view="7"
+    elif i.subtype == "W_MACE":
+        view="8"
+    elif i.subtype == "W_2HMACE":
+        view="9"
+    elif i.subtype == "W_STAFF":
         view="10"
     elif i.subtype == "W_BOW":
         view="11"
-    elif i.type == "IT_WEAPON":
+    elif i.subtype == "W_KNUCKLE":
+        view="12"
+    elif i.subtype == "W_MUSICAL":
+        view="13"
+    elif i.subtype == "W_WHIP":
+        view="14"
+    elif i.subtype == "W_BOOK":
+        view="15"
+    elif i.subtype == "W_KATAR":
+        view="16"
+    elif i.subtype == "W_REVOLVER":
+        view="17"
+    elif i.subtype == "W_RIFLE":
+        view="18"
+    elif i.subtype == "W_GATLING":
+        view="19"
+    elif i.subtype == "W_SHOTGUN":
+        view="20"
+    elif i.subtype == "W_GRENADE":
+        view="21"
+    elif i.subtype == "W_HUUMA":
+        view="22"
+    elif i.subtype == "W_2HSTAFF":
+        view="23"
+    elif i.subtype == "A_ARROW":
+        view="0"
+    elif i.subtype == "A_SHELL":
+        view="0"
+    elif i.type == "IT_AMMO":
+        view="0"
+    elif i.type == "IT_WEAPON": # fall through if subtype was missing (W_DAGGER)
         view="1"
     else:
         view="0"
