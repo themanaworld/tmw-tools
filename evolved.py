@@ -154,7 +154,7 @@ class It:
     self.sl="0" # Slots (unused always 0)
     self.gender="2" # default = UNSPECIFIED = 2
     self.loc=""
-    self.wlv="0" # 1 for weapons, 0 for all others including ammo
+    self.wlv="0" # >= 1 for weapons, 0 for all others including ammo
     self.elv="0" # equip lvl
     self.md=0
     self.subtype=""
@@ -310,6 +310,8 @@ def newItemDB():
             x.range=sti(a)
         elif "\tDef:" in a:
             x.df=sti(a)
+        elif "\tWeaponLv:" in a:
+            x.wlv=sti(a)
         elif "\tEquipLv:" in a:
             x.elv=sti(a)
         #elif "\tSlots:" in a: # allways 0 in tmwa atm
@@ -389,7 +391,7 @@ def newItemDB():
 
 #############################################################################################
 def sti(x):
-    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace(';','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('EquipLv: ', '').replace('Subtype: ', '').replace('Slots: ', '').replace('Gender: ', '').replace('nodrop: ', '').replace('notrade: ', '').replace('noselltonpc: ', '').replace('nostorage: ', '').replace('override: ', '').replace(" ", "").strip()
+    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace(';','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('WeaponLv: ', '').replace('EquipLv: ', '').replace('Subtype: ', '').replace('Slots: ', '').replace('Gender: ', '').replace('nodrop: ', '').replace('notrade: ', '').replace('noselltonpc: ', '').replace('nostorage: ', '').replace('override: ', '').replace(" ", "").strip()
 
 #############################################################################################
 def stis(x):
