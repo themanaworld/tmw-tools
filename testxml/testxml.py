@@ -1326,9 +1326,10 @@ def testSounds(id, node, type):
                 print "error: incorrect sound event name " + event + " in id=" + id
                 errors = errors + 1
         elif type == "item":
-            if event != "hit" and event != "strike" and event != "miss":
+            if event != "hit" and event != "miss":
                 print "error: incorrect sound event name " + event + " in id=" + id
                 errors = errors + 1
+            ## FIXME: Is this even necessary?
             if event == "strike" or event == "miss":
                 if havemiss:
                     print "error: miss and strike attributes at same time in id=" + id

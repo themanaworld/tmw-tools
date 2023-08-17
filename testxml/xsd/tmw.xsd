@@ -1021,7 +1021,6 @@
           <xs:simpleType>
             <xs:restriction base="xs:string">
               <xs:enumeration value="hit"/>
-              <xs:enumeration value="strike"/>
               <xs:enumeration value="miss"/>
               <xs:enumeration value="use"/>
               <xs:enumeration value="equip"/>
