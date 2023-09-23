@@ -401,11 +401,12 @@ def stis(x):
     x=re.sub(r'readparam\(b(.*)\)',r'\1',x)
     x=re.sub(r'callfunc "itheal", (-?[0-9]+), (-?[0-9]+).*',r'heal \1, \2, 1;',x)
     x=re.sub(r'callfunc "RequireStat", b(.*), ([0-9]+).*',r'set @bStat, \1; set @minbStatVal, \2; callfunc "RequireStat";',x)
-    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PLUSATTACKPOWER, (-?[0-9]+).*',r'sc_start sc_raiseattackstrength, \1, \2;',x)
-    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_ATTHASTE_POTION1, (-?[0-9]+).*',r'sc_start sc_raiseattackspeed0, \1, \2;',x)
-    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_SLOWPOISON, (-?[0-9]+).*',r'sc_start sc_slowpoison, \1, \2;',x) # uses 180k in tmwa files but gets multiplied by 1000 in source if low evolved value is taken
-    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_BLOODING, (-?[0-9]+).*',r'sc_start sc_poison, \1, \2;',x)
-    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_POISON, (-?[0-9]+).*',r'sc_start sc_poison, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PLUSATTACKPOWER, (-?[0-9]+).*',r'sc_start SC_ATKPOT, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PLUSMAGICPOWER, (-?[0-9]+).*',r'sc_start SC_MATKPOT, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_ATTHASTE_POTION1, (-?[0-9]+).*',r'sc_start SC_SPEEDPOTION0, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_SLOWPOISON, (-?[0-9]+).*',r'sc_start SC_SLOWPOISON, \1, \2;',x) # uses 180k in tmwa files but gets multiplied by 1000 in source if low evolved value is taken
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_BLOODING, (-?[0-9]+).*',r'sc_start SC_POISON, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_POISON, (-?[0-9]+).*',r'sc_start SC_POISON, \1, \2;',x)
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PHYS_SHIELD, (-?[0-9]+).*',r'sc_start SC_PHYS_SHIELD, \1, \2;',x)
     x=re.sub(r' +',' ',x)
     return x.replace('\n', '').replace("\t","").strip()
