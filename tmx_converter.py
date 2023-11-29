@@ -33,6 +33,7 @@ import zlib
 
 dump_all = False # wall of text
 check_mobs = True # mob_db.txt
+create_switches_files = False # creates .switches.txt with template npcs for objects of the class switch (only needed for devs when creating quests)
 
 # lower case versions of everything except 'spawn' and 'warp'
 other_object_types = set([
@@ -400,17 +401,18 @@ class ContentHandler(xml.sax.ContentHandler):
             self.nodes.write('// (no nodes)\n')
 
         # had to move it here else it writes zero size files not sure if its better to check if a written file has zero size and delete it after
-        if len(self.switch_objs) > 0:
-            with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w') as switches:
-                switches.write('// %s\n' % MESSAGE)
-                switches.write('// %s switches\n\n' % self.name)
-                for sobjs in sorted(self.switch_objs):
-                    obj_name = "#%s_%s_%s" % (self.base, sobjs.x, sobjs.y)
-                    switches.write(
-                        SEPARATOR.join([
-                            '%s,%d,%d,0|script|%s|422\n{\n// REPLACE ME\n}\n' % (self.base, sobjs.x, sobjs.y, obj_name),
-                        ])
-                    )
+        if create_switches_files:
+            if len(self.switch_objs) > 0:
+                with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w') as switches:
+                    switches.write('// %s\n' % MESSAGE)
+                    switches.write('// %s switches\n\n' % self.name)
+                    for sobjs in sorted(self.switch_objs):
+                        obj_name = "#%s_%s_%s" % (self.base, sobjs.x, sobjs.y)
+                        switches.write(
+                            SEPARATOR.join([
+                                '%s,%d,%d,0|script|%s|422\n{\n// REPLACE ME\n}\n' % (self.base, sobjs.x, sobjs.y, obj_name),
+                            ])
+                        )
 
         self.imports.write('// Map %s: %s\n' % (self.base, self.name))
         self.imports.write('// %s\n' % MESSAGE)
