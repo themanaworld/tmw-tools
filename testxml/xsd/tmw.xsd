@@ -638,6 +638,7 @@
       <xs:enumeration value="slot17"/>
       <xs:enumeration value="slot18"/>
       <xs:enumeration value="slot19"/>
+      <xs:enumeration value="food"/>
       <xs:enumeration value="slot20"/>
       <xs:enumeration value="slot21"/>
       <xs:enumeration value="slot22"/>
