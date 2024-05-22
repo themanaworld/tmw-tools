@@ -42,7 +42,7 @@ echo -e "\e[105m======= Legacy =======\e[0m"
 
 echo -e "\e[96m>> Building adler32...\e[0m"
 rm -f adler32 2>/dev/null || :
-$CC -lz adler32.c -o adler32
+$CC adler32.c -lz -o adler32
 
 echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
