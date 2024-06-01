@@ -252,6 +252,8 @@ enum class ItemMode : uint8_t
     NO_TRADE       = 2,
     NO_SELL_TO_NPC = 4,
     NO_STORAGE     = 8,
+    KEEP_AFTER_USE = 16,
+    DONT_USE_AMMO  = 32,
 };
 """
 def newItemDB():
@@ -259,7 +261,9 @@ def newItemDB():
     IT_NO_TRADE =        2
     IT_NO_SELL_TO_NPC =  4
     IT_NO_STORAGE =      8
-    IT_DROPANNOUNCE =    16
+    IT_KEEP_AFTER_USE = 16
+    IT_DONT_USE_AMMO =  32
+    IT_DROPANNOUNCE =   64
 
     print("\nGenerating Item Wiki...")
     if len(sys.argv) >= 2:
@@ -333,9 +337,6 @@ def newItemDB():
         elif "\tAllowCards:" in a:
             x.ac=True
         # Write booleans
-        elif "\tDropAnnounce: true" in a:
-            x.rare=True
-            #x.md = x.md | IT_DROPANNOUNCE
         elif "\tnodrop: true" in a:
             #x.drop=False
             x.md = x.md | IT_NO_DROP
@@ -348,6 +349,15 @@ def newItemDB():
         elif "\tnostorage: true" in a:
             #x.store=False
             x.md = x.md | IT_NO_STORAGE
+        elif "\tKeepAfterUse: true" in a:
+            #x.keepafteruse=False
+            x.md = x.md | IT_KEEP_AFTER_USE
+        elif "\tDontUseAmmo: true" in a:
+            #x.dontuseammo=False
+            x.md = x.md | IT_DONT_USE_AMMO
+        elif "\tDropAnnounce: true" in a:
+            x.rare=True
+            #x.md = x.md | IT_DROPANNOUNCE
         elif "\tNouse:" in a:
             nouse=True
         elif "\toverride:" in a:
@@ -391,7 +401,7 @@ def newItemDB():
 
 #############################################################################################
 def sti(x):
-    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace(';','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('WeaponLv: ', '').replace('EquipLv: ', '').replace('Subtype: ', '').replace('Slots: ', '').replace('Gender: ', '').replace('nodrop: ', '').replace('notrade: ', '').replace('noselltonpc: ', '').replace('nostorage: ', '').replace('override: ', '').replace(" ", "").strip()
+    return x.replace('\n', '').replace('|', '').replace(')', '').replace('Id: ', '').replace('"','').replace(';','').replace("    ","").replace("\t","").replace('AegisName: ', '').replace('Name: ','').replace('Buy: ', '').replace('Sell: ', '').replace('Weight: ', '').replace('Type: ', '').replace('Loc: ', '').replace('Atk: ', '').replace('Matk: ', '').replace('Range: ', '').replace('Def: ', '').replace('WeaponLv: ', '').replace('EquipLv: ', '').replace('Subtype: ', '').replace('Slots: ', '').replace('Gender: ', '').replace('nodrop: ', '').replace('notrade: ', '').replace('noselltonpc: ', '').replace('nostorage: ', '').replace('KeepAfterUse: ', '').replace('DontUseAmmo: ', '').replace('override: ', '').replace(" ", "").strip()
 
 #############################################################################################
 def stis(x):
