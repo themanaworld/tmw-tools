@@ -124,7 +124,7 @@ class JSONWriter(BasicWriter):
         entry, author = entry.rstrip('\n').rsplit('\n', 1)
         self.stream.write('"title":"%s",' % title.format(**{'title':NOPFmt()})) # FIXME: assumes the first line is always the title
         self.stream.write('"date":"%s",' % date.format(**{'date':NOPFmt()})) # FIXME: assumes the second line is always the date
-        self.stream.write('"author":"%s",' % author.format(**{'author':NOPFmt()})) # FIXME: assumes the second line is always the date
+        self.stream.write('"author":"%s",' % author.format(**{'author':NOPFmt()})) # FIXME: assumes the last line is always the author
         self.stream.write('"html":"')
         entry = entry.lstrip('\n')
         entry = entry.replace('\n\n', '<br/>')
