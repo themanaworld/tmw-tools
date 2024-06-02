@@ -20,7 +20,12 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import cgi
+try:
+    # py3
+    from html import escape as html_escape
+except ImportError:
+    # py2
+    from cgi import escape as html_escape
 
 __all__ = ['make_html_colors_dict', 'make_txt_colors_dict', 'make_forum_colors_dict']
 
@@ -51,7 +56,7 @@ class HtmlDate(object):
 class HtmlLink(object):
     __slots__ = ()
     def __format__(self, target):
-        target = cgi.escape(target, True)
+        target = html_escape(target, True)
         return '<a href="%s">%s</a>' % (target, target)
 
 class HtmlSignature(object):
