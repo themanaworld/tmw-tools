@@ -1834,6 +1834,24 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
+              <xs:element name="attack">
+                <xs:complexType>
+                  <xs:attribute name="id" type="xs:int" use="required"/>
+                  <xs:attribute name="effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="hit-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="critical-hit-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="miss-effect-id" type="xs:int" use="optional"/>
+                  <xs:attribute name="action" type="xs:string" default="attack"/>
+                  <xs:attribute name="skyaction" type="xs:string" default="skyattack"/>
+                  <xs:attribute name="wateraction" type="xs:string" default="waterattack"/>
+                  <xs:attribute name="rideaction" type="xs:string" default="waterattack"/>
+                  <xs:attribute name="missile-particle" type="xs:string" use="optional"/>
+                  <xs:attribute name="missile-z" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-lifetime" type="xs:int" use="optional"/>
+                  <xs:attribute name="missile-speed" type="xs:float" use="optional"/>
+                  <xs:attribute name="missile-diedistance" type="xs:float" use="optional"/>
+                </xs:complexType>
+              </xs:element>
             </xs:choice>
             <xs:attribute name="id" type="xs:int" use="required"/>
             <xs:attribute name="name" type="xs:string" use="required"/>
