@@ -1850,16 +1850,18 @@
             <xs:attribute name="deadDirectionType" type="xs:int" default="1"/>
             <xs:attribute name="attackDirectionType" type="xs:int" default="4"/>
             <xs:attribute name="removeMessage" type="xs:string" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="sound">
-          <xs:complexType>
-            <xs:simpleContent>
-              <xs:extension base="xs:string">
-                <xs:attribute name="event" type="monster_sound_event" use="required"/>
-                <xs:attribute name="delay" type="xs:int" default="0"/>
-              </xs:extension>
-            </xs:simpleContent>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="sound">
+                  <xs:complexType>
+                    <xs:simpleContent>
+                      <xs:extension base="xs:string">
+                        <xs:attribute name="event" type="monster_sound_event" use="required"/>
+                        <xs:attribute name="delay" type="xs:int" default="0"/>
+                      </xs:extension>
+                    </xs:simpleContent>
+                  </xs:complexType>
+                </xs:element>
+              </xs:choice>
           </xs:complexType>
         </xs:element>
       </xs:choice>
