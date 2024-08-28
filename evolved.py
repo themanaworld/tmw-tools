@@ -418,6 +418,7 @@ def stis(x):
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_BLOODING, (-?[0-9]+).*',r'sc_start SC_POISON, \1, \2;',x)
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_POISON, (-?[0-9]+).*',r'sc_start SC_POISON, \1, \2;',x)
     x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PHYS_SHIELD, (-?[0-9]+).*',r'sc_start SC_PHYS_SHIELD, \1, \2;',x)
+    x=re.sub(r'callfunc\("SC_Bonus", (-?[0-9]+), SC_PHYS_SHIELD_ITEM, (-?[0-9]+).*',r'sc_start SC_PHYS_SHIELD_ITEM, \1, \2;',x)
     x=re.sub(r' +',' ',x)
     return x.replace('\n', '').replace("\t","").strip()
 
