@@ -10,7 +10,7 @@ import re
 import datetime
 import xml
 import csv
-import ogg.vorbis
+import soundfile
 import StringIO
 import sys
 from xml.dom import minidom
@@ -938,8 +938,10 @@ def testSound(file, sfxDir, msg):
             showMsgFile(file, "sound file not found", True)
         return
     try:
-        ogg.vorbis.VorbisFile(fullPath)
-    except ogg.vorbis.VorbisError as e:
+        # TODO: speed this up by preallocating a numpy array?
+        soundfile.read(fullPath, always_2d = False)
+    #except SoundFileError as e:
+    except Exception as e:
         showMsgFile(file, "sound file incorrect error: " + str(e), True)
 
 
