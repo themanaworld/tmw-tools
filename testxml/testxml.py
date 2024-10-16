@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf8 -*-
 #
 # Copyright (C) 2010-2011  Evol Online
@@ -11,7 +11,7 @@ import datetime
 import xml
 import csv
 import soundfile
-import StringIO
+import io
 import sys
 from xml.dom import minidom
 from xml.etree import ElementTree
@@ -66,25 +66,19 @@ class Layer:
 
 def printErr(err):
     errDict.add(err)
-    print err.encode("utf-8")
+    print(err)
 
 def showFileErrorById(id, rootDir, fileDir):
-    rootDir = rootDir.encode("utf-8")
-    fileDir = fileDir.encode("utf-8")
-    print "error: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")"
+    print("error: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")")
 
 def showFileWarningById(id, rootDir, fileDir):
-    rootDir = rootDir.encode("utf-8")
-    fileDir = fileDir.encode("utf-8")
-    print "warn: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")"
+    print("warn: id=" + id + ", file not found: " + fileDir + " (" + rootDir + fileDir + ")")
 
 def showError(id, text):
-    text = text.encode("utf-8")
-    print "error: id=" + id + " " + text
+    print("error: id=" + id + " " + text)
 
 def showWarning(id, text):
-    text = text.encode("utf-8")
-    print "warn: id=" + id + " " + text
+    print("warn: id=" + id + " " + text)
 
 def showMsg(id, text, src, iserr):
     global errors, warnings
@@ -137,26 +131,26 @@ def showFileMsgById(id, rootDir, fileDir, iserr):
         warnings = warnings + 1
 
 def printSeparator():
-    print "--------------------------------------------------------------------------------"
+    print("--------------------------------------------------------------------------------")
 
 def showHeader():
     print("Client Data Validator.")
-    print("Run at: " + datetime.datetime.now().isoformat())
+    print(("Run at: " + datetime.datetime.now().isoformat()))
     print("https://git.themanaworld.org/ml/tools/blob/master/testxml/testxml.py")
     printSeparator()
 
 def showFooter():
     printSeparator()
-    print "Total:"
-    print " Warnings: " + str(warnings)
-    print " Errors:   " + str(errors)
+    print("Total:")
+    print(" Warnings: " + str(warnings))
+    print(" Errors:   " + str(errors))
 
 def enumDirs(parentDir):
     global warnings, errors
     try:
         files = os.listdir(parentDir)
     except OSError:
-        print "Directory error: " + parentDir
+        print("Directory error: " + parentDir)
         if silent == False:
             warnings = warnings + 1
         return
@@ -170,10 +164,10 @@ def enumDirs(parentDir):
             if filt.search(file1):
                 try:
                     if silent == True and not stfu:
-                        print "Checking " + file2
+                        print("Checking " + file2)
                     minidom.parse(file2)
                 except xml.parsers.expat.ExpatError as err:
-                    print "error: " + file2 + ", line=" + str(err.lineno) + ", char=" + str(err.offset)
+                    print("error: " + file2 + ", line=" + str(err.lineno) + ", char=" + str(err.offset))
                     errors = errors + 1
             if file1 != "testxml.py":
                 checkFilePermission(file2)
@@ -181,7 +175,7 @@ def enumDirs(parentDir):
 def checkFilePermission(fullName):
     global warnings
     if os.access(fullName, os.X_OK):
-        print "warn: execute flag on file: " + fullName
+        print("warn: execute flag on file: " + fullName)
         warnings = warnings + 1
 
 
@@ -195,14 +189,14 @@ def loadPaths():
             if node.attributes["name"].value == "itemIcons":
                 iconsDir = node.attributes["value"].value
                 if iconsDir != "graphics/items/":
-                    print "warn: itemIcons path has not default value."\
-                            " Will be incampatible with old clients."
+                    print("warn: itemIcons path has not default value."\
+                            " Will be incampatible with old clients.")
                     warnings = warnings + 1
             elif node.attributes["name"].value == "sprites":
                 spritesDir = node.attributes["value"].value
                 if spritesDir != "graphics/sprites/":
-                    print "warn: sprites path has not default value."\
-                            " Will be incampatible with old clients."
+                    print("warn: sprites path has not default value."\
+                            " Will be incampatible with old clients.")
                     warnings = warnings + 1
             elif node.attributes["name"].value == "sfx":
                 sfxDir = node.attributes["value"].value
@@ -210,14 +204,14 @@ def loadPaths():
             elif node.attributes["name"].value == "particles":
                 particlesDir = node.attributes["value"].value
                 if particlesDir != "graphics/particles/":
-                    print "warn: particles path has not default value."\
-                            " Will be incampatible with old clients."
+                    print("warn: particles path has not default value."\
+                            " Will be incampatible with old clients.")
                     warnings = warnings + 1
             elif node.attributes["name"].value == "maps":
                 mapsDir = node.attributes["value"].value
                 if mapsDir != "maps/":
-                    print "warn: maps path has not default value."\
-                            " Will be incampatible with old clients."
+                    print("warn: maps path has not default value."\
+                            " Will be incampatible with old clients.")
                     warnings = warnings + 1
             elif node.attributes["name"].value == "spriteErrorFile":
                 spriteErrorFile = node.attributes["value"].value
@@ -235,7 +229,7 @@ def loadPaths():
                 musicDir = node.attributes["value"].value
 
     except:
-        print "warn: paths.xml not found"
+        print("warn: paths.xml not found")
         warnings = warnings + 1
 
 def splitImage(image):
@@ -441,7 +435,7 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
         return
 
     try:
-        variants = dom.documentElement.attributes["variants"].value
+        variants = int(dom.documentElement.attributes["variants"].value)
     except:
         variants = 0
 
@@ -932,7 +926,7 @@ def testImageFile(file, fullPath, sz, src, iserr):
 def testSound(file, sfxDir, msg):
     fullPath = parentDir + "/" + sfxDir + file
     if not os.path.isfile(fullPath) or os.path.exists(fullPath) == False:
-        print "error:" + fullPath
+        print("error:" + fullPath)
         if msg != "":
             showMsgFile(file, "sound file not found: " + msg , True)
         else:
@@ -1000,12 +994,12 @@ def testEmitters(id, file, parentNode, src):
 def testItems(fileName, imgDir):
     global warnings, errors, safeDye
     if not stfu:
-        print "Checking " + fileName
+        print("Checking " + fileName)
     try:
         dom = minidom.parse(parentDir + "/" + fileName)
     except Exception as err:
-        print "error: " + fileName + ": corrupted"
-        print err
+        print("error: " + fileName + ": corrupted")
+        print(err)
         errors = errors + 1
         return
     idset = set()
@@ -1016,11 +1010,11 @@ def testItems(fileName, imgDir):
                 name = node.attributes["name"].value
                 if name == "":
                     errors = errors + 1
-                    print "error: " + fileName + ": Empty include name";
+                    print("error: " + fileName + ": Empty include name");
                 testItems(name, imgDir)
             except:
                 errors = errors + 1
-                print "error: " + fileName + ": Broken include tag";
+                print("error: " + fileName + ": Broken include tag");
             continue
         if node.nodeName != "item":
             continue
@@ -1032,14 +1026,14 @@ def testItems(fileName, imgDir):
             id = node.attributes["id"].value
         except:
             if oldId is None:
-                print "error: " + fileName + ": item without id"
+                print("error: " + fileName + ": item without id")
             else:
-                print "error: " + fileName + ": item without id. Last id was: " + oldId
+                print("error: " + fileName + ": item without id. Last id was: " + oldId)
             errors = errors + 1
             continue
         oldId = id
         if id in idset:
-            print "error: " + fileName + ": duplicated id=" + id
+            print("error: " + fileName + ": duplicated id=" + id)
             errors = errors + 1
         else:
             idset.add(id)
@@ -1055,7 +1049,7 @@ def testItems(fileName, imgDir):
             type = node.attributes["type"].value
         except:
             type = ""
-            print "warn: " + fileName + ": no type attribute for id=" + id
+            print("warn: " + fileName + ": no type attribute for id=" + id)
             warnings = warnings + 1
         try:
             image = node.attributes["image"].value
@@ -1106,10 +1100,10 @@ def testItems(fileName, imgDir):
 
         if type == "hairsprite":
             if idI >= 0:
-                print "error: " + fileName + ": hairsprite with id=" + id
+                print("error: " + fileName + ": hairsprite with id=" + id)
                 errors = errors + 1
             elif idI < -100:
-                print "error: " + fileName + ": hairsprite override player sprites"
+                print("error: " + fileName + ": hairsprite override player sprites")
                 errors = errors + 1
 
             safeDye = True
@@ -1118,10 +1112,10 @@ def testItems(fileName, imgDir):
 
         elif type == "racesprite":
             if idI >= 0:
-                print "error: " + fileName + ": racesprite with id=" + id
+                print("error: " + fileName + ": racesprite with id=" + id)
                 errors = errors + 1
             elif idI > -100:
-                print "error: " + fileName + ": racesprite override player hair"
+                print("error: " + fileName + ": racesprite override player hair")
                 errors = errors + 1
         elif type == "usable" or type == "unusable" or type == "generic" \
         or type == "equip-necklace" or type == "equip-torso" or type == "equip-feet" \
@@ -1130,7 +1124,7 @@ def testItems(fileName, imgDir):
         or type == "equip-charm" or type == "equip-ammo" or type == "equip-neck" \
         or type == "equip-ring" or type == "card":
             if image == "":
-                print "error: " + fileName + ": missing image attribute on id=" + id
+                print("error: " + fileName + ": missing image attribute on id=" + id)
                 errors = errors + 1
                 continue
             elif len(imagecolor) > 0:
@@ -1139,7 +1133,7 @@ def testItems(fileName, imgDir):
                 else:
                     testDyeChannel(id, imagecolor, "image=" + image0, True)
                     if colors not in colorsList:
-                        print "error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml"
+                        print("error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml")
                         errors = errors + 1
 
             if floorcolor != None and len(floorcolor) > 0:
@@ -1148,14 +1142,14 @@ def testItems(fileName, imgDir):
                 else:
                     testDyeChannel(id, imagecolor, "floor=" + floor0, True);
                     if colors not in colorsList:
-                        print "error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml"
+                        print("error: " + fileName + ": colors value " + colors + " not found in itemcolors.xml")
                         errors = errors + 1
 
             if description == "":
-                print "warn: " + fileName + ": missing description attribute on id=" + id
+                print("warn: " + fileName + ": missing description attribute on id=" + id)
                 warnings = warnings + 1
             elif description == ".":
-                print "warn: " + fileName + ": broken description attribute on id=" + id
+                print("warn: " + fileName + ": broken description attribute on id=" + id)
                 warnings = warnings + 1
 
             if missile != "":
@@ -1169,8 +1163,8 @@ def testItems(fileName, imgDir):
                 floorSprite = None
             if floorSprite != None:
                 if floor != None:
-                    print "error: " + fileName + ": found attribute floor and tag floor. " + \
-                            "Should be only one tag or attribute. id=" + id
+                    print("error: " + fileName + ": found attribute floor and tag floor. " + \
+                            "Should be only one tag or attribute. id=" + id)
                     errors = errors + 1
                 testSprites(id, floorSprite, False, colors is None, True, "", err)
 
@@ -1211,7 +1205,7 @@ def testItems(fileName, imgDir):
         elif type == "other":
             None
         elif type != "":
-            print "warn: " + fileName + ": unknown type '" + type + "' for id=" + id
+            print("warn: " + fileName + ": unknown type '" + type + "' for id=" + id)
             warnings = warnings + 1
 
 
@@ -1224,7 +1218,7 @@ def testItemReplace(id, rootNode, name):
             sprite = node.attributes["sprite"].value
         except:
             if len(node.attributes) != 0:
-                print "error: reading replace sprite name, id=" + str(id)
+                print("error: reading replace sprite name, id=" + str(id))
                 errors = errors + 1
             continue
         checkSpriteName(id, sprite)
@@ -1245,14 +1239,14 @@ def checkSpriteName(id, name):
             and name != "glove" and name != "gloves" and name != "weapon" and \
             name != "weapons" and name != "shield" and name != "shields" and \
             name != "amulet" and name != "amulets" and name != "ring" and name != "rings":
-                print "error: unknown sprite name " + name + ", id=" + str(id)
+                print("error: unknown sprite name " + name + ", id=" + str(id))
                 errors = errors + 1
 
 
 def testMonsters(fileName):
     global warnings, errors
     if not stfu:
-        print "Checking " + fileName
+        print("Checking " + fileName)
     dom = minidom.parse(parentDir + "/" + fileName)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -1261,22 +1255,22 @@ def testMonsters(fileName):
                 name = node.attributes["name"].value
                 if name == "":
                     errors = errors + 1
-                    print "error: " + fileName + ": Empty include name";
+                    print("error: " + fileName + ": Empty include name");
                 testMonsters(name)
             except:
                 errors = errors + 1
-                print "error: " + fileName + ": Broken include tag";
+                print("error: " + fileName + ": Broken include tag");
             continue
         if node.nodeName == "monster":
             try:
                 id = node.attributes["id"].value
             except:
-                print "error: " + fileName + ": no id for monster"
+                print("error: " + fileName + ": no id for monster")
                 errors = errors + 1
                 continue
 
             if id in idset:
-                print "error: " + fileName + ": duplicate id=" + id
+                print("error: " + fileName + ": duplicate id=" + id)
                 errors = errors + 1
             else:
                 idset.add(id)
@@ -1284,7 +1278,7 @@ def testMonsters(fileName):
             try:
                 name = node.attributes["name"].value
             except:
-                print "error: " + fileName + ": no name for id=" + id
+                print("error: " + fileName + ": no name for id=" + id)
                 errors = errors + 1
                 name = ""
 
@@ -1319,17 +1313,17 @@ def testSounds(id, node, type):
         try:
             event = sound.attributes["event"].value
         except:
-            print "error: no sound event name in id=" + id
+            print("error: no sound event name in id=" + id)
             errors = errors + 1
 
         if type == "monster":
             if event != "hit" and event != "miss" and event != "hurt" and event != "die" \
                     and event != "move" and event != "sit" and event != "spawn":
-                print "error: incorrect sound event name " + event + " in id=" + id
+                print("error: incorrect sound event name " + event + " in id=" + id)
                 errors = errors + 1
         elif type == "item":
             if event != "hit" and event != "miss":
-                print "error: incorrect sound event name " + event + " in id=" + id
+                print("error: incorrect sound event name " + event + " in id=" + id)
                 errors = errors + 1
 
         testSound(sound.childNodes[0].data, sfxDir, "")
@@ -1337,7 +1331,7 @@ def testSounds(id, node, type):
 def testNpcs(file):
     global warnings, errors
     if not stfu:
-        print "Checking " + file
+        print("Checking " + file)
     dom = minidom.parse(parentDir + "/" + file)
     idset = set()
     for node in dom.documentElement.childNodes:
@@ -1346,11 +1340,11 @@ def testNpcs(file):
                 name = node.attributes["name"].value
                 if name == "":
                     errors = errors + 1
-                    print "error: " + file + ": Empty include name";
+                    print("error: " + file + ": Empty include name");
                 testNpcs(name)
             except:
                 errors = errors + 1
-                print "error: " + file + ": Broken include tag";
+                print("error: " + file + ": Broken include tag");
             continue
         if node.nodeName != "npc":
             continue
@@ -1358,12 +1352,12 @@ def testNpcs(file):
         try:
             id = node.attributes["id"].value
         except:
-            print "error: " + file + ": no id for npc"
+            print("error: " + file + ": no id for npc")
             errors = errors + 1
             continue
 
         if id in idset:
-            print "error: " + file + ": duplicate npc id=" + id
+            print("error: " + file + ": duplicate npc id=" + id)
             errors = errors + 1
         else:
             idset.add(id)
@@ -1379,7 +1373,7 @@ def readAttr(node, attr, dv, msg, iserr):
     try:
         return node.attributes[attr].value
     except:
-        print msg
+        print(msg)
         if iserr:
             errors = errors + 1
         else:
@@ -1765,8 +1759,8 @@ def testOverSizedTiles(layer, tiles, file):
                             warnings = warnings + 1
 
     if len(oversizeErrList) > 0 and silent != True:
-        print "error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
-                ". Possible incorrect map drawing"
+        print("error: " + file + ": Oversized tile overlapped to next tile in layer " + layer.name + \
+                ". Possible incorrect map drawing")
         errors = errors + 1
         errStr = ""
         k = 0
@@ -1776,7 +1770,7 @@ def testOverSizedTiles(layer, tiles, file):
             if k > 100:
                 errStr = errStr + "..."
                 break
-        print errStr
+        print(errStr)
 
     if len(ignoreErrList) > 0:
         errStr = ""
@@ -1784,8 +1778,8 @@ def testOverSizedTiles(layer, tiles, file):
             if errStr != "":
                 errStr = errStr + ", "
             errStr = errStr + err
-        print("error: {0}: Tiles from ignored atlas used in layer {1}. Tilesets: {2}. "
-              "Possible incorrect map drawing".format(file, layer.name, errStr))
+        print(("error: {0}: Tiles from ignored atlas used in layer {1}. Tilesets: {2}. "
+              "Possible incorrect map drawing".format(file, layer.name, errStr)))
         errors = errors + 1
         errStr = ""
         k = 0
@@ -1795,7 +1789,7 @@ def testOverSizedTiles(layer, tiles, file):
             if k > 100:
                 errStr = errStr + "..."
                 break
-        print errStr
+        print(errStr)
 
 
 def testTiles(mapName, file, tilesMap):
@@ -2004,7 +1998,7 @@ def testLayer(file, node, name, width, height, layer, tiles):
                 showMsgFile(file, "not supported compression " + compression + \
                         " for csv layer format:" + name, True)
             binData = data.childNodes[0].data.strip()
-            f = StringIO.StringIO(binData)
+            f = io.StringIO(binData)
             arr = list(csv.reader(f, delimiter=',', quotechar='|'))
             layer.arr = []
 #            print file
@@ -2146,9 +2140,9 @@ def countCollisionsNear(layer, x, y):
 def testMaps(dir):
     global warnings, errors
     fullPath = parentDir + "/" + dir
-    print "Checking maps"
+    print("Checking maps")
     if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
-        print "error: maps dir not found: " + dir
+        print("error: maps dir not found: " + dir)
         errors = errors + 1
         return
 
@@ -2160,15 +2154,15 @@ def testDirExists(path):
     global errors
     fullName = parentDir + "/" + path
     if not os.path.exists(fullName):
-        print "error: path '" + path + "' not exists."
+        print("error: path '" + path + "' not exists.")
         errors = errors + 1
     elif not os.path.isdir(fullName):
-        print "error: path '" + path + "' is incorrect directory."
+        print("error: path '" + path + "' is incorrect directory.")
         errors = errors + 1
 
 def testDefaultFiles():
     global warnings
-    print "Checking default files"
+    print("Checking default files")
     testDirExists(iconsDir)
     testDirExists(spritesDir)
     testDirExists(particlesDir)
@@ -2190,10 +2184,10 @@ def testDefaultFiles():
 def testMinimapsDir():
     global errors, warnings
 
-    print "Checking minimaps"
+    print("Checking minimaps")
     fullPath = parentDir + "/" + minimapsDir
     if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
-        print "warn: minimaps dir not exist"
+        print("warn: minimaps dir not exist")
         warnings = warnings + 1
         return
     for file in os.listdir(fullPath):
@@ -2270,7 +2264,7 @@ def testSoundsDir(dir, sfxDir):
 
     fullPath = parentDir + "/" + sfxDir + dir
     if not os.path.isdir(fullPath) or not os.path.exists(fullPath):
-        print "warn: directory " + sfxDir + " not exist"
+        print("warn: directory " + sfxDir + " not exist")
         warnings = warnings + 1
         return
     for file in os.listdir(fullPath):
@@ -2285,7 +2279,7 @@ def testSoundsDir(dir, sfxDir):
 
 def testItemColors(fileName):
     global warnings, errors, safeDye, colorLists
-    print "Checking itemcolors.xml"
+    print("Checking itemcolors.xml")
     try:
         dom = minidom.parse(parentDir + "/" + fileName)
     except:
@@ -2298,11 +2292,11 @@ def testItemColors(fileName):
         try:
             name = node.attributes["name"].value
         except:
-            print "error: colors list dont have name"
+            print("error: colors list dont have name")
             errors = errors + 1
             continue
         if name in colorsList:
-            print "error: duplicate color list: " + name
+            print("error: duplicate color list: " + name)
             errors = errors + 1
             continue
         colorsList.add(name)
@@ -2314,27 +2308,27 @@ def testItemColors(fileName):
             try:
                 id = colorNode.attributes["id"].value
             except:
-                print "error: getting id in list: " + name
+                print("error: getting id in list: " + name)
                 errors = errors + 1
                 continue
             try:
                 colorName = colorNode.attributes["name"].value
             except:
-                print "error: getting name in list: " + name
+                print("error: getting name in list: " + name)
                 errors = errors + 1
                 continue
             try:
                 colorDye = colorNode.attributes["value"].value
             except:
-                print "error: getting color in list: " + name
+                print("error: getting color in list: " + name)
                 errors = errors + 1
             if id in colors:
-                print "error: color with id " + str(id) + " already in list: " + name
+                print("error: color with id " + str(id) + " already in list: " + name)
                 errors = errors + 1
             else:
                 colors.add(id)
             if colorName in names:
-                print "error: color with name \"" + colorName + "\" already in list: " + name
+                print("error: color with name \"" + colorName + "\" already in list: " + name)
                 errors = errors + 1
             else:
                 names.add(colorName)
@@ -2384,11 +2378,11 @@ def detectClientData(dirs):
 
     for dir in dirs:
         if haveXml(dir):
-            print "Detected client data directory in: " + dir
+            print("Detected client data directory in: " + dir)
             parentDir = dir
             return True
 
-    print "Cant detect client data directory"
+    print("Cant detect client data directory")
     exit(1)
 
 
@@ -2405,9 +2399,9 @@ if len(sys.argv) == 2:
         herc = True
 
 showHeader()
-print "Detecting clientdata dir"
+print("Detecting clientdata dir")
 detectClientData([".", "..", "../../client-data", parentDir])
-print "Checking xml file syntax"
+print("Checking xml file syntax")
 enumDirs(parentDir)
 loadPaths()
 (mapToAtlas, atlasToFiles) = loadMapAtlases("/maps.xml")
@@ -2418,17 +2412,17 @@ testMonsters("/monsters.xml")
 testNpcs("/npcs.xml")
 testMaps(mapsDir)
 testMinimapsDir()
-print "Checking images dir"
+print("Checking images dir")
 testImagesDir(wallpapersDir, 0)
-print "Checking icons dir"
+print("Checking icons dir")
 testImagesDir(iconsDir, 32)
-print "Checking sprites dir"
+print("Checking sprites dir")
 testSpritesDir("")
-print "Checking particles dir"
+print("Checking particles dir")
 testParticlesDir(particlesDir)
-print "Checking sfx dir"
+print("Checking sfx dir")
 testSoundsDir("", sfxDir)
-print "Checking music dir"
+print("Checking music dir")
 if silent != True:
     testSoundsDir("", musicDir)
 showFooter()
