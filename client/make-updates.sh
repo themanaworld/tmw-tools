@@ -63,11 +63,11 @@ pushd $cdata &>/dev/null
 
 if [ "$UPDATE_HTTP" == "none" ] ; then
     echo -e "\e[96m>> Changing last modified dates...\e[0m"
-    find -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
+    find -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
 fi
 
 echo -e "\e[96m>> Compressing files...\e[0m"
-find -path ./music -prune -o -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/TMW.zip
+find -path ./music -prune -o -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/TMW.zip
 find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/TMW-music.zip
 #find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
 find ./mods -type f | xargs zip -9 -r $dir/files/TMW-mods.zip
