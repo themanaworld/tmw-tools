@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
 ##    tmx_converter.py - Extract walkmap, warp, and spawn information from maps.
@@ -151,7 +151,7 @@ class ContentHandler(xml.sax.ContentHandler):
     def __init__(self, out, npc_dir, mobs, warps, imports, nodes):
         xml.sax.ContentHandler.__init__(self)
         self.locator = None
-        self.out = open(out, 'w')
+        self.out = open(out, 'wb')
         self.state = State.INITIAL
         self.tilesets = set([0]) # consider the null tile as its own tileset
         self.buffer = bytearray()
@@ -222,7 +222,7 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.compression = attr.get(u'compression','')
                 self.state = State.DATA
         elif self.state is State.DATA:
-            self.out.write(chr(int(attr.get(u'gid',0)) not in self.tilesets))
+            self.out.write(bytes([int(attr.get(u'gid',0)) not in self.tilesets]))
         elif self.state is State.FINAL:
             if name == u'object':
                 try:
@@ -358,8 +358,8 @@ class ContentHandler(xml.sax.ContentHandler):
         if name == u'data':
             if self.state is State.DATA:
                 if self.encoding == u'csv':
-                    for x in self.buffer.split(','):
-                        self.out.write(chr(int(x) not in self.tilesets))
+                    for x in self.buffer.split(b','):
+                        self.out.write(bytes([int(x) not in self.tilesets]))
                 elif self.encoding == u'base64':
                     data = base64.b64decode(str(self.buffer))
                     if self.compression == u'zlib':
@@ -367,7 +367,7 @@ class ContentHandler(xml.sax.ContentHandler):
                     elif self.compression == u'gzip':
                         data = zlib.decompressobj().decompress('x\x9c' + data[10:-8])
                     for i in range(self.width*self.height):
-                        self.out.write(chr(int(struct.unpack('<I',data[i*4:i*4+4])[0]) not in self.tilesets))
+                        self.out.write(bytes([struct.unpack('<I',data[i*4:i*4+4])[0] not in self.tilesets]))
                 self.state = State.FINAL
 
     def endDocument(self):
