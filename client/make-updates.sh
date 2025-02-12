@@ -7,7 +7,6 @@ dir=`pwd`
 UPDATE_DIR=${UPDATE_DIR:=~/www/updates}
 cdata=../../client-data
 UPDATE_HTTP=${UPDATE_HTTP:="http://updates.themanaworld.org/updates"}
-CC=${CC:=gcc}
 
 function check_update() {
     test_command=`           \
@@ -39,10 +38,6 @@ trap finish EXIT
 
 
 echo -e "\e[105m======= Legacy =======\e[0m"
-
-echo -e "\e[96m>> Building adler32...\e[0m"
-rm -f adler32 2>/dev/null || :
-$CC adler32.c -lz -o adler32
 
 echo -e "\e[96m>> Creating directory tree...\e[0m"
 mkdir -pv files
@@ -76,9 +71,9 @@ touch $dir/files/TMW-mods.zip
 
 echo -e "\e[96m>> Calculating adler32 checksum...\e[0m"
 pushd $dir/files &>/dev/null
-sum=`../adler32 1 TMW.zip`
-musicsum=`../adler32 1 TMW-music.zip`
-modsum=`../adler32 1 TMW-mods.zip`
+sum=`../adler32.py TMW.zip`
+musicsum=`../adler32.py TMW-music.zip`
+modsum=`../adler32.py TMW-mods.zip`
 
 echo -e "\e[96m>> Generating xml file...\e[0m"
 echo "<?xml version=\"1.0\"?><updates>" >resources.xml
