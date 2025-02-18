@@ -67,10 +67,10 @@ if [ "$UPDATE_HTTP" == "none" ] ; then
 fi
 
 echo -e "\e[96m>> Compressing files...\e[0m"
-find -path ./music -prune -o -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ $dir/files/TMW.zip
-find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ $dir/files/TMW-music.zip
+find -path ./music -prune -o -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ -n .ogg $dir/files/TMW.zip
+find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip
 #find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
-find ./mods -type f | xargs zip -9 -r $dir/files/TMW-mods.zip
+find ./mods -type f | xargs zip -9 -r -n .ogg $dir/files/TMW-mods.zip
 touch $dir/files/TMW-music.zip
 touch $dir/files/TMW-mods.zip
 
