@@ -894,7 +894,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
                 except:
                     delay = 0
                 if delay > 0 and delay < 5000:
-                    showMsgSprite(file, "last frame\sequence in dead animation have to low limit. Need zero or >5000: " + name, False)
+                    showMsgSprite(file, "last frame\sequence in dead animation have too low limit. Need zero or >5000: " + name, False)
 
     return framesid
 
