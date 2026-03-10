@@ -1724,8 +1724,7 @@ def testOverSizedTiles(layer, tiles, file):
         ignoredFiles = atlasToFiles["ignored"]
     for x in range(0, layer.width):
         for y in range(0, layer.height):
-            idx = ((y * layer.width) + x) * 4
-            val = getLDV(layer.arr, idx)
+            val = getLDV(layer.arr, (y * layer.width) + x)
             if val == 0:
                 continue
 
@@ -1741,8 +1740,7 @@ def testOverSizedTiles(layer, tiles, file):
                 None
             elif tile.tileWidth > 32 and x + 1 < layer.width:
                 for x2 in range(x + 1, x + 1 + int(tile.width / 32), 1):
-                    idx = ((y * layer.width) + x2) * 4
-                    val = getLDV(layer.arr, idx)
+                    val = getLDV(layer.arr, (y * layer.width) + x2)
                     tile, _ = findTileByGid(tiles, val)
                     if val > 0:
                         oversizeErrList.append((x, y))
@@ -1750,8 +1748,7 @@ def testOverSizedTiles(layer, tiles, file):
                             warnings = warnings + 1
             elif tile.tileHeight > 32 and y - 1 > 0:
                 for y2 in range(y - 1, y - 1 - int(tile.height / 32), -1):
-                    idx = ((y2 * layer.width) + x) * 4
-                    val = getLDV(layer.arr, idx)
+                    val = getLDV(layer.arr, (y2 * layer.width) + x)
                     tile, _ = findTileByGid(tiles, val)
                     if val > 0:
                         oversizeErrList.append((x, y))
@@ -1884,8 +1881,7 @@ def testCollisionLayer(file, layer, tiles):
 
     for x in range(0, layer.width):
         for y in range(0, layer.height):
-            idx = ((y * layer.width) + x) * 4
-            val = getLDV(arr, idx)
+            val = getLDV(arr, (y * layer.width) + x)
             if val != 0:
                 haveTiles = True
                 tile, tilesetName = findTileByGid(tiles, val)
@@ -1928,13 +1924,13 @@ def showLayerErrors(file, points, msg, iserr):
 
 
 def getLDV(arr, index):
-    return arr[index] | (arr[index + 1] << 8) | (arr[index + 2] << 16) \
-        | (arr[index + 3] << 24)
+    nindex = index * 4
+    return arr[nindex] | (arr[nindex + 1] << 8) | (arr[nindex + 2] << 16) \
+        | (arr[nindex + 3] << 24)
 
 
 def getLDV2(arr, x, y, width, height, tilesMap):
-    ptr = ((y * width) + x) * 4
-    res = getLDV(arr, ptr)
+    res = getLDV(arr, (y * width) + x)
     yend = height - 1
     if yend - y > 5:
         yend = y + 5
@@ -1943,8 +1939,7 @@ def getLDV2(arr, x, y, width, height, tilesMap):
         if x0 < 0:
             x0 = 0
         for x2 in range(x0, x + 1):
-            ptr = ((y2 * width) + x2) * 4
-            val = getLDV(arr, ptr)
+            val = getLDV(arr, (y2 * width) + x2)
             tile, _ = findTileByGid(tilesMap, val)
             if tile is not None:
                 if (tile.tileHeight > 32 or y2 == y) and (tile.tileWidth > 32 or x2 == x):
@@ -2075,7 +2070,7 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
                 if layer.arr != None and x < layer.width \
                         and y < layer.height:
                     arr = layer.arr
-                    ptr = ((y * layer.width) + x) * 4
+                    ptr = ((y * layer.width) + x)
                     if testBadCollisions == True:
                         val = getLDV2(arr, x, y, layer.width, layer.height, tilesMap)
                     else:
@@ -2091,7 +2086,7 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
                 if lastTileId not in tileInfo:
                     tileInfo[lastTileId] = [0, set(), 0, set()]
                 ti = tileInfo[lastTileId]
-                flg = getLDV(collision.arr, ((y * collision.width) + x) * 4)
+                flg = getLDV(collision.arr, (y * collision.width) + x)
                 cnt = countCollisionsNear(collision, x, y)
                 k = 0
                 if flg > 0:
@@ -2129,7 +2124,7 @@ def countCollisionsNear(layer, x, y):
     for f in range(x1, x2 + 1):
         for d in range(y1, y2 + 1):
             if f != x or d != y:
-                val = getLDV(arr, ((d * layer.width) + f) * 4)
+                val = getLDV(arr, (d * layer.width) + f)
                 if val == 0:
                     nor = nor + 1
                 else:
