@@ -899,7 +899,7 @@ def testSpriteAction(file, name, action, numframes, iserr):
     return framesid
 
 
-def testImageFile(file, fullPath, sz, src, iserr):
+def testImageFile(file, fullPath, sz, src, iserr, needPNG = True):
     try:
         img = Image.open(fullPath, "r")
         img.load()
@@ -907,7 +907,7 @@ def testImageFile(file, fullPath, sz, src, iserr):
         showMsgFile(file, "incorrect image format" + src, iserr)
         return
 
-    if img.format != "PNG":
+    if needPNG and img.format != "PNG":
         showMsgFile(file, "image format is not png" + src, False)
 
     sizes = img.size
@@ -1538,7 +1538,7 @@ def testMap(mapName, file, path):
             if imagecolor != "":
                 testDye("", imagecolor, source, file, True)
 
-            sz = testImageFile(file, imagePath, 0, "", True)
+            sz = testImageFile(file, imagePath, 0, "", True, needPNG = False)
             width = sz[0]
             height = sz[1]
 
