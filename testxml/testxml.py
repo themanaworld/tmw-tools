@@ -1994,24 +1994,23 @@ def testLayer(file, node, name, width, height, layer, tiles):
                         " for csv layer format:" + name, True)
             binData = data.childNodes[0].data.strip()
             f = io.StringIO(binData)
-            arr = list(csv.reader(f, delimiter=',', quotechar='|'))
-            layer.arr = []
+            rows = list(csv.reader(f, delimiter=',', quotechar='|'))
+            idlist = []
 #            print file
-            for row in arr:
+            for row in rows:
                 try:
                     for item in row:
                         if item != "":
                             nums = splitBytes(int(item))
-                            layer.arr.append(nums[0])
-                            layer.arr.append(nums[1])
-                            layer.arr.append(nums[2])
-                            layer.arr.append(nums[3])
+                            idlist.append(nums[0])
+                            idlist.append(nums[1])
+                            idlist.append(nums[2])
+                            idlist.append(nums[3])
                 except:
                     None
 
             f.close()
-            arr = array.array('i', (layer.arr))
-            layer.arr = arr
+            layer.arr = array.array('i', idlist)
 #            for item in arr:
 #                print item
 
@@ -2035,8 +2034,7 @@ def testLayer(file, node, name, width, height, layer, tiles):
                 layer.arr.append(nums[2])
                 layer.arr.append(nums[3])
 
-            arr = array.array('i', (layer.arr))
-            layer.arr = arr
+            layer.arr = array.array('i', (layer.arr))
 #            for item in arr:
 #                print item
 
