@@ -1920,10 +1920,7 @@ def showLayerErrors(file, points, msg, iserr):
 
 
 def getLDV(arr, index):
-    nindex = index * 4
-    return arr[nindex] | (arr[nindex + 1] << 8) | (arr[nindex + 2] << 16) \
-        | (arr[nindex + 3] << 24)
-
+    return arr[index]
 
 def getLDV2(arr, x, y, width, height, tilesMap):
     res = getLDV(arr, (y * width) + x)
@@ -1978,12 +1975,10 @@ def testLayer(file, node, name, width, height, layer, tiles):
             else:
                 dc = zlib.decompressobj()
             layerData = dc.decompress(binData)
-            arr = array.array("B")
-            arr.fromstring(layerData)
-            layer.arr = arr
+            # TODO: source has little endian byte order, will break on big-endian machines
+            layer.arr = array.array("I", layerData)
 #            print file
-#            for item in arr:
-#                print item
+            #print (layer.arr)
         elif encoding == "csv":
             if compression != "":
                 showMsgFile(file, "not supported compression " + compression + \
@@ -1992,30 +1987,25 @@ def testLayer(file, node, name, width, height, layer, tiles):
             f = io.StringIO(binData)
 #            print file
 
-            arr = array.array('i')
+            arr = array.array('I')
             for row in csv.reader(f, delimiter=',', quotechar='|'):
                 try:
                     for item in row:
                         if item != "":
-                            nums = splitBytes(int(item))
-                            arr.append(nums[0])
-                            arr.append(nums[1])
-                            arr.append(nums[2])
-                            arr.append(nums[3])
+                            arr.append(int(item))
                 except:
                     None
 
             layer.arr = arr
             f.close()
-#            for item in arr:
-#                print item
+#            print (layer.arr)
 
         elif encoding == "":
             if compression != "":
                 showMsgFile(file, "not supported compression " + compression + \
                         " for xml layer format:" + name, True)
 
-            layer.arr = []
+            arr = array.array('I')
             tiles = data.getElementsByTagName("tile")
 #            print file
             for tile in tiles:
@@ -2024,27 +2014,15 @@ def testLayer(file, node, name, width, height, layer, tiles):
                 except:
                     showMsgFile(file, "incorrect xml layer format: " + name, True)
                     return layer
-                nums = splitBytes(gid)
-                layer.arr.append(nums[0])
-                layer.arr.append(nums[1])
-                layer.arr.append(nums[2])
-                layer.arr.append(nums[3])
+                arr.append(gid)
 
-            layer.arr = array.array('i', (layer.arr))
-#            for item in arr:
-#                print item
+            layer.arr = arr
+#           print(arr)
 
 
             # here may be i should check is tiles correct or not, but i will trust to tiled
     return layer
 
-
-def splitBytes(num):
-    i1 = int(num % 256)
-    i2 = int(((num % 65536) - i1) / 256)
-    i3 = int(((num % 16777216) - i2 - i1) / 65536)
-    i4 = int(((num % 4294967296) - i3 - i2 - i1) / 16777216)
-    return (i1, i2, i3, i4)
 
 def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
     width = 0
