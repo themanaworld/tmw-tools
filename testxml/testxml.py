@@ -1720,7 +1720,7 @@ def testOverSizedTiles(layer, tiles, file):
         ignoredFiles = atlasToFiles["ignored"]
     for x in range(0, layer.width):
         for y in range(0, layer.height):
-            val = getLDV(layer.arr, (y * layer.width) + x)
+            val = getLDV(layer, x, y)
             if val == 0:
                 continue
 
@@ -1736,7 +1736,7 @@ def testOverSizedTiles(layer, tiles, file):
                 None
             elif tile.tileWidth > 32 and x + 1 < layer.width:
                 for x2 in range(x + 1, x + 1 + int(tile.width / 32), 1):
-                    val = getLDV(layer.arr, (y * layer.width) + x2)
+                    val = getLDV(layer, x2, y)
                     tile, _ = findTileByGid(tiles, val)
                     if val > 0:
                         oversizeErrList.append((x, y))
@@ -1744,7 +1744,7 @@ def testOverSizedTiles(layer, tiles, file):
                             warnings = warnings + 1
             elif tile.tileHeight > 32 and y - 1 > 0:
                 for y2 in range(y - 1, y - 1 - int(tile.height / 32), -1):
-                    val = getLDV(layer.arr, (y2 * layer.width) + x)
+                    val = getLDV(layer, x, y2)
                     tile, _ = findTileByGid(tiles, val)
                     if val > 0:
                         oversizeErrList.append((x, y))
@@ -1877,7 +1877,7 @@ def testCollisionLayer(file, layer, tiles):
 
     for x in range(0, layer.width):
         for y in range(0, layer.height):
-            val = getLDV(arr, (y * layer.width) + x)
+            val = getLDV(layer, x, y)
             if val != 0:
                 haveTiles = True
                 tile, tilesetName = findTileByGid(tiles, val)
@@ -1919,20 +1919,20 @@ def showLayerErrors(file, points, msg, iserr):
     showMsgFile(file, msg + txt[0:len(txt)-1], iserr)
 
 
-def getLDV(arr, index):
-    return arr[index]
+def getLDV(layer, x, y):
+    return layer.arr[y * layer.width + x]
 
-def getLDV2(arr, x, y, width, height, tilesMap):
-    res = getLDV(arr, (y * width) + x)
-    yend = height - 1
+def getLDV2(layer, x, y, tilesMap):
+    res = getLDV(layer, x, y)
+    yend = layer.height - 1
     if yend - y > 5:
         yend = y + 5
-    for y2 in range(height - 1, y, -1):
+    for y2 in range(layer.height - 1, y, -1):
         x0 = x - 3
         if x0 < 0:
             x0 = 0
         for x2 in range(x0, x + 1):
-            val = getLDV(arr, (y2 * width) + x2)
+            val = getLDV(layer, x2, y2)
             tile, _ = findTileByGid(tilesMap, val)
             if tile is not None:
                 if (tile.tileHeight > 32 or y2 == y) and (tile.tileWidth > 32 or x2 == x):
@@ -2041,12 +2041,11 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
             for layer in layers:
                 if layer.arr != None and x < layer.width \
                         and y < layer.height:
-                    ptr = ((y * layer.width) + x)
                     if testBadCollisions == True:
-                        val = getLDV2(layer.arr, x, y, layer.width, layer.height, tilesMap)
+                        val = getLDV2(layer, x, y, tilesMap)
                     else:
                         val = 0
-                    val1 = getLDV(layer.arr, ptr)
+                    val1 = getLDV(layer, x, y)
                     if val1 != 0:
                         good = True
                         if val == val1 and testBadCollisions == True:
@@ -2057,7 +2056,7 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
                 if lastTileId not in tileInfo:
                     tileInfo[lastTileId] = [0, set(), 0, set()]
                 ti = tileInfo[lastTileId]
-                flg = getLDV(collision.arr, (y * collision.width) + x)
+                flg = getLDV(collision, x, y)
                 cnt = countCollisionsNear(collision, x, y)
                 k = 0
                 if flg > 0:
@@ -2075,7 +2074,6 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
 
 
 def countCollisionsNear(layer, x, y):
-    arr = layer.arr
     x1 = x - 1
     y1 = y - 1
     x2 = x + 1
@@ -2095,7 +2093,7 @@ def countCollisionsNear(layer, x, y):
     for f in range(x1, x2 + 1):
         for d in range(y1, y2 + 1):
             if f != x or d != y:
-                val = getLDV(arr, (d * layer.width) + f)
+                val = getLDV(layer, f, d)
                 if val == 0:
                     nor = nor + 1
                 else:
