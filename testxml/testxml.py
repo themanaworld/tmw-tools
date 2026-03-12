@@ -1666,16 +1666,12 @@ def testMap(mapName, file, path):
         lowLayers.append(fringe)
     warn1 = None
 
+    testData = dict()
     if len(overLayers) > 0:
-        testData = dict()
         warn1 = testLayerGroups(file, lowLayers, collision, None, tilesMap, False)
         lowLayers.extend(overLayers)
-        err1 = testLayerGroups(file, lowLayers, collision, testData, tilesMap, False)
-        reportAboutTiles(file, testData)
-    else:
-        testData = dict()
-        err1 = testLayerGroups(file, lowLayers, collision, testData, tilesMap, False)
-        reportAboutTiles(file, testData)
+    err1 = testLayerGroups(file, lowLayers, collision, testData, tilesMap, False)
+    reportAboutTiles(file, testData)
 
     if warn1 != None and err1 != None:
         warn1 = warn1 - err1
@@ -2067,13 +2063,12 @@ def testLayerGroups(file, layers, collision, tileInfo, tilesMap, iserr):
             for layer in layers:
                 if layer.arr != None and x < layer.width \
                         and y < layer.height:
-                    arr = layer.arr
                     ptr = ((y * layer.width) + x)
                     if testBadCollisions == True:
-                        val = getLDV2(arr, x, y, layer.width, layer.height, tilesMap)
+                        val = getLDV2(layer.arr, x, y, layer.width, layer.height, tilesMap)
                     else:
                         val = 0
-                    val1 = getLDV(arr, ptr)
+                    val1 = getLDV(layer.arr, ptr)
                     if val1 != 0:
                         good = True
                         if val == val1 and testBadCollisions == True:
