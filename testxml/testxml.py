@@ -13,6 +13,7 @@ import csv
 import soundfile
 import io
 import sys
+import struct
 from xml.dom import minidom
 from xml.etree import ElementTree
 from PIL import Image
@@ -1975,8 +1976,13 @@ def testLayer(file, node, name, width, height, layer, tiles):
             else:
                 dc = zlib.decompressobj()
             layerData = dc.decompress(binData)
-            # TODO: source has little endian byte order, will break on big-endian machines
-            layer.arr = array.array("I", layerData)
+            # testing layerData = b"\1\0\0\0" + b"\0\1\1\0" + b"\0\0\0\1"
+
+            reader = struct.Struct("<l") # faster to compile format just once.
+            layer.arr = array.array('l')
+            # Cannot pass iter_unpack to above as it needs to unpack the tuple, too.
+            for tid, in reader.iter_unpack(layerData):
+                layer.arr.append(tid)
 #            print file
             #print (layer.arr)
         elif encoding == "csv":
@@ -1987,16 +1993,16 @@ def testLayer(file, node, name, width, height, layer, tiles):
             f = io.StringIO(binData)
 #            print file
 
-            arr = array.array('I')
+            # There seems to be no performance advantage in making a local arr
+            layer.arr = array.array('l')
             for row in csv.reader(f, delimiter=',', quotechar='|'):
                 try:
                     for item in row:
                         if item != "":
-                            arr.append(int(item))
+                            layer.arr.append(int(item))
                 except:
                     None
 
-            layer.arr = arr
             f.close()
 #            print (layer.arr)
 
