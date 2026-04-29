@@ -782,6 +782,7 @@
         <xs:element ref="include"/>
         <xs:element name="emote">
           <xs:complexType>
+            <!-- ManaVerse uses sprites for emotes -->
             <xs:choice minOccurs="0" maxOccurs="unbounded">
               <xs:element name="sprite">
                 <xs:complexType>
@@ -799,6 +800,13 @@
             <!-- altid is only in manaplus_emotes.xml -->
             <xs:attribute name="altid" type="xs:int" use="optional"/>
             <xs:attribute name="time" type="xs:int" default="500"/>
+
+            <!-- Mana client uses icon images + effect IDs for emotes -->
+            <xs:attribute name="name" type="xs:string" use="optional"/>
+            <xs:attribute name="effectid" type="xs:int" use="optional"/>
+            <xs:attribute name="image" type="xs:string" use="optional"/>
+            <xs:attribute name="width" type="xs:int" use="optional"/>
+            <xs:attribute name="height" type="xs:int" use="optional"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
