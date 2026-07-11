@@ -156,6 +156,7 @@ class It:
     self.loc=""
     self.wlv="0" # >= 1 for weapons, 0 for all others including ammo
     self.elv="0" # equip lvl
+    self.gmlvl="0"
     self.md=0
     self.subtype=""
     self.disabled=False
@@ -171,7 +172,6 @@ class It:
     # Visual
     self.ac=False # Allow Cards
 
-    self.gmlvlonly=False
 
 #############################################################################################
 def ItAlloc(it):
@@ -362,8 +362,7 @@ def newItemDB():
             nouse=True
         elif "\toverride:" in a:
             if nouse:
-                if sti(a) != "0":
-                    x.gmlvlonly=True
+                x.gmlvl=sti(a)
         elif "\t}" in a:
             if nouse:
                 nouse=False
@@ -619,8 +618,11 @@ def write_item(i, f):
 
     if i.disabled:
         i.id="//"+i.id
-    if i.gmlvlonly:
-        i.eqscript.insert(0, "callfunc \"RestrictedItem\";")
+    if i.gmlvl != "0":
+        if i.gmlvl == "60":
+            i.eqscript.insert(0, "callfunc \"RestrictedItem\";")
+        else:
+            i.eqscript.insert(0, "set .@minLvl, " + i.gmlvl + "; callfunc \"RestrictedItem\";")
 
     ## Add spaces
     md=str(i.md)
