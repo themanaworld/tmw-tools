@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.w3.org/2005/11/its" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:its="http://www.w3.org/2005/11/its">
+  <!--
+    Schema generated from ODD source 2007-04-02T11:42:44+09:00. This schema has been developed using the ODD (One Document Does it
+    all) language of the Text Encoding Initiative (). This is a literate programming language for writing XML schemas, with three
+    characteristics: (1) The element and attribute set is specified using
+      an XML vocabulary which includes support for macros
+      (like DTD entities, or schema patterns), a hierarchical
+      class system for attributes and elements, and creation
+      of modules. (2) The content models for elements and attributes is
+      written using embedded RELAX NG XML notation. (3) Documentation for elements, attributes, value
+      lists etc. is written inline, along with examples and
+      other supporting material. XSLT transformations
+      are provided by the TEI to extract documentation in
+      HTML, XSL FO or LaTeX forms, and to generate RELAX NG
+      documents and DTD. From the RELAX NG documents, James
+      Clark's trang
+      can be used to create XML Schema documents.
+  -->
+    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:element name="rules">
+    <xs:annotation>
+      <xs:documentation>Container for global rules.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rules.content">
+          <xs:attributeGroup ref="its:its-rules.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rules.content">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="its:translateRule"/>
+      <xs:element ref="its:locNoteRule"/>
+      <xs:element ref="its:termRule"/>
+      <xs:element ref="its:dirRule"/>
+      <xs:element ref="its:rubyRule"/>
+      <xs:element ref="its:langRule"/>
+      <xs:element ref="its:withinTextRule"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rules.attributes">
+    <xs:attribute name="version" use="required" type="xs:float">
+      <xs:annotation>
+        <xs:documentation>Version of the ITS schema.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+      <xs:attributeGroup ref="xlink:its-type"/>
+      <xs:attributeGroup ref="xlink:its-href"/>
+     <!-- 
+    <xs:attribute ref="xlink:href"/>
+    <xs:attribute ref="xlink:type"/> --> 
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.selector.attributes">
+    <xs:attributeGroup ref="its:att.selector.attribute.selector"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.selector.attribute.selector">
+    <xs:attribute name="selector" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>XPath expression identifying the nodes to be selected.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.version.attributes">
+    <xs:attributeGroup ref="its:att.version.attribute.version"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.version.attribute.version">
+    <xs:attribute name="version" use="required" form="qualified" type="xs:float">
+      <xs:annotation>
+        <xs:documentation>Version of the ITS schema.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.local.no-ns.attributes">
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.translate"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.locNote"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.locNoteType"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.locNoteRef"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.termInfoRef"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.term"/>
+    <xs:attributeGroup ref="its:att.local.no-ns.attribute.dir"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.translate">
+    <xs:attribute name="translate">
+      <xs:annotation>
+        <xs:documentation>The Translate data category information to be attached to
+		the current node.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The nodes need to be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The nodes must not be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.locNote">
+    <xs:attribute name="locNote" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.locNoteType">
+    <xs:attribute name="locNoteType">
+      <xs:annotation>
+        <xs:documentation>The type of localization note.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="alert">
+            <xs:annotation>
+              <xs:documentation>Localization note is an alert.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="description">
+            <xs:annotation>
+              <xs:documentation>Localization note is a description.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.locNoteRef">
+    <xs:attribute name="locNoteRef" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>URI referring to the location of the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.termInfoRef">
+    <xs:attribute name="termInfoRef" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>Pointer to a resource containing
+		      information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.term">
+    <xs:attribute name="term">
+      <xs:annotation>
+        <xs:documentation>Indicates a term locally.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The value 'yes' means that this is a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The value 'no' means that this is not a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.no-ns.attribute.dir">
+    <xs:attribute name="dir">
+      <xs:annotation>
+        <xs:documentation>The text direction for the context.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="ltr">
+            <xs:annotation>
+              <xs:documentation>Left-to-right text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rtl">
+            <xs:annotation>
+              <xs:documentation>Right-to-left text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lro">
+            <xs:annotation>
+              <xs:documentation>Left-to-right override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rlo">
+            <xs:annotation>
+              <xs:documentation>Right-to-left override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.local.with-ns.attributes">
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.translate"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.locNote"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.locNoteType"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.locNoteRef"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.termInfoRef"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.term"/>
+    <xs:attributeGroup ref="its:att.local.with-ns.attribute.dir"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.translate">
+    <xs:attribute name="translate" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The Translate data category information to be attached to
+		the current node.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The nodes need to be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The nodes must not be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.locNote">
+    <xs:attribute name="locNote" form="qualified" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.locNoteType">
+    <xs:attribute name="locNoteType" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The type of localization note.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="alert">
+            <xs:annotation>
+              <xs:documentation>Localization note is an alert.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="description">
+            <xs:annotation>
+              <xs:documentation>Localization note is a description.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.locNoteRef">
+    <xs:attribute name="locNoteRef" form="qualified" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>URI referring to the location of the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.termInfoRef">
+    <xs:attribute name="termInfoRef" form="qualified" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>Pointer to a resource containing
+		      information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.term">
+    <xs:attribute name="term" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Indicates a term locally.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The value 'yes' means that this is a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The value 'no' means that this is not a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.local.with-ns.attribute.dir">
+    <xs:attribute name="dir" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The text direction for the context.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="ltr">
+            <xs:annotation>
+              <xs:documentation>Left-to-right text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rtl">
+            <xs:annotation>
+              <xs:documentation>Right-to-left text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lro">
+            <xs:annotation>
+              <xs:documentation>Left-to-right override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rlo">
+            <xs:annotation>
+              <xs:documentation>Right-to-left override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="span">
+    <xs:annotation>
+      <xs:documentation>Inline element to contain ITS information.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-span.content">
+          <xs:attributeGroup ref="its:its-span.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-span.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="its:ruby"/>
+      <xs:element ref="its:span"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:attributeGroup name="its-span.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="translateRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Translate data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="its:its-translateRule.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-translateRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="translate" use="required">
+      <xs:annotation>
+        <xs:documentation>The Translate data category information to be
+		    applied to selected nodes.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The nodes need to be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The nodes must not be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.translate.attributes">
+    <xs:attributeGroup ref="its:att.translate.attribute.translate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.translate.attribute.translate">
+    <xs:attribute name="translate" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The Translate data category information to be attached to
+		the current node.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The nodes need to be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The nodes must not be translated.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="locNoteRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Localization Note data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-locNoteRule.content">
+          <xs:attributeGroup ref="its:its-locNoteRule.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-locNoteRule.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="its:locNote"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-locNoteRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="locNotePointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that holds the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="locNoteType" use="required">
+      <xs:annotation>
+        <xs:documentation>The type of localization note.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="alert">
+            <xs:annotation>
+              <xs:documentation>Localization note is an alert.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="description">
+            <xs:annotation>
+              <xs:documentation>Localization note is a description.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="locNoteRef" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>URI referring to the location of the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="locNoteRefPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that holds the URI referring to the location of the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="locNote">
+    <xs:annotation>
+      <xs:documentation>Contains a localization note.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-locNote.content">
+          <xs:attributeGroup ref="its:its-locNote.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-locNote.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="its:ruby"/>
+      <xs:element ref="its:span"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:attributeGroup name="its-locNote.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.locNote.attributes">
+    <xs:attributeGroup ref="its:att.locNote.attribute.locNote"/>
+    <xs:attributeGroup ref="its:att.locNote.attribute.locNoteType"/>
+    <xs:attributeGroup ref="its:att.locNote.attribute.locNoteRef"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.locNote.attribute.locNote">
+    <xs:attribute name="locNote" form="qualified" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.locNote.attribute.locNoteType">
+    <xs:attribute name="locNoteType" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The type of localization note.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="alert">
+            <xs:annotation>
+              <xs:documentation>Localization note is an alert.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="description">
+            <xs:annotation>
+              <xs:documentation>Localization note is a description.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.locNote.attribute.locNoteRef">
+    <xs:attribute name="locNoteRef" form="qualified" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>URI referring to the location of the localization note.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="termRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Terminology data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="its:its-termRule.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-termRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="term" use="required">
+      <xs:annotation>
+        <xs:documentation>Indicates whether the selection is a term or not.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The value 'yes' means that this is a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The value 'no' means that this is not a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="termInfoRef" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>URI referring to the resource providing information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="termInfoRefPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node containing a URI referring to the resource providing information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="termInfoPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node containing
+		      information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.term.attributes">
+    <xs:attributeGroup ref="its:att.term.attribute.termInfoRef"/>
+    <xs:attributeGroup ref="its:att.term.attribute.term"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.term.attribute.termInfoRef">
+    <xs:attribute name="termInfoRef" form="qualified" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>Pointer to a resource containing
+		      information about the term.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.term.attribute.term">
+    <xs:attribute name="term" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Indicates a term locally.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The value 'yes' means that this is a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The value 'no' means that this is not a term.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="dirRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Directionality data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="its:its-dirRule.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-dirRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="dir" use="required">
+      <xs:annotation>
+        <xs:documentation>The text direction for the selection.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="ltr">
+            <xs:annotation>
+              <xs:documentation>Left-to-right text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rtl">
+            <xs:annotation>
+              <xs:documentation>Right-to-left text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lro">
+            <xs:annotation>
+              <xs:documentation>Left-to-right override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rlo">
+            <xs:annotation>
+              <xs:documentation>Right-to-left override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="its-att.dir.attributes">
+    <xs:attributeGroup ref="its:att.dir.attribute.dir"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="att.dir.attribute.dir">
+    <xs:attribute name="dir" form="qualified">
+      <xs:annotation>
+        <xs:documentation>The text direction for the context.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="ltr">
+            <xs:annotation>
+              <xs:documentation>Left-to-right text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rtl">
+            <xs:annotation>
+              <xs:documentation>Right-to-left text.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lro">
+            <xs:annotation>
+              <xs:documentation>Left-to-right override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="rlo">
+            <xs:annotation>
+              <xs:documentation>Right-to-left override.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="rubyRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Ruby data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rubyRule.content">
+          <xs:attributeGroup ref="its:its-rubyRule.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rubyRule.content">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="its:rubyText"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rubyRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="rubyPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that corresponds to a ruby element</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="rtPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that
+                   corresponds to a rt element</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="rpPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that
+                   corresponds to a rp element</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="rbcPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that
+                   corresponds to a rbc element</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="rtcPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that
+                   corresponds to a rtc element</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="rbspanPointer" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that corresponds to a rbspan attribute.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="rubyText">
+    <xs:annotation>
+      <xs:documentation>Ruby text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="its:its-rubyText.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-rubyText.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+    <xs:attribute name="rbspan" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Allows an rt element to span multiple rb elements in complex ruby markup.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="ruby">
+    <xs:annotation>
+      <xs:documentation>Ruby markup.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-ruby.content">
+          <xs:attributeGroup ref="its:its-ruby.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-ruby.content">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element ref="its:rb"/>
+        <xs:choice>
+          <xs:element ref="its:rt"/>
+          <xs:sequence>
+            <xs:element ref="its:rp"/>
+            <xs:element ref="its:rt"/>
+            <xs:element ref="its:rp"/>
+          </xs:sequence>
+        </xs:choice>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element ref="its:rbc"/>
+        <xs:element ref="its:rtc"/>
+        <xs:element minOccurs="0" ref="its:rtc"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+  <xs:attributeGroup name="its-ruby.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="rb">
+    <xs:annotation>
+      <xs:documentation>Ruby base text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rb.content">
+          <xs:attributeGroup ref="its:its-rb.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rb.content" mixed="true">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="its:span"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rb.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="rt">
+    <xs:annotation>
+      <xs:documentation>Ruby text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rt.content">
+          <xs:attributeGroup ref="its:its-rt.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rt.content" mixed="true">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="its:span"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rt.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+    <xs:attribute name="rbspan" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Allows an rt element to span multiple rb elements in complex ruby markup.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="rbc">
+    <xs:annotation>
+      <xs:documentation>Container for rb elements in the case of complex ruby markup.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rbc.content">
+          <xs:attributeGroup ref="its:its-rbc.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rbc.content">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="its:rb"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rbc.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="rtc">
+    <xs:annotation>
+      <xs:documentation>Container for rt elements in the case of complex ruby markup. </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="its:its-rtc.content">
+          <xs:attributeGroup ref="its:its-rtc.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="its-rtc.content">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="its:rt"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:attributeGroup name="its-rtc.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="rp">
+    <xs:annotation>
+      <xs:documentation>Used in the case of simple ruby markup to specify characters that can denote the beginning and end of ruby text when user agents do not have other ways to present ruby text distinctively from the base text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="its:its-rp.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-rp.attributes">
+    <xs:attributeGroup ref="its:its-att.local.no-ns.attributes"/>
+  </xs:attributeGroup>
+  <xs:element name="langRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Language Information data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="its:its-langRule.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-langRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="langPointer" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Relative XPath expression pointing to a node that contains language information.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="withinTextRule">
+    <xs:annotation>
+      <xs:documentation>Rule about the Elements Within Text data category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="its:its-withinTextRule.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="its-withinTextRule.attributes">
+    <xs:attributeGroup ref="its:its-att.selector.attributes"/>
+    <xs:attribute name="withinText" use="required">
+      <xs:annotation>
+        <xs:documentation>States whether current context is regarded as
+		    "within text".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="yes">
+            <xs:annotation>
+              <xs:documentation>The element and its content are part of the flow of its parent element.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="no">
+            <xs:annotation>
+              <xs:documentation>The element splits the text flow of its parent element and its content is an independent text flow.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="nested">
+            <xs:annotation>
+              <xs:documentation>The element is part of the flow of its parent element, its content is an independent flow.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+</xs:schema>
