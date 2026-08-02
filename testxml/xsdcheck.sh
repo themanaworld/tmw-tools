@@ -2,7 +2,7 @@
 
 cd xsd
 DIR="$(pwd)/../../../client-data"
-rm ../errors.txt
+rm -f ../errors.txt
 
 function check {
     xmllint --format --schema tmw.xsd "${DIR}"/"${1}" 2>&1 >/dev/null | \
