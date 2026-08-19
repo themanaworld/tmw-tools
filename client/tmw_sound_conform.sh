@@ -119,10 +119,12 @@ if [[ "$DIR_CHECK" == 'music' ]]; then
                                     mv -f "$TRACK" "$NEW_NAME"
                                         if [ -f "$NEW_NAME" ]; then
                                             echo "0: - $TRACK: Renamed to $NEW_NAME."
-                                            CORRECTED_EXTS="$CORRECTED_NAMES $NEW_NAME"
+                                            CORRECTED_EXTS="$CORRECTED_EXTS $NEW_NAME"
                                             CORRECTED_EXT_COUNT=$((CORRECTED_EXT_COUNT + 1))
                                             #Updates license automatically.
-                                            sed -i "s/$TRACK/$NEW_NAME/g" 'music-license.md'
+                                            if [ -f 'music-license.md' ]; then
+                                                sed -i "s/${TRACK//./\\.}/$NEW_NAME/g" 'music-license.md'
+                                            fi
                                         else
                                             #Fatal errors could be due to a script error, read only system or failing hardware.
                                             echo "Error(fatal): $XMARK $TRACK: Copy failed. Ensure you are not on a read-only system." >&2
@@ -336,7 +338,14 @@ fi
 
 
 ##Map: Auto-correct names. Warning: Writes to files.
-NAME_EXCEPTIONS=$(echo "$NAME_EXCEPTIONS" | sed 's/\\|/\\|\n/g' | grep '.*\.ogg' | tr -d '\n')
+#Only the .ogg exceptions apply to maps. An empty pattern would match every map, so it is built entry by entry.
+MAP_EXCEPTIONS=''
+for EXCEPTION in $(echo "$NAME_EXCEPTIONS" | sed 's/\\|/ /g'); do
+    case "$EXCEPTION" in
+        *\\.ogg) MAP_EXCEPTIONS="${MAP_EXCEPTIONS:+$MAP_EXCEPTIONS\\|}$EXCEPTION" ;;
+    esac
+done
+NAME_EXCEPTIONS="$MAP_EXCEPTIONS"
 #echo "NAME_EXCEPTIONS: $NAME_EXCEPTIONS"
 
 if [[ "$DIR_CHECK" == 'music' ]] && [[ "$MAPS_DIR" != '' ]]; then
@@ -392,8 +401,8 @@ fi
 if [[ "$DIR_CHECK" == 'maps' ]]; then
     for MAP in *.tmx; do
         echo "$MAP"
-        OLD_TITLE=$(grep 'music' "$MAP" | grep -Eo "[A-Za-z0-9 _\.\-]+\.ogg")
-                if [[ $(grep "$NAME_EXCEPTIONS" "$MAP") != '' ]]; then
+        OLD_TITLE=$(grep -m1 'name="music"' "$MAP" | grep -Eo "[A-Za-z0-9 _\.\-]+\.ogg")
+                if [[ "$NAME_EXCEPTIONS" != '' ]] && [[ $(grep 'name="music"' "$MAP" | grep "$NAME_EXCEPTIONS") != '' ]]; then
                     echo "Exception found: $OLD_TITLE. Skipping..."
                     echo '________________________'
                 else
@@ -404,14 +413,15 @@ if [[ "$DIR_CHECK" == 'maps' ]]; then
                                     sed -e 's/.[Oo][Gg][Gg]$/.ogg/g' | \
                                     sed 's/ /_/g' | \
                                     sed 's/-/_/g' | \
-                                    sed -E 's/([a-z])([A-Z])+/\1_\L\2/g' | \
-                                    sed -E 's/([a-z])([0-9])+/\1_\2/g' | \
+                                    sed -E 's/([a-z])([A-Z]+)/\1_\L\2/g' | \
+                                    sed -E 's/([a-z])([0-9]+)/\1_\2/g' | \
                                     sed -E 's/([A-Z])/\L\1/g')
-                        sed -i "s/$OLD_TITLE/$NEW_TITLE/g" "$MAP"
+                        OLD_TITLE_RE=$(echo "$OLD_TITLE" | sed 's/[.[\\*^$]/\\&/g')
+                        sed -i "/name=\"music\"/s/$OLD_TITLE_RE/$NEW_TITLE/g" "$MAP"
                     else
                         NEW_TITLE="$OLD_TITLE"
                     fi
-                VERIFIED_TITLE=$(grep 'music' "$MAP" | grep -Eo "[A-Za-z0-9 _\-]+.ogg")    
+                VERIFIED_TITLE=$(grep -m1 'name="music"' "$MAP" | grep -Eo "[A-Za-z0-9 _\-]+\.ogg")
                 echo "Old title: $OLD_TITLE"
                 echo "New title: $NEW_TITLE"
                 echo '________________________'
