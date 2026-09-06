@@ -163,7 +163,6 @@ do
     run cd $client_data
     # restore update state to old
     run cp ~/www/updates/resources.xml{.master,}
-    run cp ~/www/updates/resources2.txt{.master,}
     run git branch -f update-zips $client_main_branch
 
     # force new master and back up for future restoration
@@ -171,7 +170,6 @@ do
     run git reset --hard $client_main_branch
     run $tmw_tools/client/make-updates
     run cp ~/www/updates/resources.xml{,.master}
-    run cp ~/www/updates/resources2.txt{,.master}
 
     info 'commit=$(' git rev-parse --verify -q $client_main_branch ')'
     commit=$(git rev-parse --verify -q $client_main_branch)

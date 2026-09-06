@@ -51,7 +51,6 @@ rm -v $UPDATE_DIR/TMW.zip 2>/dev/null || :
 rm -v $UPDATE_DIR/TMW-music.zip 2>/dev/null || :
 rm -v $UPDATE_DIR/TMW-mods.zip 2>/dev/null || :
 rm -v $UPDATE_DIR/resources.xml 2>/dev/null || :
-rm -v $UPDATE_DIR/resources2.txt 2>/dev/null || : # Legacy: used by mana client
 
 echo -e "\e[96m>> Entering client-data...\e[0m"
 pushd $cdata &>/dev/null
