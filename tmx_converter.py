@@ -229,25 +229,25 @@ class ContentHandler(xml.sax.ContentHandler):
                     obj_type = attr[u'type'].lower()
                 except KeyError:
                     obj_type = attr[u'class'].lower()
-                x = int(attr[u'x']) / TILESIZE;
-                y = int(attr[u'y']) / TILESIZE;
-                w = int(attr.get(u'width', 0)) / TILESIZE;
-                h = int(attr.get(u'height', 0)) / TILESIZE;
+                x = int(attr[u'x']) // TILESIZE;
+                y = int(attr[u'y']) // TILESIZE;
+                w = int(attr.get(u'width', 0)) // TILESIZE;
+                h = int(attr.get(u'height', 0)) // TILESIZE;
                 # I'm not sure exactly what the w/h shrinking is for,
                 # I just copied it out of the old converter.
-                # I know that the x += w/2 is to get centers, though.
+                # I know that the x += w//2 is to get centers, though.
                 if obj_type == 'spawn':
                     self.object = Mob()
                     if w > 1:
                         w -= 1
                     if h > 1:
                         h -= 1
-                    x += w/2
-                    y += h/2
+                    x += w//2
+                    y += h//2
                 elif obj_type == 'warp':
                     self.object = Warp()
-                    x += w/2
-                    y += h/2
+                    x += w//2
+                    y += h//2
                     w -= 2
                     h -= 2
                 elif obj_type == 'node':
@@ -361,11 +361,11 @@ class ContentHandler(xml.sax.ContentHandler):
                     for x in self.buffer.split(b','):
                         self.out.write(bytes([int(x) not in self.tilesets]))
                 elif self.encoding == u'base64':
-                    data = base64.b64decode(str(self.buffer))
+                    data = base64.b64decode(bytes(self.buffer))
                     if self.compression == u'zlib':
                         data = zlib.decompress(data)
                     elif self.compression == u'gzip':
-                        data = zlib.decompressobj().decompress('x\x9c' + data[10:-8])
+                        data = zlib.decompress(data, 16 + zlib.MAX_WBITS)
                     for i in range(self.width*self.height):
                         self.out.write(bytes([struct.unpack('<I',data[i*4:i*4+4])[0] not in self.tilesets]))
                 self.state = State.FINAL
@@ -406,7 +406,7 @@ class ContentHandler(xml.sax.ContentHandler):
                 with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w') as switches:
                     switches.write('// %s\n' % MESSAGE)
                     switches.write('// %s switches\n\n' % self.name)
-                    for sobjs in sorted(self.switch_objs):
+                    for sobjs in sorted(self.switch_objs, key=lambda o: (o.x, o.y)):
                         obj_name = "#%s_%s_%s" % (self.base, sobjs.x, sobjs.y)
                         switches.write(
                             SEPARATOR.join([
