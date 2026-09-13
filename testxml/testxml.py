@@ -137,7 +137,7 @@ def printSeparator():
 def showHeader():
     print("Client Data Validator.")
     print(("Run at: " + datetime.datetime.now().isoformat()))
-    print("https://git.themanaworld.org/ml/tools/blob/master/testxml/testxml.py")
+    print("https://git.themanaworld.org/tmw/tools/-/blob/master/testxml/testxml.py")
     printSeparator()
 
 def showFooter():
