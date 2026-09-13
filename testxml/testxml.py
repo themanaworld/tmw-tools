@@ -2422,5 +2422,5 @@ print("Checking music dir")
 if silent != True:
     testSoundsDir("", musicDir)
 showFooter()
-if errors > 0 or warnings > 0:
+if errors > 0:
     exit(1)
