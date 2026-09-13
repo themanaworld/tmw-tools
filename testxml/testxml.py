@@ -45,7 +45,7 @@ warnings = 0
 errDict = set()
 safeDye = False
 borderSize = 14 # Required 18 # Original 14
-widescreenSize = 1920/32
+widescreenSize = 1920 // 32
 tiledVersion = 13 # Minimum Tiled version, advised "14" for Tiled 1.4
 colorsList = set()
 showAll = False
@@ -159,6 +159,10 @@ def enumDirs(parentDir):
         if file1[0] == ".":
             continue
         file2 = os.path.abspath(parentDir + os.path.sep + file1)
+        if os.path.islink(file2):
+            # Symlinks point outside of the client data (for example
+            # tools -> ../tools/client/), so don't follow them.
+            continue
         if not os.path.isfile(file2):
             enumDirs(file2)
         else:
@@ -341,60 +345,79 @@ def testSprites(id, node, checkGender, isNormalDye, isMust, checkAction, iserr):
         if len(sprites) == 0 or len(sprites[0].childNodes) == 0:
             if nosprite == False:
                 showMsg(id, "no sprite tags found", "", iserr)
-        elif len(sprites) > 3 and checkGender:
-            showMsg(id, "incorrect number of sprite tags", "", iserr)
-        elif len(sprites) == 1:
-            file = sprites[0].childNodes[0].data
-            if checkGender:
+        elif checkGender:
+            # Sprites can be specified per race, and each race can have its
+            # own set of gendered or unisex sprites.
+            races = dict()
+            for sprite in sprites:
                 try:
-                    gender = sprites[0].attributes["gender"].value
+                    race = sprite.attributes["race"].value
                 except:
-                    gender = ""
-
-                if gender != "" and gender != "unisex":
-                    showMsg(id, "gender tag in alone sprite", "", iserr)
-
-            try:
-                variant = int(sprites[0].attributes["variant"].value)
-            except:
-                variant = 0
-
-            testSprite(id, file, variant, isNormalDye, checkAction, iserr)
+                    race = "0"
+                races.setdefault(race, []).append(sprite)
+            for race in races:
+                testGenderSprites(id, races[race], isNormalDye, checkAction, iserr)
         else:
-            male = False
-            female = False
-            unisex = False
             for sprite in sprites:
                 file = sprite.childNodes[0].data
-                if checkGender:
-                    try:
-                        gender = sprite.attributes["gender"].value
-                    except:
-                        gender = ""
-                    if gender == "male":
-                        if male == True:
-                            showMsg(id, "double male sprite tag", "", iserr)
-                        male = True
-                    elif gender == "female":
-                        if female == True:
-                            showMsg(id, "double female sprite tag", "", iserr)
-                        female = True
-                    elif gender == "unisex":
-                        unisex = True
                 try:
                     variant = int(sprite.attributes["variant"].value)
                 except:
                     variant = 0
                 testSprite(id, file, variant, isNormalDye, checkAction, iserr)
-            if checkGender:
-                if male == False and unisex == False:
-                    showMsg(id, "no male sprite tag", "",iserr)
-                if female == False and unisex == False:
-                    showMsg(id, "no female sprite tag", "", iserr)
-                if unisex == True and female == True and male == True:
-                    showMsg(id, "gender sprite tag with unisex tag", "", iserr)
-                if unisex == False and male == False and female == False:
-                    showMsg(id, "no any gender tags", "", iserr)
+
+def testGenderSprites(id, sprites, isNormalDye, checkAction, iserr):
+    if len(sprites) > 3:
+        showMsg(id, "incorrect number of sprite tags", "", iserr)
+    elif len(sprites) == 1:
+        file = sprites[0].childNodes[0].data
+        try:
+            gender = sprites[0].attributes["gender"].value
+        except:
+            gender = ""
+
+        if gender != "" and gender != "unisex":
+            showMsg(id, "gender tag in alone sprite", "", iserr)
+
+        try:
+            variant = int(sprites[0].attributes["variant"].value)
+        except:
+            variant = 0
+
+        testSprite(id, file, variant, isNormalDye, checkAction, iserr)
+    else:
+        male = False
+        female = False
+        unisex = False
+        for sprite in sprites:
+            file = sprite.childNodes[0].data
+            try:
+                gender = sprite.attributes["gender"].value
+            except:
+                gender = ""
+            if gender == "male":
+                if male == True:
+                    showMsg(id, "double male sprite tag", "", iserr)
+                male = True
+            elif gender == "female":
+                if female == True:
+                    showMsg(id, "double female sprite tag", "", iserr)
+                female = True
+            elif gender == "unisex":
+                unisex = True
+            try:
+                variant = int(sprite.attributes["variant"].value)
+            except:
+                variant = 0
+            testSprite(id, file, variant, isNormalDye, checkAction, iserr)
+        if male == False and unisex == False:
+            showMsg(id, "no male sprite tag", "",iserr)
+        if female == False and unisex == False:
+            showMsg(id, "no female sprite tag", "", iserr)
+        if unisex == True and female == True and male == True:
+            showMsg(id, "gender sprite tag with unisex tag", "", iserr)
+        if unisex == False and male == False and female == False:
+            showMsg(id, "no any gender tags", "", iserr)
 
 def testSprite(id, file, variant, isNormalDye, checkAction, iserr):
     global safeDye
@@ -446,6 +469,11 @@ def testSpriteFile(id, fullPath, file, fileLoc, dnum, variant, checkAction, iser
 #        variant_offset = 0
 
 #    root = dom.childNodes[0];
+    if len(dom.documentElement.getElementsByTagName("*")) == 0:
+        # An intentionally empty sprite (<sprite/>), used to show nothing
+        # at all, for example as bald hairstyle.
+        return
+
     imagesets = dom.getElementsByTagName("imageset")
     if imagesets is None or len(imagesets) < 1:
         showMsgSprite(fileLoc, "incorrect number of imageset tags", iserr)
@@ -1049,9 +1077,9 @@ def testItems(fileName, imgDir):
         try:
             type = node.attributes["type"].value
         except:
+            # Items without a type are sprite carriers spawned by spells,
+            # which intentionally omit most attributes (see items/misc).
             type = ""
-            print("warn: " + fileName + ": no type attribute for id=" + id)
-            warnings = warnings + 1
         try:
             image = node.attributes["image"].value
             image0 = image
@@ -1203,6 +1231,13 @@ def testItems(fileName, imgDir):
             and type != "equip-charm" and type != "equip-neck":
                 err = type != "equip-shield"
                 testSprites(id, node, True, colors is None, True, "", err)
+        elif type == "":
+            try:
+                attackaction = node.attributes["attack-action"].value
+            except:
+                attackaction = ""
+            testSprites(id, node, True, colors is None, False, attackaction, True)
+            testSounds(id, node, "item")
         elif type == "other":
             None
         elif type != "":
@@ -1323,7 +1358,7 @@ def testSounds(id, node, type):
                 print("error: incorrect sound event name " + event + " in id=" + id)
                 errors = errors + 1
         elif type == "item":
-            if event != "hit" and event != "miss":
+            if event != "hit" and event != "strike" and event != "miss":
                 print("error: incorrect sound event name " + event + " in id=" + id)
                 errors = errors + 1
 
@@ -1417,13 +1452,11 @@ def testMap(mapName, file, path):
     if mapHeight < borderSize * 2 + 1:
         if silent == False or file.find("maps/test") != 0:
             showMsgFile(file, "map height to small: " + str(mapHeight), False)
-    if mapWidth < widescreenSize:
-        showMsgFile(file, "error: map width below widescreen minimum: " + str(mapHeight), True)
-
     if len(dom.getElementsByTagName("properties")) < 1:
         showMsgFile(file, "missing map properties", True)
         return
 
+    hasBackground = False
     for props in dom.getElementsByTagName("properties"):
         for prop in props.getElementsByTagName("property"):
             try:
@@ -1440,15 +1473,18 @@ def testMap(mapName, file, path):
             if value == "" and name == "name":
                 showMsgFile(file, "empty map name property", True)
                 continue
+            if name.startswith("background") and name.endswith("image") and value != "":
+                hasBackground = True
 
-    # Total minimum required width
-    if mapWidth < 60:
+    # Narrower maps leave part of a 1920 pixels wide screen black
+    if mapWidth < widescreenSize:
         name1=file.find("maps/test")
         name2=file.find("maps/000-1")
         if name1 == 0 or name2 == 0:
             pass
         else:
-            showMsgFile(file, "total map width to small: " + str(mapWidth), False)
+            showMsgFile(file, "map width below widescreen minimum of " + \
+                    str(widescreenSize) + " tiles: " + str(mapWidth), False)
 
     tilesMap = dict()
 
@@ -1570,7 +1606,7 @@ def testMap(mapName, file, path):
             if height != s2:
                 if s2 == 0:
                     s2 = int(tileHeight)
-                showMsgFile(file, "image width " + str(height) + \
+                showMsgFile(file, "image height " + str(height) + \
                         " (need " + str(s2) + ") is not multiply to tile size " + \
                         str(tileHeight) + ". " + source + ", " + name, False)
 
@@ -1580,7 +1616,7 @@ def testMap(mapName, file, path):
             tile.source = tile.source[3:]
         tilesMap[tile.firstGid] = tile
 
-    if mapName not in mapToAtlas:
+    if len(atlasToFiles) > 0 and mapName not in mapToAtlas:
         showMsgFile(file, "map dont have atlas", True)
 
     tileset = tileset0
@@ -1597,14 +1633,11 @@ def testMap(mapName, file, path):
     lowLayers = []
     overLayers = []
     beforeFringe = True
-    haveHeight = False
 
     for layer in layers:
         name = readAttr(layer, "name", None, "layer dont have name", True)
         if name == None:
             continue
-        if name.lower() == "height" or name.lower() == "heights":
-            haveHeight=True
         obj = Layer()
         obj.name = name
         if name.lower() == "fringe":
@@ -1651,17 +1684,15 @@ def testMap(mapName, file, path):
             if silent == False or file.find("maps/test") != 0:
                 showLayerErrors(file, ids[0], "empty tiles in collision border", False)
         if ids[1] != None and len(ids[1]) > 0:
-            if silent == False or file.find("maps/test") != 0:
-                showLayerErrors(file, ids[1], "incorrect tileset index in collision layer", False)
+            # The server blocks any non-empty tile in the collision layer,
+            # but the client only knows the tiles of the collision tileset.
+            showLayerErrors(file, ids[1], "non-collision tiles in collision layer", True)
 
     if len(lowLayers) < 1:
         showMsgFile(file, "missing low layers", False)
     if len(overLayers) < 1:
         if (silent == False or file.find("maps/test") != 0) and herc == False:
             showMsgFile(file, "missing over layers", False)
-
-    if not haveHeight:
-        showMsgFile(file, "missing height layer", False)
 
     if fringe != None:
         lowLayers.append(fringe)
@@ -1679,7 +1710,8 @@ def testMap(mapName, file, path):
     if warn1 != None and len(warn1) > 0:
         if silent != True:
             showLayerErrors(file, warn1, "empty tile in lower layers", False)
-    if err1 != None and len(err1) > 0:
+    if err1 != None and len(err1) > 0 and not hasBackground:
+        # With a background image, empty tiles show the background
         showLayerErrors(file, err1, "empty tile in all layers", True)
 
     for objx in objects:
@@ -2271,7 +2303,6 @@ def testItemColors(fileName):
             continue
         colorsList.add(name)
         colors = set()
-        names = set()
         for colorNode in node.getElementsByTagName("color"):
             if colorNode.parentNode != node:
                 continue
@@ -2297,11 +2328,6 @@ def testItemColors(fileName):
                 errors = errors + 1
             else:
                 colors.add(id)
-            if colorName in names:
-                print("error: color with name \"" + colorName + "\" already in list: " + name)
-                errors = errors + 1
-            else:
-                names.add(colorName)
             testDyeColors(id, colorDye, colorDye, name, True)
 
 def loadMapAtlases(fileName):
