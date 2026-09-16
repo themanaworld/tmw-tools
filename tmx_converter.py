@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- encoding: utf-8 -*-
 
 ##    tmx_converter.py - Extract walkmap, warp, and spawn information from maps.
 ##
@@ -21,8 +20,6 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import print_function
-
 import sys
 import os
 import posixpath
@@ -36,13 +33,13 @@ check_mobs = True # mob_db.txt
 create_switches_files = False # creates .switches.txt with template npcs for objects of the class switch (only needed for devs when creating quests)
 
 # lower case versions of everything except 'spawn' and 'warp'
-other_object_types = set([
+other_object_types = {
     'particle_effect',
     'npc', # not interpreted by client
     'script', # for ManaServ
     'fixme', # flag for things that didn't have a type before
     'music',
-])
+}
 
 # Somebody has put ManaServ fields in our data!
 other_spawn_fields = (
@@ -67,14 +64,14 @@ NPC_MASTER_IMPORTS = NPC_IMPORTS
 
 this_map_npc_dir = ''
 
-class State(object):
+class State:
     pass
 State.INITIAL = State()
 State.LAYER = State()
 State.DATA = State()
 State.FINAL = State()
 
-class Object(object):
+class Object:
     __slots__ = (
         'name',
         #'map',
@@ -145,15 +142,15 @@ class ContentHandler(xml.sax.ContentHandler):
         'object',   # stores properties of the latest <object> tag
         'mob_ids',  # set of all mob types that spawn here
         'node_types', # set of all node types that appear here
-        'node_objs', # set of all node objects that appear here
+        'node_objs', # list of all node objects that appear here, in map order
         'switch_objs', # set of all switch objects that appear here
     )
     def __init__(self, out, npc_dir, mobs, warps, imports, nodes):
-        xml.sax.ContentHandler.__init__(self)
+        super().__init__()
         self.locator = None
         self.out = open(out, 'wb')
         self.state = State.INITIAL
-        self.tilesets = set([0]) # consider the null tile as its own tileset
+        self.tilesets = {0} # consider the null tile as its own tileset
         self.buffer = bytearray()
         self.encoding = None
         self.compression = None
@@ -168,7 +165,7 @@ class ContentHandler(xml.sax.ContentHandler):
         self.object = None
         self.mob_ids = set()
         self.node_types = set()
-        self.node_objs = set()
+        self.node_objs = []
         self.switch_objs = set()
 
     def setDocumentLocator(self, loc):
@@ -193,8 +190,8 @@ class ContentHandler(xml.sax.ContentHandler):
                 print('<%s>' % name)
 
         if self.state is State.INITIAL:
-            if name == u'property' and attr[u'name'].lower() == u'name':
-                self.name = attr[u'value']
+            if name == 'property' and attr['name'].lower() == 'name':
+                self.name = attr['value']
                 self.mobs.write('// %s\n' % MESSAGE)
                 self.mobs.write('// %s mobs\n\n' % self.name)
                 self.warps.write('// %s\n' % MESSAGE)
@@ -202,37 +199,37 @@ class ContentHandler(xml.sax.ContentHandler):
                 self.nodes.write('// %s\n' % MESSAGE)
                 self.nodes.write('// %s nodes\n\n' % self.name)
 
-            if name == u'tileset':
-                self.tilesets.add(int(attr[u'firstgid']))
+            if name == 'tileset':
+                self.tilesets.add(int(attr['firstgid']))
 
-            if name == u'layer' and attr[u'name'].lower().startswith(u'collision'):
-                self.width = int(attr[u'width'])
-                self.height = int(attr[u'height'])
+            if name == 'layer' and attr['name'].lower().startswith('collision'):
+                self.width = int(attr['width'])
+                self.height = int(attr['height'])
                 self.out.write(struct.pack('<HH', self.width, self.height))
                 self.state = State.LAYER
         elif self.state is State.LAYER:
-            if name == u'data':
-                if attr.get(u'encoding','') not in (u'', u'csv', u'base64', u'xml'):
-                    print('Bad encoding:', attr.get(u'encoding',''))
+            if name == 'data':
+                if attr.get('encoding','') not in ('', 'csv', 'base64', 'xml'):
+                    print('Bad encoding:', attr.get('encoding',''))
                     return
-                self.encoding = attr.get(u'encoding','')
-                if attr.get(u'compression','') not in (u'', u'none', u'zlib', u'gzip'):
-                    print('Bad compression:', attr.get(u'compression',''))
+                self.encoding = attr.get('encoding','')
+                if attr.get('compression','') not in ('', 'none', 'zlib', 'gzip'):
+                    print('Bad compression:', attr.get('compression',''))
                     return
-                self.compression = attr.get(u'compression','')
+                self.compression = attr.get('compression','')
                 self.state = State.DATA
         elif self.state is State.DATA:
-            self.out.write(bytes([int(attr.get(u'gid',0)) not in self.tilesets]))
+            self.out.write(bytes([int(attr.get('gid',0)) not in self.tilesets]))
         elif self.state is State.FINAL:
-            if name == u'object':
+            if name == 'object':
                 try:
-                    obj_type = attr[u'type'].lower()
+                    obj_type = attr['type'].lower()
                 except KeyError:
-                    obj_type = attr[u'class'].lower()
-                x = int(attr[u'x']) // TILESIZE;
-                y = int(attr[u'y']) // TILESIZE;
-                w = int(attr.get(u'width', 0)) // TILESIZE;
-                h = int(attr.get(u'height', 0)) // TILESIZE;
+                    obj_type = attr['class'].lower()
+                x = int(attr['x']) // TILESIZE
+                y = int(attr['y']) // TILESIZE
+                w = int(attr.get('width', 0)) // TILESIZE
+                h = int(attr.get('height', 0)) // TILESIZE
                 # I'm not sure exactly what the w/h shrinking is for,
                 # I just copied it out of the old converter.
                 # I know that the x += w//2 is to get centers, though.
@@ -269,13 +266,13 @@ class ContentHandler(xml.sax.ContentHandler):
                 obj.y = y
                 obj.w = w
                 obj.h = h
-                obj.name = attr[u'name']
-            elif name == u'property':
+                obj.name = attr['name']
+            elif name == 'property':
                 obj = self.object
                 if obj is None:
                     return
-                key = attr[u'name'].lower()
-                value = attr[u'value']
+                key = attr['name'].lower()
+                value = attr['value']
                 # Not true due to defaulting
                 #assert not hasattr(obj, key)
                 try:
@@ -291,9 +288,9 @@ class ContentHandler(xml.sax.ContentHandler):
         if dump_all:
             print('</%s>' % name)
 
-        if name == u'object':
+        if name == 'object':
             if hasattr(self.object, 'ignore'):
-                return;
+                return
             obj = self.object
 
             if isinstance(obj, Mob):
@@ -353,18 +350,18 @@ class ContentHandler(xml.sax.ContentHandler):
 
             elif isinstance(obj, Node):
                 self.node_types.add(obj.name)
-                self.node_objs.add(obj)
+                self.node_objs.append(obj)
 
-        if name == u'data':
+        if name == 'data':
             if self.state is State.DATA:
-                if self.encoding == u'csv':
+                if self.encoding == 'csv':
                     for x in self.buffer.split(b','):
                         self.out.write(bytes([int(x) not in self.tilesets]))
-                elif self.encoding == u'base64':
+                elif self.encoding == 'base64':
                     data = base64.b64decode(bytes(self.buffer))
-                    if self.compression == u'zlib':
+                    if self.compression == 'zlib':
                         data = zlib.decompress(data)
-                    elif self.compression == u'gzip':
+                    elif self.compression == 'gzip':
                         data = zlib.decompress(data, 16 + zlib.MAX_WBITS)
                     for i in range(self.width*self.height):
                         self.out.write(bytes([struct.unpack('<I',data[i*4:i*4+4])[0] not in self.tilesets]))
@@ -403,7 +400,7 @@ class ContentHandler(xml.sax.ContentHandler):
         # had to move it here else it writes zero size files not sure if its better to check if a written file has zero size and delete it after
         if create_switches_files:
             if len(self.switch_objs) > 0:
-                with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w') as switches:
+                with open(posixpath.join(this_map_npc_dir, NPC_SWITCHES), 'w', encoding='utf-8') as switches:
                     switches.write('// %s\n' % MESSAGE)
                     switches.write('// %s switches\n\n' % self.name)
                     for sobjs in sorted(self.switch_objs, key=lambda o: (o.x, o.y)):
@@ -438,10 +435,10 @@ def main(argv):
     if check_mobs:
         global mob_names
         mob_names = {}
-        with open(posixpath.join(server_data, TMWA_MAP_CONF)) as mob_dbs:
+        with open(posixpath.join(server_data, TMWA_MAP_CONF), encoding='utf-8') as mob_dbs:
             for mob_db_line in mob_dbs:
                 if mob_db_line.startswith('mob_db:'):
-                    with open(posixpath.join(server_data, mob_db_line.split(':')[1].strip())) as mob_db:
+                    with open(posixpath.join(server_data, mob_db_line.split(':')[1].strip()), encoding='utf-8') as mob_db:
                         for line in mob_db:
                             if not line.strip():
                                 continue
@@ -461,19 +458,19 @@ def main(argv):
             tmx = posixpath.join(tmx_dir, arg)
             wlk = posixpath.join(wlk_dir, base + '.wlk')
             this_map_npc_dir = posixpath.join(npc_dir, base)
-            os.path.isdir(this_map_npc_dir) or os.mkdir(this_map_npc_dir)
+            os.makedirs(this_map_npc_dir, exist_ok=True)
             print('Converting %s to %s' % (tmx, wlk))
-            with open(posixpath.join(this_map_npc_dir, NPC_MOBS), 'w') as mobs:
-                with open(posixpath.join(this_map_npc_dir, NPC_WARPS), 'w') as warps:
-                    with open(posixpath.join(this_map_npc_dir, NPC_IMPORTS), 'w') as imports:
-                        with open(posixpath.join(this_map_npc_dir, NPC_NODES), 'w') as nodes:
+            with open(posixpath.join(this_map_npc_dir, NPC_MOBS), 'w', encoding='utf-8') as mobs:
+                with open(posixpath.join(this_map_npc_dir, NPC_WARPS), 'w', encoding='utf-8') as warps:
+                    with open(posixpath.join(this_map_npc_dir, NPC_IMPORTS), 'w', encoding='utf-8') as imports:
+                        with open(posixpath.join(this_map_npc_dir, NPC_NODES), 'w', encoding='utf-8') as nodes:
                             xml.sax.parse(tmx, ContentHandler(wlk, this_map_npc_dir, mobs, warps, imports, nodes))
             npc_master.append('import: %s\n' % posixpath.join(SERVER_NPCS, base, NPC_IMPORTS))
 
-    with open(posixpath.join(wlk_dir, 'resnametable.txt'), 'w') as resname:
+    with open(posixpath.join(wlk_dir, 'resnametable.txt'), 'w', encoding='utf-8') as resname:
         for base in sorted(map_basenames):
             resname.write('%s#%s.wlk#\n' % (base, base))
-    with open(posixpath.join(npc_dir, NPC_MASTER_IMPORTS), 'w') as out:
+    with open(posixpath.join(npc_dir, NPC_MASTER_IMPORTS), 'w', encoding='utf-8') as out:
         out.write('// %s\n\n' % MESSAGE)
         npc_master.sort()
         for line in npc_master:
