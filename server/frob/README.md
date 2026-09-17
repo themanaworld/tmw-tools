@@ -18,4 +18,9 @@ make frob items="item..item"                # item range
 make frob items="item,item item-item item"  # mixed
 ```
 
+### Special flags
+- `--dry`: performs a dry run (does not modify databases)
+- `--sql`: converts the flatfile databases to MySQL tables in the `legacy` database
+- `--stats`: compiles statistics about general item distribution
+
 [Deno]: https://deno.land

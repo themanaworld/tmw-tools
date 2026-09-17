@@ -1,5 +1,6 @@
 // this script removes specified items from inventories and storage
-import { SQLHandler } from "./sql.ts"
+import { SQLHandler } from "./sql.ts";
+import { ManaMarketHandler } from "./manamarket.ts";
 import { LoginParser, LoginSQL } from "./login.ts";
 import { CharParser, CharWriter, CharSQL } from "./char.ts";
 import { AccregParser, AccregSQL } from "./accreg.ts";
@@ -10,6 +11,7 @@ import { ItemDB } from "./itemdb.ts";
 const args: string[] = Deno.args.slice(1);
 const to_remove: Set<number> = new Set();
 const sql = new SQLHandler();
+const manamarket = new ManaMarketHandler();
 const login_parser = new LoginParser();
 const char_parser = new CharParser();
 const accreg_parser = new AccregParser();
@@ -23,6 +25,10 @@ const party_SQL = new PartySQL(sql);
 const storage_writer = new StorageWriter();
 const storage_SQL = new StorageSQL(sql);
 const item_db = new ItemDB();
+
+// at which value an item is considered SSR
+const rare_threshold = 3000000;
+const hoarders: Map<number, any> = new Map();
 
 const stats = {
     inventory: {
@@ -44,12 +50,61 @@ const stats = {
 const flags = {
     dry_run: false,
     sql: false,
+    stats: false,
 };
 
 
 (async () => {
     const items_by_id = new Map(); // holds full item info
     const items_by_name = new Map(); // holds references to the former
+
+    // TODO: split the hoarder stuff into hoarders.ts
+    const getHoarder = (account_id: number) => {
+        let hoarder = hoarders.get(account_id);
+
+        if (!hoarder) {
+            hoarder = hoarders.set(account_id, {
+                value: {
+                    items: 0,
+                    //gp: 0,
+                },
+                storage: {},
+                inventories: {},
+            }).get(account_id);
+        }
+
+        return hoarder;
+    };
+
+    const maybeAddToHoarders = (account_id: number, char_name: string, char_id: number, item: number, qty: number = 1) => {
+        // make sure all values are the expected format (Deno is weird sometimes)
+        [account_id, char_id, item, qty] = [+account_id, +char_id, +item, +qty];
+
+        const data = manamarket.items.get(item);
+        let value = data ? data.averageValue.overall : 0;
+
+        if (value < rare_threshold) {
+            return;
+        }
+
+        const hoarder = getHoarder(account_id);
+
+        item = (items_by_id.get(item)).name;
+
+        if (char_id && char_name) {
+            if (!Reflect.has(hoarder.inventories, char_name)) {
+                hoarder.inventories[char_name] = new Map();
+            }
+
+            const had = hoarder.inventories[char_name][item] || 0;
+            hoarder.inventories[char_name][item] = had + qty;
+        } else {
+            const had = hoarder.storage[item] || 0;
+            hoarder.storage[item] = had + qty;
+        }
+
+        hoarder.value.items += value;
+    };
 
     for await (let item of item_db.readDB()) {
         items_by_id.set(+item.id, item);
@@ -102,6 +157,9 @@ const flags = {
             case "sql":
                 flags.sql = true;
                 break;
+            case "stats":
+                flags.stats = true;
+                break;
             case "clean":
             case "clean-only":
                 break;
@@ -148,6 +206,11 @@ const flags = {
         await sql.init();
     }
 
+    if (flags.stats) {
+        console.log("");
+        await manamarket.init();
+    }
+
     console.log("");
 
     // account:
@@ -174,7 +237,7 @@ const flags = {
 
         for (let item of char.items) {
             if (!items_by_id.has(+item.nameid)) {
-                console.log(`\rremoving ${+item.    amount || 1}x non-existant item ID ${item.nameid} from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
+                console.log(`\rremoving ${+item.amount || 1}x non-existant item ID ${item.nameid} from inventory of character ${char.name} [${char.account_id}:${char.char_id}]`);
                 stats.inventory.pruned += +item.amount;
                 mod = true;
             } else if (+item.amount < 1) {
@@ -187,6 +250,10 @@ const flags = {
                 mod = true;
             } else {
                 items_filtered.push(item);
+            }
+
+            if (flags.stats) {
+                maybeAddToHoarders(+char.account_id, char.name, +char.char_id, +item.nameid, +item.amount || 1);
             }
         }
 
@@ -244,6 +311,10 @@ const flags = {
             } else {
                 items_filtered.push(item);
             }
+
+            if (flags.stats) {
+                maybeAddToHoarders(+storage.account_id, "", 0, +item.nameid, +item.amount || 1);
+            }
         }
 
         if (mod)
@@ -272,6 +343,51 @@ const flags = {
 
     await storage_writer.finalize();
     await sql.close();
+
+    if (flags.stats) {
+        function partition(all: any[], left: number, right: number) {
+            var pivot   = all[Math.floor((right + left) / 2)], //middle element
+                i       = left, //left pointer
+                j       = right; //right pointer
+            while (i <= j) {
+                while (all[i][1].value.items < pivot[1].value.items) {
+                    i++;
+                }
+                while (all[j][1].value.items > pivot[1].value.items) {
+                    j--;
+                }
+                if (i <= j) {
+                    [all[i], all[j]] = [all[j], all[i]]; // swap them
+                    i++;
+                    j--;
+                }
+            }
+            return i;
+        }
+
+        function quickSort(all: any[], left: number, right: number) {
+            if (all.length > 1) {
+                const index = partition(all, left, right); //index returned from partition
+                if (left < index - 1) { //more elements on the left side of the pivot
+                    quickSort(all, left, index - 1);
+                }
+                if (index < right) { //more elements on the right side of the pivot
+                    quickSort(all, index, right);
+                }
+            }
+            return all;
+        }
+
+        console.log("Sorting hoarders...");
+        const entries = Array.from(hoarders.entries());
+        const sorted = quickSort(entries, 0, entries.length - 1).reverse();
+        const json = JSON.stringify(sorted, null, "\t");
+        const encoder = new TextEncoder();
+
+        console.log("Writing hoarders.json...");
+        await Deno.mkdir("log", {recursive: true});
+        await Deno.writeTextFile("log/hoarders.json", json);
+    }
 
     console.info("\r                                                            \n=== all done ===");
     console.info(`removed ${stats.inventory.removed} existant, ${stats.inventory.pruned} non-existant and ${stats.inventory.stub} stub items from the inventory of ${stats.inventory.chars} characters`);
