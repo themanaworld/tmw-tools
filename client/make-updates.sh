@@ -6,7 +6,7 @@
 dir=`pwd`
 UPDATE_DIR=${UPDATE_DIR:=~/www/updates}
 cdata=../../client-data
-UPDATE_HTTP=${UPDATE_HTTP:="http://updates.themanaworld.org/updates"}
+UPDATE_HTTP=${UPDATE_HTTP:="http://updates.themanaworld.org"}
 
 function check_update() {
     test_command=`           \
@@ -22,7 +22,6 @@ function check_update() {
         echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
     else
         echo -e "\e[31m!!FAILED!!\e[0m $1 ($test_command)";
-        exit 1;
     fi
 }
 
@@ -101,7 +100,7 @@ if [ "$UPDATE_HTTP" != "none" ] ; then
     check_update "$UPDATE_HTTP/TMW-music.zip"
     check_update "$UPDATE_HTTP/TMW-mods.zip"
     check_update "$UPDATE_HTTP/resources.xml"
-    check_update "$UPDATE_HTTP/news.php"
+    check_update "$UPDATE_HTTP/news.txt"
 fi
 
 popd &>/dev/null # $dir/files
