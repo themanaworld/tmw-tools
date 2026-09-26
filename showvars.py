@@ -15,8 +15,12 @@ parser.add_argument("-f", "--file", dest="fname", default="",
 
 parser.add_argument("-l", "--localvariables", dest="localvars", action="store_true", default=False,
                     help="show local variables as well")
+parser.add_argument("-c", "--charvars", dest="charvars", action="store_true", default=False,
+                    help="show only persistent character variables")
 
 options = parser.parse_args()
+
+SPECIAL_PARAMS = {"BaseLevel","Zeny","Sex","Class","Str","Agi","Vit","Int","Dex","Luk","Hp","Sp","PARTNER","GM"}
 
 def handleFile(fname):
 	f = open(fname, encoding="utf-8", errors="ignore")
@@ -48,10 +52,25 @@ def handleFile(fname):
 			varname = line[0:endpos].strip()
 			assignment = line[endpos+1:].strip()[:-1] # remove semicolon
 			if assignment != "0":
-				if varname.startswith("@") and not options.localvars:
-					continue
-				if varname.startswith("$"):
-					continue
+				if options.charvars:
+					# Only persistent character variables:
+					# - no @, $, #, or . prefix
+					# - no string suffix ($)
+					# - no array indices ([...])
+					# - not a special player parameter
+					if varname.startswith("@") or varname.startswith("$") or varname.startswith("#") or varname.startswith("."):
+						continue
+					if varname.endswith("$"):
+						continue
+					if "[" in varname or "]" in varname:
+						continue
+					if varname in SPECIAL_PARAMS:
+						continue
+				else:
+					if varname.startswith("@") and not options.localvars:
+						continue
+					if varname.startswith("$"):
+						continue
 				if varname in allvars:
 					if not fname in allvars[varname]:
 						allvars[varname] += [fname]
