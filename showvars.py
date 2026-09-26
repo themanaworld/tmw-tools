@@ -1,26 +1,26 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 
 # must be started in the npc dir
 
 import os
 import re
-from optparse import OptionParser
-parser = OptionParser()
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False,
-                  help="show the occurrences of that var")
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", default=False,
+                    help="show the occurrences of that var")
 
-parser.add_option("-f", "--file", dest="fname", default="",
-                  help="inspect that file", metavar="FILE")
+parser.add_argument("-f", "--file", dest="fname", default="",
+                    help="inspect that file", metavar="FILE")
 
-parser.add_option("-l", "--localvariables", dest="localvars", action="store_true", default=False,
-                  help="show local variables as well")
+parser.add_argument("-l", "--localvariables", dest="localvars", action="store_true", default=False,
+                    help="show local variables as well")
 
-(options, args) = parser.parse_args()
+options = parser.parse_args()
 
 def handleFile(fname):
-	f = open(fname)
-	lines = f.readlines();
+	f = open(fname, encoding="utf-8", errors="ignore")
+	lines = f.readlines()
 	f.close()
 	rm=[]
 	for l in lines:
@@ -64,7 +64,7 @@ def handleFile(fname):
 
 		else:
 			# ok error, you need to check manually:
-			print "\tline:\t",line
+			print("\tline:\t", line)
 	return rm
 
 if options.fname:
@@ -74,7 +74,7 @@ else:
 
 allvars = {}
 rmvars = []
-print "please check manully for vars in here:"
+print("please check manully for vars in here:")
 os.chdir(path)
 
 for tpl in os.walk("."):
@@ -83,28 +83,28 @@ for tpl in os.walk("."):
 
 unusedcounter=0
 usedcounter=0
-print "These variables are found in the scripts, which are deleted in clear_vars"
+print("These variables are found in the scripts, which are deleted in clear_vars")
 for var in allvars:
 	if not var in rmvars:
 		continue
 
 	unusedcounter+=1
-	print "\t",var
+	print("\t", var)
 	if options.verbose:
 		for fname in allvars[var]:
-			print "\t","\t", fname
+			print("\t", "\t", fname)
 
 
-print "These variables are valid variables of the scripts:"
+print("These variables are valid variables of the scripts:")
 for var in allvars:
 	if var in rmvars:
 		continue
 
 	usedcounter+=1
-	print "\t",var
+	print("\t", var)
 	if options.verbose:
 		for fname in allvars[var]:
-			print "\t","\t", fname
+			print("\t", "\t", fname)
 
-print "number of vars used:", usedcounter
-print "number of vars cleared:", unusedcounter
+print("number of vars used:", usedcounter)
+print("number of vars cleared:", unusedcounter)
