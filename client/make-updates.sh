@@ -54,13 +54,24 @@ rm -v $UPDATE_DIR/resources.xml 2>/dev/null || :
 echo -e "\e[96m>> Entering client-data...\e[0m"
 pushd $cdata &>/dev/null
 
+echo -e "\e[96m>> Optimizing PNG images...\e[0m"
+make -s -j"$(nproc)" optimize-pngs || { echo "PNG optimization failed"; exit 1; }
+
 if [ "$UPDATE_HTTP" == "none" ] ; then
     echo -e "\e[96m>> Changing last modified dates...\e[0m"
     find -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -exec touch --date=2015-01-01 {} \;
 fi
 
 echo -e "\e[96m>> Compressing files...\e[0m"
-find -path ./music -prune -o -path ./mods -prune -o -iregex ".+[.]\(xml\|png\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n" | zip -X -@ -n .ogg $dir/files/TMW.zip
+# Data files are zipped straight from the checkout, PNGs (which all
+# live under graphics/) are appended from the opt/ tree which mirrors it.
+{ find . -maxdepth 1 -type f \
+      -iregex ".+[.]\(xml\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%P\n";
+  find graphics items maps npcs quests rules sfx tilesets -type f \
+      -iregex ".+[.]\(xml\|jpg\|tmx\|ogg\|txt\|po\|tsx\)" -printf "%p\n";
+} | zip -X -@ -n .ogg:.jpg "$dir/files/TMW.zip"
+find graphics -type f -iname '*.png' -printf "%p\n" |
+  (cd opt && zip -X -@ -n .png "$dir/files/TMW.zip")
 find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip
 #find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
 find ./mods -type f | xargs zip -9 -r -n .ogg $dir/files/TMW-mods.zip
