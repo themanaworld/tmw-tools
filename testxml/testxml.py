@@ -415,9 +415,9 @@ def testGenderSprites(id, sprites, isNormalDye, checkAction, iserr):
         if female == False and unisex == False:
             showMsg(id, "no female sprite tag", "", iserr)
         if unisex == True and female == True and male == True:
-            showMsg(id, "gender sprite tag with unisex tag", "", iserr)
+            showMsg(id, "gender sprite tags with unisex tag", "", iserr)
         if unisex == False and male == False and female == False:
-            showMsg(id, "no any gender tags", "", iserr)
+            showMsg(id, "no gender tags", "", iserr)
 
 def testSprite(id, file, variant, isNormalDye, checkAction, iserr):
     global safeDye
