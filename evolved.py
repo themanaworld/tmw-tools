@@ -782,6 +782,8 @@ def testMobs():
     MD_BOSS =              32
     MD_PLANT =             64
     MD_CANATTACK =         128
+    MD_CHANGETARGET_MELEE = 512
+    MD_CHANGETARGET_CHASE = 1024
 
     print("\nGenerating Mob Database...")
     if len(sys.argv) >= 2:
@@ -895,6 +897,10 @@ def testMobs():
             x.md = x.md | MD_PLANT
         elif "\tCanAttack: true" in a:
             x.md = x.md | MD_CANATTACK
+        elif "\tChangeTargetMelee: true" in a:
+            x.md = x.md | MD_CHANGETARGET_MELEE
+        elif "\tChangeTargetChase: true" in a:
+            x.md = x.md | MD_CHANGETARGET_CHASE
         elif '\tDrops: ' in a:
             dropper=True
         elif dropper and '\t}' in a:
