@@ -74,9 +74,9 @@ echo -e "\e[96m>> Compressing files...\e[0m"
 } | zip -X -@ -n .ogg:.jpg "$dir/files/TMW.zip"
 find graphics -type f -iname '*.png' -printf "%p\n" |
   (cd opt && zip -X -@ -n .png "$dir/files/TMW.zip")
-find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip || :
+find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip
 #find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
-find ./mods -type f | xargs -r zip -9 -r -n .ogg $dir/files/TMW-mods.zip
+find ./mods -type f | xargs zip -9 -r -n .ogg $dir/files/TMW-mods.zip
 touch $dir/files/TMW-music.zip
 touch $dir/files/TMW-mods.zip
 
