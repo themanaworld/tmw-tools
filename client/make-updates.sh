@@ -3,6 +3,8 @@
 # Copyright (C) 2011-2012  Evol Online
 # Author: Andrei Karas (4144), gumi
 
+set -e
+
 dir=`pwd`
 UPDATE_DIR=${UPDATE_DIR:=~/www/updates}
 cdata=../../client-data
@@ -15,9 +17,9 @@ function check_update() {
         "$1"                 \
         -o /dev/null         \
         --connect-timeout 3  \
-        --max-time 5`
+        --max-time 5 || :`
 
-    if [ ${test_command} == "200" ] ;
+    if [ "${test_command}" == "200" ] ;
     then
         echo -e "hit $1 (\e[92m$test_command OK\e[0m)";
     else
@@ -72,9 +74,9 @@ echo -e "\e[96m>> Compressing files...\e[0m"
 } | zip -X -@ -n .ogg:.jpg "$dir/files/TMW.zip"
 find graphics -type f -iname '*.png' -printf "%p\n" |
   (cd opt && zip -X -@ -n .png "$dir/files/TMW.zip")
-find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip
+find -path ./sfx -prune -o -path ./mods -prune -o -iregex ".+[.]\(ogg\)" -printf "%P\n" | zip -X -@ -0 $dir/files/TMW-music.zip || :
 #find ./mods -printf "%P\n" | zip -X -@ $dir/files/TMW-mods.zip
-find ./mods -type f | xargs zip -9 -r -n .ogg $dir/files/TMW-mods.zip
+find ./mods -type f | xargs -r zip -9 -r -n .ogg $dir/files/TMW-mods.zip
 touch $dir/files/TMW-music.zip
 touch $dir/files/TMW-mods.zip
 
